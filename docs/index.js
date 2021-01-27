@@ -13,4 +13,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function accepted() {
     console.log(auth_code);
+    navigator.clipboard = auth_code;
 }
