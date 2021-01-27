@@ -45,6 +45,7 @@ function init() {
 }
 
 function getAuthCode() {
+    //chrome.storage.local.remove(["MAL_User_Token"], function () {});
     chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
         if (result.MAL_User_Token == undefined) {

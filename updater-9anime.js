@@ -26,6 +26,8 @@ function getAnime(name) {
 }
 
 function finishedEpisode() {
+    //Reparsing the URL
+    parseURL(window.location.toString());
     chrome.runtime.sendMessage(
         {
             type: "SEND_ANIME_FINISHED",
