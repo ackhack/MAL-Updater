@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function accepted() {
     let tb = document.getElementById("code");
-    tb.innerText = auth_code;
+    tb.value = auth_code;
     tb.focus();
     tb.select();
 }
