@@ -12,6 +12,5 @@ document.addEventListener('DOMContentLoaded', () => {
 }, false);
 
 function accepted() {
-    console.log(auth_code);
-    navigator.clipboard.writeText(auth_code);
+    document.getElementById("code").innerText = auth_code;
 }
