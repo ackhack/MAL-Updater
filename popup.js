@@ -15,3 +15,5 @@ function accepted() {
     });
     alert("Reload Page");
 }
+
+//

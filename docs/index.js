@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (para.startsWith("code=")) {
         auth_code = para.slice(5);
-        auth_code = auth_code.substring(auth_code.indexOf("&")+1);
+        auth_code = auth_code.substring(0,auth_code.indexOf("&")+1);
     }
 
     document.getElementById("btnGrant").addEventListener("click", accepted);
