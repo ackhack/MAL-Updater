@@ -58,12 +58,12 @@ function getAuthCode() {
 }
 
 function parseUserToken() {
-    if (usertoken.access_req_time + usertoken.access_time > Date.now()) {
+    if (usertoken.access_req_time + usertoken.access_time <= Date.now()) {
         pendNewAccessToken(usertoken.access_req_time + usertoken.access_time - Date.now());
         return;
     }
 
-    if (usertoken.refresh_req_time + usertoken.refresh_time > Date.now()) {
+    if (usertoken.refresh_req_time + usertoken.refresh_time <= Date.now()) {
         return refreshAccessToken();
     }
 
@@ -90,7 +90,8 @@ function refreshAccessToken() {
             usertoken.access_req_time = Date.now();
             usertoken.refresh_req_time = Date.now();
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
-            pendNewAccessToken(usertoken.access_time);
+            console.log(res.expires_in*1000);
+            pendNewAccessToken(res.expires_in * 1000);
         }
     }
 
