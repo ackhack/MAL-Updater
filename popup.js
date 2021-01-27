@@ -11,11 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }, false);
 
 function accepted() {
-    saveToken("asdf");
-    alert("Reload Page!");
-}
-
-function saveToken(t) {
-    chrome.storage.local.set({ "mal_updater_token": t}, function(){
+    chrome.storage.local.set({ "mal_updater_token": document.getElementById("inputCode").innerText}, function(){
     });
+    alert("Reload Page");
 }

@@ -6,7 +6,7 @@
     "permissions": [
         "activeTab",
         "storage",
-        "*://api.myanimelist.net/*",
+        "*://*.myanimelist.net/*",
         "*://*.github.com/*"
     ],
     "content_scripts": [

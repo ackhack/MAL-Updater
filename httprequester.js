@@ -46,17 +46,16 @@ function getAnime(req, callb) {
 }
 
 function getAuthCode() {
-
-    fetch("https://api.myanimelist.net/v1/oauth2/authorize?" +
+    
+    fetch("https://myanimelist.net/v1/oauth2/authorize?" +
     "response_type=code" +
     "&client_id=" + client.id +
     "&state=RequestID42" +
     "&code_challenge=" + randomString() +
     "&code_challenge_method=plain")
-    .then(response => console.log(response));
+    .then(response => chrome.tabs.create({ url: response.url }));
 }
 
 function randomString() {
     return "NklUDX_CzS8qrMGWaDzgKs6VqrinuVFHa0xnpWPDy7_fggtM6kAar4jnTwOgzK7nPYfE9n60rsY4fhDExWzr5bf7sEvMMmSXcT2hWkCstFGIJKoaimoq5GvAEQD8NZ8g";
 }
-

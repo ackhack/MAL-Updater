@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (para.startsWith("code=")) {
         auth_code = para.slice(5);
+        auth_code = auth_code.substring(auth_code.indexOf("&")+1);
     }
 
     document.getElementById("btnGrant").addEventListener("click", accepted);
 }, false);
 
 function accepted() {
-    document.getElementById("show").innerText = "Please copy following Code into the popup: " + auth_code;
+    console.log(auth_code);
 }
