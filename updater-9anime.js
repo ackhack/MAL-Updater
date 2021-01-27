@@ -44,19 +44,19 @@ function finishedEpisode() {
 
 function updateStatus(con, user = "") {
     if (user != "") {
-        con.log("TO USER: " + user);
+        alert("TO USER: " + user);
     }
     console.log("MAL Updater: " + con);
 }
 
 function parseURL(url) {
-    //https://www2.kickassanime.rs/anime/world-witches-hasshin-shimasu-162140/episode-03-550318
-    let urlPattern = "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*)-\\d+\\/episode-0*(\\d+)-\\d+";
+    //https://www12.9anime.to/watch/rezero-kara-hajimeru-isekai-seikatsu-2nd-season-part-2.xk78/ep-4
+    let urlPattern = "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}\\/ep-(\\d+)";
 
     let res = url.match(urlPattern);
 
     if (!res) {
-        updateStatus("No RegEx match", true, "No Anime found in URL");
+        updateStatus("No RegEx match","No Anime found in URL");
     } else {
         animeName = res[1];
         episodeNumber = res[2];
@@ -77,7 +77,7 @@ function recieveAnime(list) {
 
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1"
-    div.style = "position: absolute;left: 50%;top: 50%;background-color: rgb(33, 33, 33);border: 3px solid rgb(231, 219, 163);padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color: rgb(33, 33, 33);border: 3px solid rgb(73, 37, 123);padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 2em;font-size: larger;";
@@ -124,9 +124,9 @@ function clickedLi(li) {
 
 function insertButton() {
     let btnFinish = document.createElement("button");
-    btnFinish.style = "width: 20em;height: 3em;background-color: #212121;border: 3px solid #e7dba3;color: #e7dba3;";
+    btnFinish.style = "width: 20em;height: 3em;background-color: #212121;border: 3px solid rgb(73, 37, 123);color: white;";
     btnFinish.textContent = "Finished Episode";
     btnFinish.onclick = () => { finishedEpisode(); };
-    let navbar = document.getElementById("main-nav");
-    navbar.insertBefore(btnFinish, navbar.children[1]);
+    let navbar = document.getElementById("menu").parentElement;
+    navbar.appendChild(btnFinish);
 }
