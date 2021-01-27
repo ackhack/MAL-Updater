@@ -14,6 +14,8 @@ var client;
 init();
 
 chrome.runtime.onMessage.addListener(
+    //Listener for HTTPReqeust
+    //Needed because content_scripts cant run them
     function (request, sender, onSuccess) {
         switch (request.type) {
             case "GET_ANIME":
@@ -29,6 +31,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 function init() {
+    //Init the secret File
     let url = chrome.runtime.getURL('secret.json');
 
     if (!url) {
@@ -48,8 +51,8 @@ function getAuthCode() {
     //chrome.storage.local.remove(["MAL_User_Token"], function () {});
     chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
-        console.log(result);
-
+        //Check if usertoken is in storage
+        //otherwise request new one
         if (result.MAL_User_Token == undefined) {
             getNewAuthCode();
         } else {
@@ -60,19 +63,23 @@ function getAuthCode() {
 }
 
 function parseUserToken() {
+    //If accessToken is valid, use it
     if (usertoken.access_req_time + usertoken.access_time > Date.now()) {
         pendNewAccessToken(usertoken.access_req_time + usertoken.access_time - Date.now());
         return;
     }
 
+    //If refreshToken is valid, use it
     if (usertoken.refresh_req_time + usertoken.refresh_time > Date.now()) {
         return refreshAccessToken();
     }
 
+    //Otherwise get new Tokens
     getNewAuthCode();
 }
 
 function refreshAccessToken() {
+
     let para = "client_id=" + client.id +
         "&client_secret=" + client.secret +
         "&grant_type=refresh_token" +
@@ -84,15 +91,21 @@ function refreshAccessToken() {
 
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+
             let res = JSON.parse(this.response);
+
+            //Save Tokens and Time in var
             usertoken.access = res.access_token;
             usertoken.refresh = res.refresh_token;
             usertoken.access_time = res.expires_in * 1000;
             usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
             usertoken.access_req_time = Date.now();
             usertoken.refresh_req_time = Date.now();
+
+            //Save var to storage
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
-            console.log(res.expires_in*1000);
+
+            //Set update for AccessToken
             pendNewAccessToken(res.expires_in * 1000);
         }
     }
@@ -108,9 +121,11 @@ function pendNewAccessToken(time) {
 }
 
 function getNewAuthCode() {
+    //Generate verifier and state
     code_verifier = randomString();
     stateID = getStateID();
 
+    //Opens the MAL Auth page
     fetch("https://myanimelist.net/v1/oauth2/authorize?" +
         "response_type=code" +
         "&client_id=" + client.id +
@@ -142,6 +157,7 @@ function getStateID() {
 
 function checkState(req) {
 
+    //Check if state is the same
     if (req.state != stateID) {
         alert("States did not match!");
         return false;
@@ -167,13 +183,20 @@ function getUserToken() {
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             let res = JSON.parse(this.response);
+            
+            //Save Tokens and Time in var
             usertoken.access = res.access_token;
             usertoken.refresh = res.refresh_token;
             usertoken.access_time = res.expires_in * 1000;
             usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
             usertoken.access_req_time = Date.now();
             usertoken.refresh_req_time = Date.now();
+
+            //Save var to storage
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
+
+            //Set update for AccessToken
+            pendNewAccessToken(res.expires_in * 1000);
         }
     }
 

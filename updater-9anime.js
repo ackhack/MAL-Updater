@@ -7,6 +7,7 @@ init(0);
 
 function init(nTry) {
 
+    //Retrying on 9anime because URL changes without Postback
     if (nTry == 10)
         return;
     nTry++;
@@ -20,11 +21,13 @@ function init(nTry) {
 }
 
 function getAnime(name) {
+    //Search for animename in chache
     if (animeCache[name]) {
         animeID = animeCache[name];
         console.log("Found ID in cache: " + animeID);
         insertButton();
     }
+    //Else get it from API
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
@@ -35,7 +38,7 @@ function getAnime(name) {
 }
 
 function finishedEpisode() {
-    //Reparsing the URL
+    //Reparsing the URL because it can change without Postback
     parseURL(window.location.toString());
     chrome.runtime.sendMessage(
         {
@@ -62,7 +65,8 @@ function updateStatus(con, user = "") {
 
 function parseURL(url) {
     //https://www12.9anime.to/watch/rezero-kara-hajimeru-isekai-seikatsu-2nd-season-part-2.xk78/ep-4
-    let urlPattern = "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}(\\/ep-(\\d+)|\\?ep=(\\d+))";
+    //Get name and episode from URL
+    let urlPattern = "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}(\\/ep-(\\d+)|\\?ep=(\\d+)).*";
 
     let res = url.match(urlPattern);
 
@@ -77,6 +81,7 @@ function parseURL(url) {
 }
 
 function recieveAnime(list) {
+    //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
 
     for (let elem of list.data) {
@@ -88,6 +93,7 @@ function recieveAnime(list) {
         ul.appendChild(li);
     }
 
+    //Main Div for Anime List
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1"
     div.style = "position: absolute;left: 50%;top: 50%;background-color: rgb(33, 33, 33);border: 3px solid rgb(73, 37, 123);padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
@@ -102,6 +108,7 @@ function recieveAnime(list) {
     textbox.placeholder = "If not in List, enter MAL ID here";
     textbox.style = "width: -webkit-fill-available;margin-left: 1.5em;";
 
+    //Div with the two Buttons
     let divButton = document.createElement("div");
     divButton.style = "padding-left: 1.5em;padding-top: 5px;";
 
@@ -129,6 +136,7 @@ function recieveAnime(list) {
 }
 
 function clickedLi(li) {
+    //Save Anime to Cache, insert the Finished button and hide the Div
     animeCache[animeName] = li.value;
     animeID = li.value;
     insertButton();
