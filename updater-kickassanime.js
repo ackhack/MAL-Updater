@@ -3,18 +3,19 @@ var episodeNumber;
 var animeID;
 var animeCache = {};
 
-init();
+if (window.location.toString().includes(".kickassanime."))
+    init();
 
 function init() {
-    parseURL(window.location.toString());
-    getAnime(animeName);
+    if (parseURL(window.location.toString()))
+        getAnime(animeName);
 }
 
 function getAnime(name) {
     //Search for animename in chache
     if (animeCache[name]) {
         animeID = animeCache[name];
-        console.log("Found ID in cache: " + animeID);
+        updateStatus("Found ID in cache: " + animeID);
         insertButton();
     }
     //Else get it from API
@@ -46,7 +47,7 @@ function finishedEpisode() {
 
 function updateStatus(con, user = "") {
     if (user != "") {
-        con.log("TO USER: " + user);
+        alert("TO USER: " + user);
     }
     console.log("MAL Updater: " + con);
 }
@@ -59,17 +60,19 @@ function parseURL(url) {
     let res = url.match(urlPattern);
 
     if (!res) {
-        updateStatus("No RegEx match", true, "No Anime found in URL");
+        updateStatus("No RegEx match");
+        return false;
     } else {
         animeName = res[1];
         episodeNumber = res[2];
+        return true;
     }
 }
 
 function recieveAnime(list) {
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
-    
+
     for (let elem of list.data) {
         let li = document.createElement("li");
         li.style = "cursor: pointer;";

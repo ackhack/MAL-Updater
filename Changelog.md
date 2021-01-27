@@ -1,3 +1,8 @@
+2.0.3: 27.01.2020
+    -Updated README.md
+    -Can now read all kickassanime and 9anime links
+    -Bug Fixes
+
 2.0.2: 27.01.2020
     -Fixed Auth Storage not working
     -Added Code Comments

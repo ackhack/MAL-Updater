@@ -113,6 +113,9 @@ function refreshAccessToken() {
 }
 
 function pendNewAccessToken(time) {
+    if (time > 2147483647) {
+        time = 2147483647;
+    }
     setTimeout(() => {
         console.log("Getting new Token");
         refreshAccessToken();

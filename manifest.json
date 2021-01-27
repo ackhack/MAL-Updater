@@ -12,7 +12,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://*.kickassanime.rs/anime/*"
+                "https://*/anime/*"
             ],
             "js": [
                 "updater-kickassanime.js"
@@ -20,7 +20,7 @@
         },
         {
             "matches": [
-                "https://*.9anime.to/watch/*"
+                "https://*/watch/*"
             ],
             "js": [
                 "updater-9anime.js"

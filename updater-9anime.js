@@ -3,7 +3,8 @@ var episodeNumber;
 var animeID;
 var animeCache = {};
 
-init(0);
+if (window.location.toString().includes(".9anime."))
+    init(0);
 
 function init(nTry) {
 
@@ -24,7 +25,7 @@ function getAnime(name) {
     //Search for animename in chache
     if (animeCache[name]) {
         animeID = animeCache[name];
-        console.log("Found ID in cache: " + animeID);
+        updateStatus("Found ID in cache: " + animeID);
         insertButton();
     }
     //Else get it from API

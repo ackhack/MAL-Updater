@@ -1,8 +1,8 @@
 USE AT YOUR OWN RISK
 
 Works on:
-- Kickassanime.rs
-- 9anime.to
+- Kickassanime
+- 9anime
 
 If you want to use this Extension, you have to create a secret.json with the following structure
 ```
