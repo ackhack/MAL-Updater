@@ -86,7 +86,7 @@ function refreshAccessToken() {
             usertoken.access = res.access_token;
             usertoken.refresh = res.refresh_token;
             usertoken.access_time = res.expires_in * 1000;
-            usertoken.refresh_time = 31 * 24 * 60 * 60 * 1000;
+            usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
             usertoken.access_req_time = Date.now();
             usertoken.refresh_req_time = Date.now();
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
@@ -166,8 +166,8 @@ function getUserToken() {
             let res = JSON.parse(this.response);
             usertoken.access = res.access_token;
             usertoken.refresh = res.refresh_token;
-            usertoken.access_time = res.expires_in;
-            usertoken.refresh_time = 31 * 24 * 60 * 60;
+            usertoken.access_time = res.expires_in * 1000;
+            usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
             usertoken.access_req_time = Date.now();
             usertoken.refresh_req_time = Date.now();
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
