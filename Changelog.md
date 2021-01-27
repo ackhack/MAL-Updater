@@ -1,3 +1,6 @@
+2.0.1: 27.01.2020
+    -Refresh Token is now saved in ms
+
 2.0.0: 27.01.2020
     -Added 9anime.to support
     -Updated README.md
