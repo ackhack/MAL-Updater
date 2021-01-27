@@ -63,10 +63,9 @@ function getAuthCode() {
 }
 
 function parseUserToken() {
-    //If accessToken is valid, use it
+    //If accessToken is valid, refresh it, just in Case and use it
     if (usertoken.access_req_time + usertoken.access_time > Date.now()) {
-        pendNewAccessToken(usertoken.access_req_time + usertoken.access_time - Date.now());
-        return;
+        return refreshAccessToken();
     }
 
     //If refreshToken is valid, use it
@@ -106,7 +105,7 @@ function refreshAccessToken() {
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
 
             //Set update for AccessToken
-            pendNewAccessToken(res.expires_in * 1000);
+            pendNewAccessToken(0.9 * res.expires_in * 1000);
         }
     }
 
@@ -183,7 +182,7 @@ function getUserToken() {
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
             let res = JSON.parse(this.response);
-            
+
             //Save Tokens and Time in var
             usertoken.access = res.access_token;
             usertoken.refresh = res.refresh_token;

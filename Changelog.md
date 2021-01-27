@@ -1,6 +1,7 @@
 2.0.2: 27.01.2020
     -Fixed Auth Storage not working
     -Added Code Comments
+    -Refresh Tokens when starting
 
 2.0.1: 27.01.2020
     -Refresh Token is now saved in ms
