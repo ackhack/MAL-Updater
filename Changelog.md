@@ -3,6 +3,7 @@
     -Bug Fixes
     -Refresh Token updates after 28 Days
     -Changed github page to darkmode
+    -Added Icon
 
 2.0.0: 27.01.2020
     -Added 9anime.to support

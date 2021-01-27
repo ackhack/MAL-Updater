@@ -32,10 +32,12 @@
         "persistent": false
     },
     "web_accessible_resources": [
-        "secret.json",
-        "authtoken.json"
+        "secret.json"
     ],
     "browser_action": {
-        "default_popup": "popup.html?code=agbnjgubihwergv"
+        "default_popup": "popup.html"
+    },
+    "icons": {
+        "64": "icon.png"
     }
 }
