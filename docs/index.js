@@ -1,4 +1,4 @@
-var auth_code;
+var auth_code = "No Auth Code found";
 
 document.addEventListener('DOMContentLoaded', () => {
     let para = window.location.search.slice(1);
@@ -11,11 +11,5 @@ document.addEventListener('DOMContentLoaded', () => {
 }, false);
 
 function accepted() {
-    saveToken(auth_code);
-    window.close();
-}
-
-function saveToken(t) {
-    chrome.storage.local.set({ "mal_updater_token": t}, function(){
-    });
+    document.getElementById("show").innerText = "Please copy following Code into the popup: " + auth_code;
 }
