@@ -13,20 +13,25 @@ function accepted() {
 
     let res1 = para.match(urlPattern1);
     if (res1) {
-        auth_code = res1[1];
-        state = res1[2];
-        getUserToken();
+        foundMatch(res1[1],res1[2]);
     } else {
         let res2 = para.match(urlPattern2);
         if (res2) {
-            auth_code = res1[2];
-            state = res1[1];
-            getUserToken();
+            foundMatch(res1[2],res1[1]);
         } else {
             alert("No Token found in TextBox");
             return;
         }
     }
+}
+
+function foundMatch(auth,st) {
+    auth_code = auth;
+    state = st;
+    document.getElementById("btnGrant").style = "visibility:hidden;";
+    document.getElementById("inputCode").style = "visibility:hidden;";
+    getUserToken();
+    alert("Code accepted");
 }
 
 function getUserToken() {
