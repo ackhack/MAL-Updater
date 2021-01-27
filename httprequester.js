@@ -48,6 +48,8 @@ function getAuthCode() {
     //chrome.storage.local.remove(["MAL_User_Token"], function () {});
     chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
+        console.log(result);
+
         if (result.MAL_User_Token == undefined) {
             getNewAuthCode();
         } else {
@@ -58,12 +60,12 @@ function getAuthCode() {
 }
 
 function parseUserToken() {
-    if (usertoken.access_req_time + usertoken.access_time <= Date.now()) {
+    if (usertoken.access_req_time + usertoken.access_time > Date.now()) {
         pendNewAccessToken(usertoken.access_req_time + usertoken.access_time - Date.now());
         return;
     }
 
-    if (usertoken.refresh_req_time + usertoken.refresh_time <= Date.now()) {
+    if (usertoken.refresh_req_time + usertoken.refresh_time > Date.now()) {
         return refreshAccessToken();
     }
 

@@ -3,11 +3,20 @@ var episodeNumber;
 var animeID;
 var animeCache = {};
 
-init();
+init(0);
 
-function init() {
-    parseURL(window.location.toString());
-    getAnime(animeName);
+function init(nTry) {
+
+    if (nTry == 10)
+        return;
+    nTry++;
+
+    if (parseURL(window.location.toString()))
+        getAnime(animeName);
+    else
+        setTimeout(() => {
+            init(nTry);
+        }, 1000);
 }
 
 function getAnime(name) {
@@ -58,16 +67,18 @@ function parseURL(url) {
     let res = url.match(urlPattern);
 
     if (!res) {
-        updateStatus("No RegEx match","No Anime found in URL");
+        updateStatus("No RegEx match", "No Anime found in URL");
+        return false;
     } else {
         animeName = res[1];
         episodeNumber = res[3];
+        return true;
     }
 }
 
 function recieveAnime(list) {
     let ul = document.createElement("ul");
-    
+
     for (let elem of list.data) {
         let li = document.createElement("li");
         li.style = "cursor: pointer;";
