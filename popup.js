@@ -19,7 +19,7 @@ function accepted() {
         if (res2) {
             foundMatch(res1[2],res1[1]);
         } else {
-            alert("No Token found in TextBox");
+            document.getElementById("pFeedback").innerText = "No Token found in TextBox";
             return;
         }
     }
@@ -28,10 +28,10 @@ function accepted() {
 function foundMatch(auth,st) {
     auth_code = auth;
     state = st;
-    document.getElementById("btnGrant").style = "visibility:hidden;";
-    document.getElementById("inputCode").style = "visibility:hidden;";
+    // document.getElementById("btnGrant").style = "visibility:hidden;";
+    // document.getElementById("inputCode").style = "visibility:hidden;";
+    document.getElementById("pFeedback").innerText = "Code sent";
     getUserToken();
-    alert("Code accepted");
 }
 
 function getUserToken() {
@@ -41,6 +41,6 @@ function getUserToken() {
             token: auth_code,
             state: state
         },
-        () => {}
+        (res) => {document.getElementById("pFeedback").innerText = res ? "Code accepted" : "Code declined"}
   ); 
 }

@@ -1,3 +1,8 @@
+2.1.0: 28.01.2020
+    -Bug Fixes
+    -Changed popup.html to not use alert
+    -Added popup.html Feedback
+
 2.0.3: 27.01.2020
     -Updated README.md
     -Can now read all kickassanime and 9anime links

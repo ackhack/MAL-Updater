@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
             case "GET_ANIME":
                 return getAnime(request, onSuccess);
             case "SEND_USERTOKEN":
-                return checkState(request);
+                return checkState(request,onSuccess);
             case "SEND_ANIME_FINISHED":
                 return finishedEpisode(request, onSuccess);
             default:
@@ -49,17 +49,22 @@ function init() {
 
 function getAuthCode() {
     //chrome.storage.local.remove(["MAL_User_Token"], function () {});
-    chrome.storage.local.get(['MAL_User_Token'], function (result) {
+    try {
+        chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
-        //Check if usertoken is in storage
-        //otherwise request new one
-        if (result.MAL_User_Token == undefined) {
-            getNewAuthCode();
-        } else {
-            usertoken = JSON.parse(result.MAL_User_Token);
-            parseUserToken();
-        }
-    });
+                //Check if usertoken is in storage
+                //otherwise request new one
+                if (result.MAL_User_Token == undefined || result.MAL_User_Token == "") {
+                    getNewAuthCode();
+                } else {
+                    usertoken = JSON.parse(result.MAL_User_Token);
+                    parseUserToken();
+                }
+            });
+    } catch (ex) {
+        getNewAuthCode();
+    }
+    
 }
 
 function parseUserToken() {
@@ -126,6 +131,7 @@ function getNewAuthCode() {
     //Generate verifier and state
     code_verifier = randomString();
     stateID = getStateID();
+    console.log(stateID);
 
     //Opens the MAL Auth page
     fetch("https://myanimelist.net/v1/oauth2/authorize?" +
@@ -157,16 +163,18 @@ function getStateID() {
     return "RequestID" + parseFloat(Math.random().toString()).toFixed(10);
 }
 
-function checkState(req) {
+function checkState(req,callb) {
 
     //Check if state is the same
     if (req.state != stateID) {
         alert("States did not match!");
+        callb(false);
         return false;
     }
 
     auth_token = req.token;
     getUserToken();
+    callb(true);
     return true;
 }
 
