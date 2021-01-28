@@ -252,7 +252,7 @@ function setCache(req) {
 
         let cache = {};
 
-        if (result != {}) {
+        if (result != {} && result[req.site] != undefined) {
             cache = result[req.site];
         }
         cache[req.name] = req.id;
@@ -266,7 +266,7 @@ function getAnime(req, callb) {
     chrome.storage.local.get([req.site], function (result) {
 
         //Try to get name from cache
-        if (result != {}) {
+        if (result != {} && result[req.site] != undefined) {
             cache = result[req.site];
 
             if (cache[req.name]) {
