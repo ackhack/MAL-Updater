@@ -67,7 +67,7 @@ function updateStatus(con, user = "") {
 function parseURL(url) {
     //https://www12.9anime.to/watch/rezero-kara-hajimeru-isekai-seikatsu-2nd-season-part-2.xk78/ep-4
     //Get name and episode from URL
-    let urlPattern = "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}(\\/ep-(\\d+)|\\?ep=(\\d+)).*";
+    let urlPattern = "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}(\\/ep-(\\d+)|\\?ep=(\\d+))?.*";
 
     let res = url.match(urlPattern);
 
@@ -76,7 +76,7 @@ function parseURL(url) {
         return false;
     } else {
         animeName = res[1];
-        episodeNumber = res[3];
+        episodeNumber = res[3] ?? 1;
         return true;
     }
 }
