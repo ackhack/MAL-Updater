@@ -8,7 +8,7 @@ function run() {
     if (res1) {
         foundMatch(res1[1], res1[2]);
     } else {
-        let res2 = para.match(urlPattern2);
+        let res2 = window.location.search.match(urlPattern2);
         if (res2) {
             foundMatch(res1[2], res1[1]);
         } else {
