@@ -246,32 +246,44 @@ function closeTab(sender) {
     chrome.tabs.remove(sender.tab.id);
 }
 
-//API Calls from Sites
-
 function setCache(req) {
-    console.log(req);
-    if (!animeCache[req.site]) {
-        animeCache[req.site] = {}
-    }
-    animeCache[req.site][req.name] = req.id;
+    //Save names in storage
+    chrome.storage.local.get([req.site], function (result) {
+
+        let cache = {};
+
+        if (result != {}) {
+            cache = result[req.site];
+        }
+        cache[req.name] = req.id;
+
+        chrome.storage.local.set({ [req.site]: cache }, function () { });
+    });
     return true;
 }
 
 function getAnime(req, callb) {
-    if (animeCache[req.site]) {
-        if (animeCache[req.site][req.name]) {
-            console.log("Cached: " + animeCache[req.site][req.name]);
-            callb({ cache: animeCache[req.site][req.name] })
-            return true;
+    chrome.storage.local.get([req.site], function (result) {
+
+        //Try to get name from cache
+        if (result != {}) {
+            cache = result[req.site];
+
+            if (cache[req.name]) {
+                console.log("Cached: " + req.name);
+                callb({ cache: cache[req.name] });
+                return true;
+            }
         }
-    }
-    fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
-        headers: {
-            Authorization: "Bearer " + usertoken.access
-        }
-    })
-        .then(response => response.json())
-        .then(responseJSON => callb(responseJSON));
+
+        fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
+            headers: {
+                Authorization: "Bearer " + usertoken.access
+            }
+        })
+            .then(response => response.json())
+            .then(responseJSON => callb(responseJSON));
+    });
     return true;
 }
 
