@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
             case "GET_ANIME":
                 return getAnime(request, onSuccess);
             case "SEND_USERTOKEN":
-                return checkState(request,onSuccess);
+                return checkState(request, onSuccess);
             case "SEND_ANIME_FINISHED":
                 return finishedEpisode(request, onSuccess);
             default:
@@ -32,19 +32,36 @@ chrome.runtime.onMessage.addListener(
 
 function init() {
     //Init the secret File
-    let url = chrome.runtime.getURL('secret.json');
-
-    if (!url) {
-        updateStatus("No secret.json", "No API Data found")
-    }
-
-    fetch(url)
-        .then((response) => {
-            response.json().then((json) => {
-                client = json;
-                getAuthCode();
-            })
+    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
+        fileExists(storageRootEntry, 'secret.json', function (isExist) {
+            if (isExist) {
+                let url = chrome.runtime.getURL('secret.json');
+                fetch(url)
+                    .then((response) => {
+                        response.json().then((json) => {
+                            client = json;
+                            if (client.id == undefined || client.secret == undefined) {
+                                alert("secret.json does not have the right attributes\ngithub.com/ackhack/mal-updater for more");
+                            } else {
+                                getAuthCode();
+                            }
+                        })
+                    });
+            } else {
+                alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present");
+            }
         });
+    });
+}
+
+function fileExists(storageRootEntry, fileName, callback) {
+    storageRootEntry.getFile(fileName, {
+        create: false
+    }, function () {
+        callback(true);
+    }, function () {
+        callback(false);
+    });
 }
 
 function getAuthCode() {
@@ -52,19 +69,19 @@ function getAuthCode() {
     try {
         chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
-                //Check if usertoken is in storage
-                //otherwise request new one
-                if (result.MAL_User_Token == undefined || result.MAL_User_Token == "") {
-                    getNewAuthCode();
-                } else {
-                    usertoken = JSON.parse(result.MAL_User_Token);
-                    parseUserToken();
-                }
-            });
+            //Check if usertoken is in storage
+            //otherwise request new one
+            if (result.MAL_User_Token == undefined || result.MAL_User_Token == "") {
+                getNewAuthCode();
+            } else {
+                usertoken = JSON.parse(result.MAL_User_Token);
+                parseUserToken();
+            }
+        });
     } catch (ex) {
         getNewAuthCode();
     }
-    
+
 }
 
 function parseUserToken() {
@@ -163,7 +180,7 @@ function getStateID() {
     return "RequestID" + parseFloat(Math.random().toString()).toFixed(10);
 }
 
-function checkState(req,callb) {
+function checkState(req, callb) {
 
     //Check if state is the same
     if (req.state != stateID) {

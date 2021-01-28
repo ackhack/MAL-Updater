@@ -2,6 +2,7 @@
     -Bug Fixes
     -Changed popup.html to not use alert
     -Added popup.html Feedback
+    -secret.json file handling improved
 
 2.0.3: 27.01.2020
     -Updated README.md
