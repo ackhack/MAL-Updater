@@ -4,6 +4,7 @@
     -Added popup.html Feedback
     -secret.json file handling improved
     -Removed need of popup.html
+    -Handle Access-Denial to Account
 
 2.0.3: 27.01.2020
     -Updated README.md

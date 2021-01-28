@@ -6,6 +6,7 @@
     "permissions": [
         "activeTab",
         "storage",
+        "tabs",
         "*://*.myanimelist.net/*",
         "*://*.github.com/*"
     ],

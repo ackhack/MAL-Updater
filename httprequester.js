@@ -24,6 +24,8 @@ chrome.runtime.onMessage.addListener(
                 return checkState(request, onSuccess);
             case "SEND_ANIME_FINISHED":
                 return finishedEpisode(request, onSuccess);
+            case "CLOSE_TAB":
+                return closeTab(sender);
             default:
                 return false;
         }
@@ -65,7 +67,7 @@ function fileExists(storageRootEntry, fileName, callback) {
 }
 
 function getAuthCode() {
-    //chrome.storage.local.remove(["MAL_User_Token"], function () {});
+
     try {
         chrome.storage.local.get(['MAL_User_Token'], function (result) {
 
@@ -81,7 +83,13 @@ function getAuthCode() {
     } catch (ex) {
         getNewAuthCode();
     }
+}
 
+function debug_removeStorage() {
+    chrome.storage.local.remove(["MAL_User_Token"], function (res) {console.log(res)});
+}
+function debug_clearStorage() {
+    chrome.storage.local.clear(function(res) {console.log(res)}); 
 }
 
 function parseUserToken() {
@@ -228,6 +236,10 @@ function getUserToken() {
     }
 
     xhr.send(para);
+}
+
+function closeTab(sender) {
+    chrome.tabs.remove(sender.tab.id);
 }
 
 //API Calls from Sites
