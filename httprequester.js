@@ -199,6 +199,7 @@ function checkState(req, callb) {
 
     auth_token = req.token;
     getUserToken();
+    alert("Code accepted");
     callb(true);
     return true;
 }

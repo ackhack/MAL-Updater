@@ -3,7 +3,7 @@ run();
 function run() {
     let urlPattern1 = "\\?code=([^&]+)&state=([^&]+)(&.*)?";
     let urlPattern2 = "\\?state=([^&]+)&code=([^&]+)(&.*)?";
-    let urlDenyPattern = "\\?state=0.\\d+&error=([^&]+)&message=([^&]+)&hint=([^&]+)";
+    let urlDenyPattern = "\\?state=([^&]+)&error=([^&]+)&message=([^&]+)&hint=([^&]+)";
 
     let res1 = window.location.search.match(urlPattern1);
     if (res1) {
@@ -16,9 +16,9 @@ function run() {
             let deny = window.location.search.match(urlDenyPattern)
             if (deny) {
                 document.getElementById("pInfo").innerText =
-                    "Error: " + res[1] +
-                    "\nMessage: " + res[2] +
-                    "\nHint: " + res[3];
+                    "Error: " + deny[2].replace(/\+/g," ") +
+                    "\nMessage: " + deny[3].replace(/\+/g," ") +
+                    "\nHint: " + deny[4].replace(/\+/g," ");
             } else {
                 alert("No Code/State found\nThis site is only for data transfer, nothing to see here");
                 chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
@@ -35,8 +35,8 @@ function foundMatch(auth_code, state) {
             token: auth_code,
             state: state
         },
-        () => { chrome.runtime.sendMessage({ type: "CLOSE_TAB" }); }
+        () => {
+            chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
+        }
     );
 }
-
-//https://ackhack.github.io/MAL-Updater/?state=RequestID0.2731310266&error=access_denied&message=The+resource+owner+or+authorization+server+denied+the+request.&hint=The+user+denied+the+request
