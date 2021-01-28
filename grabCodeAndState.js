@@ -40,7 +40,7 @@ function foundMatch(auth_code, state) {
             state: state
         },
         () => {
-            chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
+            //chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
         }
     );
 }
