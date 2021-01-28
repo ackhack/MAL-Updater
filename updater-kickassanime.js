@@ -1,28 +1,22 @@
 var animeName;
 var episodeNumber;
 var animeID;
-var animeCache = {};
+var video;
 
 if (window.location.toString().includes(".kickassanime."))
     init();
 
 function init() {
     if (parseURL(window.location.toString()))
-        getAnime(animeName);
+        getAnime();
 }
 
-function getAnime(name) {
-    //Search for animename in chache
-    if (animeCache[name]) {
-        animeID = animeCache[name];
-        updateStatus("Found ID in cache: " + animeID);
-        insertButton();
-    }
-    //Else get it from API
+function getAnime() {
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
-            name: name
+            site: "kickassanime",
+            name: animeName
         },
         data => recieveAnime(data)
     );
@@ -69,11 +63,18 @@ function parseURL(url) {
     }
 }
 
-function recieveAnime(list) {
+function recieveAnime(res) {
+
+    //If id was recieved from cache, dont create Elements
+    if (res.cache) {
+        animeID = res.cache;
+        waitPageloadCache();
+        return;
+    }
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
 
-    for (let elem of list.data) {
+    for (let elem of res.data) {
         let li = document.createElement("li");
         li.style = "cursor: pointer;";
         li.value = elem.node.id;
@@ -109,7 +110,7 @@ function recieveAnime(list) {
     tbBtn.onclick = () => {
         animeID = document.getElementById("MAL_UPDATER_INPUT_1").innerText;
         alert("Inserted UserInput, cant guarantee it works");
-        insertButton();
+        afterAnimeID();
         document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
     };
     tbBtn.innerText = "Check ID";
@@ -126,17 +127,96 @@ function recieveAnime(list) {
 
 function clickedLi(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
-    animeCache[animeName] = li.value;
     animeID = li.value;
-    insertButton();
+    chrome.runtime.sendMessage(
+        {
+            type: "CACHE_ANIME",
+            site: "kickassanime",
+            name: animeName,
+            id: animeID
+        },
+        () => { }
+    );
+    afterAnimeID();
     document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
+}
+
+function waitPageloadCache(nTry = 0) {
+    //Have to wait for Site to load so btnFinished can be placed
+    if (nTry == 10) {
+        alert("MAL Updater couldnt place the Button, stopping the extension for now");
+    }
+    nTry++;
+    if (document.getElementById("main-nav") == null)
+        setTimeout(() => { waitPageloadCache(nTry) }, 1000);
+    else
+        afterAnimeID();
+}
+
+function afterAnimeID() {
+    insertButton();
+    //startVideoObserver();
 }
 
 function insertButton() {
     let btnFinish = document.createElement("button");
+    btnFinish.id = "MAL_UPDATER_BUTTON_1";
     btnFinish.style = "width: 20em;height: 3em;background-color: #212121;border: 3px solid #e7dba3;color: #e7dba3;";
     btnFinish.textContent = "Finished Episode";
     btnFinish.onclick = () => { finishedEpisode(); };
     let navbar = document.getElementById("main-nav");
     navbar.insertBefore(btnFinish, navbar.children[1]);
 }
+
+//Not working until i can get access to iframe
+// function startVideoObserver() {
+//     let vid = document.getElementsByTagName("video");
+//     if (vid == null || vid.length == 0) {
+//         setTimeout(() => {
+//             console.log("SEARCHING");
+//             startVideoObserver();
+//         }, 1000);
+//     } else {
+//         video = vid[0];
+//         console.log("ADD EVENTS");
+//         //Add important events
+//         video.onseeked = videoUpdated;
+//         video.ondurationchange = videoUpdated;
+//         video.onplaying = videoUpdated;
+//         video.onratechange = videoUpdated;
+//         video.ontimeupdate = videoUpdated;
+//     }
+// }
+
+// function videoUpdated() {
+//     console.log("EVENT TRIGGERED");
+//     checkVideoFinshed();
+
+//     let time = ((video.duration-video.currentTime)/video.playbackRate)+2000;
+
+//     setTimeout(() => {
+//         checkVideoFinshed();
+//     },time);
+// }
+
+// function checkVideoFinshed() {
+//     console.log("CHECKING FINISHED");
+//     if (video.currentTime > video.duration * 0.9) {
+//         console.log("ACTUALLY FINISHED");
+//         autoFinishEpiosode();
+//     }
+// }
+
+// function autoFinishEpiosode() {
+//     chrome.runtime.sendMessage(
+//         {
+//             type: "SEND_ANIME_FINISHED",
+//             id: animeID,
+//             episode: episodeNumber
+//         },
+//         data => {
+//             document.getElementById("MAL_UPDATER_BUTTON_1").innerText =
+//                 data.num_episodes_watched == episodeNumber ? "AutoFinished: EP " + episodeNumber : "AutoFinished failed,Press for manual";
+//         }
+//     );
+// }

@@ -1,3 +1,6 @@
+2.2.0: 28.01.2020
+    -Cache now works properly
+
 2.1.0: 28.01.2020
     -Bug Fixes
     -Changed popup.html to not use alert

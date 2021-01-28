@@ -10,6 +10,7 @@ var usertoken = {
     refresh_req_time: undefined
 };
 var client;
+var animeCache = {};
 
 init();
 
@@ -26,6 +27,8 @@ chrome.runtime.onMessage.addListener(
                 return finishedEpisode(request, onSuccess);
             case "CLOSE_TAB":
                 return closeTab(sender);
+            case "CACHE_ANIME":
+                return setCache(request);
             default:
                 return false;
         }
@@ -86,10 +89,10 @@ function getAuthCode() {
 }
 
 function debug_removeStorage() {
-    chrome.storage.local.remove(["MAL_User_Token"], function (res) {console.log(res)});
+    chrome.storage.local.remove(["MAL_User_Token"], function (res) { console.log(res) });
 }
 function debug_clearStorage() {
-    chrome.storage.local.clear(function(res) {console.log(res)}); 
+    chrome.storage.local.clear(function (res) { console.log(res) });
 }
 
 function parseUserToken() {
@@ -199,7 +202,7 @@ function checkState(req, callb) {
 
     auth_token = req.token;
     getUserToken();
-    alert("Code accepted");
+    alert("Successfully authorized MAL Updater");
     callb(true);
     return true;
 }
@@ -245,7 +248,23 @@ function closeTab(sender) {
 
 //API Calls from Sites
 
+function setCache(req) {
+    console.log(req);
+    if (!animeCache[req.site]) {
+        animeCache[req.site] = {}
+    }
+    animeCache[req.site][req.name] = req.id;
+    return true;
+}
+
 function getAnime(req, callb) {
+    if (animeCache[req.site]) {
+        if (animeCache[req.site][req.name]) {
+            console.log("Cached: " + animeCache[req.site][req.name]);
+            callb({ cache: animeCache[req.site][req.name] })
+            return true;
+        }
+    }
     fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
         headers: {
             Authorization: "Bearer " + usertoken.access

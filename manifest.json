@@ -43,9 +43,6 @@
     "web_accessible_resources": [
         "secret.json"
     ],
-    "browser_action": {
-        "default_popup": "popup.html"
-    },
     "icons": {
         "64": "icon.png"
     }

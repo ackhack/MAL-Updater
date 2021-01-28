@@ -1,12 +1,11 @@
 var animeName;
 var episodeNumber;
 var animeID;
-var animeCache = {};
 
 if (window.location.toString().includes(".9anime."))
-    init(0);
+    init();
 
-function init(nTry) {
+function init(nTry = 0) {
 
     //Retrying on 9anime because URL changes without Postback
     if (nTry == 10)
@@ -14,25 +13,19 @@ function init(nTry) {
     nTry++;
 
     if (parseURL(window.location.toString()))
-        getAnime(animeName);
+        getAnime();
     else
         setTimeout(() => {
             init(nTry);
         }, 1000);
 }
 
-function getAnime(name) {
-    //Search for animename in chache
-    if (animeCache[name]) {
-        animeID = animeCache[name];
-        updateStatus("Found ID in cache: " + animeID);
-        insertButton();
-    }
-    //Else get it from API
+function getAnime() {
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
-            name: name
+            site: "9anime",
+            name: animeName
         },
         data => recieveAnime(data)
     );
@@ -81,11 +74,19 @@ function parseURL(url) {
     }
 }
 
-function recieveAnime(list) {
+function recieveAnime(res) {
+
+    //If id was recieved from cache, dont create Elements
+    if (res.cache) {
+        animeID = res.cache;
+        waitPageloadCache();
+        return;
+    }
+
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
 
-    for (let elem of list.data) {
+    for (let elem of res.data) {
         let li = document.createElement("li");
         li.style = "cursor: pointer;";
         li.value = elem.node.id;
@@ -121,7 +122,7 @@ function recieveAnime(list) {
     tbBtn.onclick = () => {
         animeID = document.getElementById("MAL_UPDATER_INPUT_1").innerText;
         alert("Inserted UserInput, cant guarantee it works");
-        insertButton();
+        afterAnimeID();
         document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
     };
     tbBtn.innerText = "Check ID";
@@ -138,14 +139,39 @@ function recieveAnime(list) {
 
 function clickedLi(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
-    animeCache[animeName] = li.value;
     animeID = li.value;
-    insertButton();
+    chrome.runtime.sendMessage(
+        {
+            type: "CACHE_ANIME",
+            site: "9anime",
+            name: animeName,
+            id: animeID
+        },
+        () => { }
+    );
+    afterAnimeID();
     document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
+}
+
+function waitPageloadCache(nTry = 0) {
+    //Have to wait for Site to load so btnFinished can be placed
+    if (nTry == 10) {
+        alert("MAL Updater couldnt place the Button, stopping the extension for now");
+    }
+    nTry++;
+    if (document.getElementById("menu") == null)
+        setTimeout(() => { waitPageloadCache(nTry) }, 1000);
+    else
+        afterAnimeID();
+}
+
+function afterAnimeID() {
+    insertButton();
 }
 
 function insertButton() {
     let btnFinish = document.createElement("button");
+    btnFinish.id = "MAL_UPDATER_BUTTON_1";
     btnFinish.style = "width: 20em;height: 3em;background-color: #212121;border: 3px solid rgb(73, 37, 123);color: white;";
     btnFinish.textContent = "Finished Episode";
     btnFinish.onclick = () => { finishedEpisode(); };

@@ -1,6 +1,7 @@
 run();
 
 function run() {
+    //Try to match know URLs
     let urlPattern1 = "\\?code=([^&]+)&state=([^&]+)(&.*)?";
     let urlPattern2 = "\\?state=([^&]+)&code=([^&]+)(&.*)?";
     let urlDenyPattern = "\\?state=([^&]+)&error=([^&]+)&message=([^&]+)&hint=([^&]+)";
@@ -15,11 +16,13 @@ function run() {
         } else {
             let deny = window.location.search.match(urlDenyPattern)
             if (deny) {
+                //Access was denied
                 document.getElementById("pInfo").innerText =
                     "Error: " + deny[2].replace(/\+/g," ") +
                     "\nMessage: " + deny[3].replace(/\+/g," ") +
                     "\nHint: " + deny[4].replace(/\+/g," ");
             } else {
+                //Unknown URL
                 alert("No Code/State found\nThis site is only for data transfer, nothing to see here");
                 chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
                 return;
@@ -29,6 +32,7 @@ function run() {
 }
 
 function foundMatch(auth_code, state) {
+    //Validate vars in httprequester.js
     chrome.runtime.sendMessage(
         {
             type: "SEND_USERTOKEN",
