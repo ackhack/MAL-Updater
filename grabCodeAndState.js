@@ -12,6 +12,8 @@ function run() {
         if (res2) {
             foundMatch(res1[2], res1[1]);
         } else {
+            alert("This site is only for data transfer, nothing to see here");
+            window.close();
             return;
         }
     }
