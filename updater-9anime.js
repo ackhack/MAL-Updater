@@ -83,6 +83,13 @@ function recieveAnime(res) {
         return;
     }
 
+    if (res.data == undefined) {
+        updateStatus("Did not get a expected Result");
+        updateStatus(res);
+        getAnime();
+        return;
+    }
+
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
 
@@ -120,10 +127,12 @@ function recieveAnime(res) {
 
     let tbBtn = document.createElement("button");
     tbBtn.onclick = () => {
-        animeID = document.getElementById("MAL_UPDATER_INPUT_1").innerText;
-        alert("Inserted UserInput, cant guarantee it works");
-        afterAnimeID();
-        document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
+        animeID = document.getElementById("MAL_UPDATER_INPUT_1").value;
+        if (animeID != null && animeID != undefined && animeID != "") {
+            alert("Inserted UserInput, cant guarantee it works");
+            afterAnimeID();
+            document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";            
+        }
     };
     tbBtn.innerText = "Check ID";
 
