@@ -149,6 +149,7 @@ function pendNewAccessToken(time) {
     if (time > 2147483647) {
         time = 2147483647;
     }
+    console.log("New Token acquired, next one will be in " + time + " Seconds");
     setTimeout(() => {
         console.log("Getting new Token");
         refreshAccessToken();
@@ -235,7 +236,7 @@ function getUserToken() {
             chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
 
             //Set update for AccessToken
-            pendNewAccessToken(res.expires_in * 1000);
+            pendNewAccessToken(0.9 * res.expires_in * 1000);
         }
     }
 
@@ -262,11 +263,12 @@ function setCache(req) {
     return true;
 }
 
-function getAnime(req, callb) {
+function getAnime(req, callb, nTry = 0) {
+    nTry++;
     chrome.storage.local.get([req.site], function (result) {
 
         //Try to get name from cache
-        if (result != {} && result[req.site] != undefined) {
+        if (nTry == 1 && result != {} && result[req.site] != undefined) {
             cache = result[req.site];
 
             if (cache[req.name]) {
@@ -276,13 +278,27 @@ function getAnime(req, callb) {
             }
         }
 
+        if (req.name.length > 64)
+            req.name = req.name.substring(0,64);
+
         fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
             headers: {
                 Authorization: "Bearer " + usertoken.access
             }
         })
             .then(response => response.json())
-            .then(responseJSON => callb(responseJSON));
+            .then(responseJSON => {
+                console.log(responseJSON);
+                if (responseJSON.error) {
+                    if (nTry == 10) {
+                        callb({ error: "Couldn`t get Result from API:" + JSON.stringify(responseJSON) });
+                    } else {
+                        getAnime(req, callb, nTry);
+                    }
+                } else {
+                    callb(responseJSON);
+                }
+            });
     });
     return true;
 }
@@ -296,7 +312,10 @@ function finishedEpisode(req, callb) {
         },
         body: 'status=watching&num_watched_episodes=' + req.episode
     })
-        .then(response => response.json())
-        .then(responseJSON => callb(responseJSON));
+        .then(response => {
+            console.log(response);
+            response.json().then(responseJSON => callb(responseJSON));
+        });
+
     return true;
 }

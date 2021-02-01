@@ -76,17 +76,17 @@ function parseURL(url) {
 
 function recieveAnime(res) {
 
+    //Error handeling
+    if (res.error) {
+        updateStatus("Did not get a expected Result");
+        updateStatus(res.error);
+        return;
+    }
+
     //If id was recieved from cache, dont create Elements
     if (res.cache) {
         animeID = res.cache;
         waitPageloadCache();
-        return;
-    }
-
-    if (res.data == undefined) {
-        updateStatus("Did not get a expected Result");
-        updateStatus(res);
-        getAnime();
         return;
     }
 
