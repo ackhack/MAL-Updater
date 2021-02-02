@@ -9,5 +9,6 @@
     "buttonParent": "anime_name anime_video",
     "buttonParentType": "class",
     "parentIndex": 0,
-    "buttonInsertBeforeIndex": 2
+    "buttonInsertBeforeIndex": 2,
+    "ulMarginLeft": 2
 }

@@ -94,6 +94,7 @@ function recieveAnime(res) {
 
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
+    ul.style = "margin-left:" + site.ulMarginLeft + "em;";
 
     for (let elem of res.data) {
         let li = document.createElement("li");
