@@ -7,6 +7,7 @@
     "pageColor": "",
     "bgColor": "",
     "buttonParent": "",
+    "buttonParentType": "id",
     "parentIndex": 0,
     "buttonInsertBeforeIndex": -1
 }

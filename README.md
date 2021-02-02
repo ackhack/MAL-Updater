@@ -3,6 +3,7 @@ USE AT YOUR OWN RISK
 Works on:
 - Kickassanime
 - 9anime
+- gogoanimehub
 
 If you want to use this Extension, you have to create a secret.json in the Resources Folder with the following structure
 ```

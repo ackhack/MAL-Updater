@@ -170,7 +170,7 @@ function waitPageloadCache(nTry = 0) {
         alert("MAL Updater couldnt place the Button, stopping the extension for now");
     }
     nTry++;
-    if (document.getElementById(site.buttonParent) == null)
+    if (getButtonParent() == null)
         setTimeout(() => { waitPageloadCache(nTry) }, 1000);
     else
         afterAnimeID();
@@ -186,7 +186,7 @@ function insertButton() {
     btnFinish.style = "width: 20em;height: 3em;background-color: " + site.bgColor + ";border: 3px solid " + site.pageColor + ";color: white;";
     btnFinish.textContent = "Finished Episode";
     btnFinish.onclick = () => { finishedEpisode(); };
-    let navbar = document.getElementById(site.buttonParent);
+    let navbar = getButtonParent();
     for (let i = 0; i < site.parentIndex; i++) {
         navbar = navbar.parentElement;
     }
@@ -194,5 +194,16 @@ function insertButton() {
         navbar.insertBefore(btnFinish, navbar.children[site.buttonInsertBeforeIndex]);
     } else {
         navbar.appendChild(btnFinish);
+    }
+}
+
+function getButtonParent() {
+    switch (site.buttonParentType) {
+        case "id":
+            return document.getElementById(site.buttonParent);
+        case "class":
+            return document.getElementsByClassName(site.buttonParent)[0];
+        default:
+            return null;
     }
 }

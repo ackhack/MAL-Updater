@@ -1,4 +1,7 @@
-3.0.0: 02.02.2020
+3.1.0: 02.02.2021
+    -Added gogoanimehub support
+
+3.0.0: 02.02.2021
     -Refractored how Extension works
     -Sites are now safed as JSON-Objects
 

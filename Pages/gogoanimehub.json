@@ -1,0 +1,13 @@
+{
+    "sitePattern": ".*gogoanimehub.*",
+    "siteName": "gogoanimehub",
+    "urlPattern": "https?:\\/\\/.*gogoanimehub.*\\/(.*)-episode-(\\d+)",
+    "nameMatch": 1,
+    "episodeMatch": 2,
+    "pageColor": "#ffc119",
+    "bgColor": "#1b1b1b",
+    "buttonParent": "anime_name anime_video",
+    "buttonParentType": "class",
+    "parentIndex": 0,
+    "buttonInsertBeforeIndex": 2
+}
