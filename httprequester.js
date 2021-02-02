@@ -10,7 +10,7 @@ var usertoken = {
     refresh_req_time: undefined
 };
 var client;
-var animeCache = {};
+var sites = {};
 
 init();
 
@@ -29,6 +29,8 @@ chrome.runtime.onMessage.addListener(
                 return closeTab(sender);
             case "CACHE_ANIME":
                 return setCache(request);
+            case "VALIDATE_SITE":
+                return validateSite(request,onSuccess);
             default:
                 return false;
         }
@@ -36,27 +38,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 function init() {
-    //Init the secret File
-    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
-        fileExists(storageRootEntry, 'secret.json', function (isExist) {
-            if (isExist) {
-                let url = chrome.runtime.getURL('secret.json');
-                fetch(url)
-                    .then((response) => {
-                        response.json().then((json) => {
-                            client = json;
-                            if (client.id == undefined || client.secret == undefined) {
-                                alert("secret.json does not have the right attributes\ngithub.com/ackhack/mal-updater for more");
-                            } else {
-                                getAuthCode();
-                            }
-                        })
-                    });
-            } else {
-                alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present");
-            }
-        });
-    });
+    initSecret(() => { initSites(function () { console.log(sites) }) });
 }
 
 function fileExists(storageRootEntry, fileName, callback) {
@@ -279,7 +261,7 @@ function getAnime(req, callb, nTry = 0) {
         }
 
         if (req.name.length > 64)
-            req.name = req.name.substring(0,64);
+            req.name = req.name.substring(0, 64);
 
         fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
             headers: {
@@ -318,4 +300,74 @@ function finishedEpisode(req, callb) {
         });
 
     return true;
+}
+
+function validateSite(req,callb) {
+    for (let site in sites) {
+        if (req.url.match(sites[site].sitePattern)) {
+            callb(sites[site]);
+            return true;
+        }
+    }
+    callb(undefined);
+    return false;
+}
+
+function readDirectory(directory, callb) {
+    let entries = [];
+    directory.createReader().readEntries(function (results) {
+        for (let page of results) {
+            entries = entries.concat(page.name);
+        }
+        callb(entries);
+    });
+}
+
+function initSites(callb) {
+    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
+        storageRootEntry.getDirectory("Pages", { create: false }, function (directory) {
+            readDirectory(directory, function (siteNames) {
+                let curSite = 0;
+                for (let name of siteNames) {
+                    fetch(chrome.runtime.getURL('Pages/' + name))
+                        .then((response) => {
+                            response.json().then((json) => {
+                                if (name != "default.json")
+                                    sites[name.substring(0, name.length - 5)] = json;
+
+                                curSite++;
+                                if (curSite == siteNames.length) {
+                                    callb();
+                                }
+                            })
+                        });
+                }
+            });
+        })
+    });
+}
+
+function initSecret(callb) {
+    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
+        fileExists(storageRootEntry, 'Resources/secret.json', function (isExist) {
+            if (isExist) {
+                let url = chrome.runtime.getURL('Resources/secret.json');
+                console.log(url);
+                fetch(url)
+                    .then((response) => {
+                        response.json().then((json) => {
+                            client = json;
+                            if (client.id == undefined || client.secret == undefined) {
+                                alert("secret.json does not have the right attributes\ngithub.com/ackhack/mal-updater for more info");
+                            } else {
+                                getAuthCode();
+                                callb();
+                            }
+                        })
+                    });
+            } else {
+                alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present");
+            }
+        });
+    });
 }

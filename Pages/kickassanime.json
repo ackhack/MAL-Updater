@@ -1,0 +1,12 @@
+{
+    "sitePattern": ".*kickassanime.[a-z]+\\/anime\\/.*",
+    "siteName": "kickassanime",
+    "urlPattern": "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*)-\\d+\\/episode-0*(\\d+)-\\d+",
+    "nameMatch": 1,
+    "episodeMatch": 2,
+    "pageColor": "rgb(231, 219, 163)",
+    "bgColor": "rgb(33, 33, 33)",
+    "buttonParent": "main-nav",
+    "parentIndex": 0,
+    "buttonInsertBeforeIndex": 1
+}

@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "2.3.0",
+    "version": "3.0.0",
     "description": "Updates MAL List",
     "manifest_version": 2,
     "permissions": [
@@ -16,23 +16,15 @@
                 "https://ackhack.github.io/MAL-Updater/*"
             ],
             "js": [
-                "grabCodeAndState.js"
-            ]
-        },        
-        {
-            "matches": [
-                "https://*/anime/*"
-            ],
-            "js": [
-                "updater-kickassanime.js"
+                "docs/grabCodeAndState.js"
             ]
         },
         {
             "matches": [
-                "https://*/watch/*"
+                "<all_urls>"
             ],
             "js": [
-                "updater-9anime.js"
+                "updater-default.js"
             ]
         }
     ],
@@ -41,9 +33,10 @@
         "persistent": false
     },
     "web_accessible_resources": [
-        "secret.json"
+        "Resources/secret.json",
+        "Pages/*"
     ],
     "icons": {
-        "64": "icon.png"
+        "64": "Resources/icon.png"
     }
 }

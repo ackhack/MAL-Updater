@@ -1,21 +1,56 @@
 var animeName;
 var episodeNumber;
 var animeID;
-var video;
+var site;
 
-if (window.location.toString().includes(".kickassanime."))
-    init();
+chrome.runtime.sendMessage(
+    {
+        type: "VALIDATE_SITE",
+        url: window.location.toString()
+    },
+    data => {
+        if (data) {
+            site = data;
+            initSite();
+        }
+    }
+);
 
-function init() {
+function initSite(nTry = 0) {
+
+    //Retrying because URL can change without Postback
+    if (nTry == 10)
+        return;
+    nTry++;
+
     if (parseURL(window.location.toString()))
         getAnime();
+    else
+        setTimeout(() => {
+            init(nTry);
+        }, 1000);
+}
+
+function parseURL(url) {
+    //Get name and episode from URL
+
+    let res = url.match(site.urlPattern);
+
+    if (!res) {
+        updateStatus("No RegEx match", "No Anime found in URL");
+        return false;
+    } else {
+        animeName = res[site.nameMatch];
+        episodeNumber = res[site.episodeMatch] ?? 1;
+        return true;
+    }
 }
 
 function getAnime() {
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
-            site: "kickassanime",
+            site: site.siteName,
             name: animeName
         },
         data => recieveAnime(data)
@@ -23,6 +58,8 @@ function getAnime() {
 }
 
 function finishedEpisode() {
+    //Reparsing the URL because it can change without Postback
+    parseURL(window.location.toString());
     chrome.runtime.sendMessage(
         {
             type: "SEND_ANIME_FINISHED",
@@ -37,30 +74,6 @@ function finishedEpisode() {
             }
         }
     );
-}
-
-function updateStatus(con, user = "") {
-    if (user != "") {
-        alert("TO USER: " + user);
-    }
-    console.log("MAL Updater: " + con);
-}
-
-function parseURL(url) {
-    //https://www2.kickassanime.rs/anime/world-witches-hasshin-shimasu-162140/episode-03-550318
-    //Get name and episode from URL
-    let urlPattern = "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*)-\\d+\\/episode-0*(\\d+)-\\d+";
-
-    let res = url.match(urlPattern);
-
-    if (!res) {
-        updateStatus("No RegEx match");
-        return false;
-    } else {
-        animeName = res[1];
-        episodeNumber = res[2];
-        return true;
-    }
 }
 
 function recieveAnime(res) {
@@ -78,6 +91,7 @@ function recieveAnime(res) {
         waitPageloadCache();
         return;
     }
+
     //Create the HTML ELements needed for User Interaction
     let ul = document.createElement("ul");
 
@@ -93,7 +107,7 @@ function recieveAnime(res) {
     //Main Div for Anime List
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1"
-    div.style = "position: absolute;left: 50%;top: 50%;background-color: rgb(33, 33, 33);border: 3px solid rgb(231, 219, 163);padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 2em;font-size: larger;";
@@ -140,7 +154,7 @@ function clickedLi(li) {
     chrome.runtime.sendMessage(
         {
             type: "CACHE_ANIME",
-            site: "kickassanime",
+            site: site.siteName,
             name: animeName,
             id: animeID
         },
@@ -156,7 +170,7 @@ function waitPageloadCache(nTry = 0) {
         alert("MAL Updater couldnt place the Button, stopping the extension for now");
     }
     nTry++;
-    if (document.getElementById("main-nav") == null)
+    if (document.getElementById(site.buttonParent) == null)
         setTimeout(() => { waitPageloadCache(nTry) }, 1000);
     else
         afterAnimeID();
@@ -164,68 +178,21 @@ function waitPageloadCache(nTry = 0) {
 
 function afterAnimeID() {
     insertButton();
-    //startVideoObserver();
 }
 
 function insertButton() {
     let btnFinish = document.createElement("button");
     btnFinish.id = "MAL_UPDATER_BUTTON_1";
-    btnFinish.style = "width: 20em;height: 3em;background-color: #212121;border: 3px solid #e7dba3;color: #e7dba3;";
+    btnFinish.style = "width: 20em;height: 3em;background-color: " + site.bgColor + ";border: 3px solid " + site.pageColor + ";color: white;";
     btnFinish.textContent = "Finished Episode";
     btnFinish.onclick = () => { finishedEpisode(); };
-    let navbar = document.getElementById("main-nav");
-    navbar.insertBefore(btnFinish, navbar.children[1]);
+    let navbar = document.getElementById(site.buttonParent);
+    for (let i = 0; i < site.parentIndex; i++) {
+        navbar = navbar.parentElement;
+    }
+    if (site.buttonInsertBeforeIndex != -1) {
+        navbar.insertBefore(btnFinish, navbar.children[site.buttonInsertBeforeIndex]);
+    } else {
+        navbar.appendChild(btnFinish);
+    }
 }
-
-//Not working until i can get access to iframe
-// function startVideoObserver() {
-//     let vid = document.getElementsByTagName("video");
-//     if (vid == null || vid.length == 0) {
-//         setTimeout(() => {
-//             console.log("SEARCHING");
-//             startVideoObserver();
-//         }, 1000);
-//     } else {
-//         video = vid[0];
-//         console.log("ADD EVENTS");
-//         //Add important events
-//         video.onseeked = videoUpdated;
-//         video.ondurationchange = videoUpdated;
-//         video.onplaying = videoUpdated;
-//         video.onratechange = videoUpdated;
-//         video.ontimeupdate = videoUpdated;
-//     }
-// }
-
-// function videoUpdated() {
-//     console.log("EVENT TRIGGERED");
-//     checkVideoFinshed();
-
-//     let time = ((video.duration-video.currentTime)/video.playbackRate)+2000;
-
-//     setTimeout(() => {
-//         checkVideoFinshed();
-//     },time);
-// }
-
-// function checkVideoFinshed() {
-//     console.log("CHECKING FINISHED");
-//     if (video.currentTime > video.duration * 0.9) {
-//         console.log("ACTUALLY FINISHED");
-//         autoFinishEpiosode();
-//     }
-// }
-
-// function autoFinishEpiosode() {
-//     chrome.runtime.sendMessage(
-//         {
-//             type: "SEND_ANIME_FINISHED",
-//             id: animeID,
-//             episode: episodeNumber
-//         },
-//         data => {
-//             document.getElementById("MAL_UPDATER_BUTTON_1").innerText =
-//                 data.num_episodes_watched == episodeNumber ? "AutoFinished: EP " + episodeNumber : "AutoFinished failed,Press for manual";
-//         }
-//     );
-// }

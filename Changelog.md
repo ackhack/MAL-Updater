@@ -1,4 +1,8 @@
-2.3.0: 31.01.2021
+3.0.0: 02.02.2020
+    -Refractored how Extension works
+    -Sites are now safed as JSON-Objects
+
+2.3.0: 02.02.2021
     -Added some logging to httprequester
     -Fixed Error when name is longer than 64 chars
 

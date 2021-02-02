@@ -4,7 +4,7 @@ Works on:
 - Kickassanime
 - 9anime
 
-If you want to use this Extension, you have to create a secret.json with the following structure
+If you want to use this Extension, you have to create a secret.json in the Resources Folder with the following structure
 ```
 {
     "id": "YOUR CLIENT ID",
@@ -12,4 +12,4 @@ If you want to use this Extension, you have to create a secret.json with the fol
 }
 ```
 To get the ID and Secret, go to https://myanimelist.net/apiconfig and create a App with following infos
-![](https://github.com/ackhack/MAL-Updater/blob/master/MAL_App_Template.jpg)
+![](https://github.com/ackhack/MAL-Updater/blob/master/Resources/MAL_App_Template.jpg)
