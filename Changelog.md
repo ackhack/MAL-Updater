@@ -1,3 +1,7 @@
+3.1.1: 02.02.2021
+    -Added remove from storage function
+    -httprequester is now persistent
+
 3.1.0: 02.02.2021
     -Added gogoanimehub support
 

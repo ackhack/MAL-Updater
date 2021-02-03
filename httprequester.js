@@ -77,6 +77,15 @@ function debug_clearStorage() {
     chrome.storage.local.clear(function (res) { console.log(res) });
 }
 
+function removeAnimeCache(animename,sitename) {
+    chrome.storage.local.get([sitename], function (result) {
+
+        result[sitename][animename] = undefined;
+
+        chrome.storage.local.set({ [sitename]: result }, function () { });
+    });
+}
+
 function parseUserToken() {
     //If accessToken is valid, refresh it, just in Case and use it
     if (usertoken.access_req_time + usertoken.access_time > Date.now()) {

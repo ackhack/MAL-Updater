@@ -29,8 +29,7 @@
         }
     ],
     "background": {
-        "scripts": ["httprequester.js"],
-        "persistent": false
+        "scripts": ["httprequester.js"]
     },
     "web_accessible_resources": [
         "Resources/secret.json",
