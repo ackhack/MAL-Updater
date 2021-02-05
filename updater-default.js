@@ -57,14 +57,69 @@ function getAnime() {
     );
 }
 
-function finishedEpisode() {
+function finishedEpisode(force = false) {
     //Reparsing the URL because it can change without Postback
     parseURL(window.location.toString());
     chrome.runtime.sendMessage(
         {
             type: "SEND_ANIME_FINISHED",
             id: animeID,
-            episode: episodeNumber
+            episode: episodeNumber,
+            force: force
+        },
+        data => {
+            if (data.last) {
+                finishedLastEpisode();
+            } else {
+                if (data.num_episodes_watched == episodeNumber) {
+                    alert("Successfully updated EpisodeNumber");
+                } else {
+                    alert("An Error occured while updating the EpisodeNumber");
+                }
+            }
+        }
+    );
+}
+
+function finishedLastEpisode() {
+    let div = document.createElement("div");
+    div.id = "MAL_UPDATER_DIV_2";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+
+    let paragrah = document.createElement("p");
+    paragrah.style = "padding-left: 2em;font-size: larger;";
+    paragrah.innerText = "Rate Anime";
+
+    let ul = document.createElement("ul");
+    ul.style = "margin-left:" + site.ulMarginLeft + "em;";
+
+    for (let i = 0; i < 10; i++) {
+        let li = document.createElement("li");
+        li.style = "cursor: pointer;";
+        li.value = i + 1;
+        li.innerText = i + 1;
+        li.onclick = () => clickedLastEpLi(li);
+        ul.appendChild(li);
+    }
+
+    let abortBtn = document.createElement("button");
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").style += "visibility: hidden;"; finishedEpisode(true); };
+    abortBtn.innerText = "Not Last Episode";
+    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+
+    div.appendChild(paragrah);
+    div.appendChild(ul);
+    div.appendChild(abortBtn);
+    document.getElementsByTagName("body")[0].appendChild(div);
+}
+
+function clickedLastEpLi(li) {
+    chrome.runtime.sendMessage(
+        {
+            type: "SEND_ANIME_FINISHED",
+            id: animeID,
+            episode: episodeNumber,
+            rating: li.value
         },
         data => {
             if (data.num_episodes_watched == episodeNumber) {
@@ -72,6 +127,7 @@ function finishedEpisode() {
             } else {
                 alert("An Error occured while updating the EpisodeNumber");
             }
+            document.getElementById("MAL_UPDATER_DIV_2").style += "visibility: hidden;";
         }
     );
 }
@@ -107,7 +163,7 @@ function recieveAnime(res) {
 
     //Main Div for Anime List
     let div = document.createElement("div");
-    div.id = "MAL_UPDATER_DIV_1"
+    div.id = "MAL_UPDATER_DIV_1";
     div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
@@ -146,7 +202,7 @@ function recieveAnime(res) {
     div.appendChild(ul);
     div.appendChild(textbox);
     div.appendChild(divButton);
-    document.getElementsByTagName("body")[0].appendChild(div)
+    document.getElementsByTagName("body")[0].appendChild(div);
 }
 
 function clickedLi(li) {

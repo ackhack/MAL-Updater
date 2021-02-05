@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener(
             case "CACHE_ANIME":
                 return setCache(request);
             case "VALIDATE_SITE":
-                return validateSite(request,onSuccess);
+                return validateSite(request, onSuccess);
             default:
                 return false;
         }
@@ -38,17 +38,8 @@ chrome.runtime.onMessage.addListener(
 );
 
 function init() {
-    initSecret(() => { initSites(function () { console.log(sites) }) });
-}
-
-function fileExists(storageRootEntry, fileName, callback) {
-    storageRootEntry.getFile(fileName, {
-        create: false
-    }, function () {
-        callback(true);
-    }, function () {
-        callback(false);
-    });
+    //Init with callbacks for right order
+    initSecret(() => { initSites(() => { }) });
 }
 
 function getAuthCode() {
@@ -70,6 +61,7 @@ function getAuthCode() {
     }
 }
 
+//Debug functions are only to be called via console
 function debug_removeStorage() {
     chrome.storage.local.remove(["MAL_User_Token"], function (res) { console.log(res) });
 }
@@ -77,7 +69,7 @@ function debug_clearStorage() {
     chrome.storage.local.clear(function (res) { console.log(res) });
 }
 
-function removeAnimeCache(animename,sitename) {
+function removeAnimeCache(animename, sitename) {
     chrome.storage.local.get([sitename], function (result) {
 
         result[sitename][animename] = undefined;
@@ -114,29 +106,30 @@ function refreshAccessToken() {
 
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-
-            let res = JSON.parse(this.response);
-
-            //Save Tokens and Time in var
-            usertoken.access = res.access_token;
-            usertoken.refresh = res.refresh_token;
-            usertoken.access_time = res.expires_in * 1000;
-            usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
-            usertoken.access_req_time = Date.now();
-            usertoken.refresh_req_time = Date.now();
-
-            //Save var to storage
-            chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
-
-            //Set update for AccessToken
-            pendNewAccessToken(0.9 * res.expires_in * 1000);
+            saveAccessToken(JSON.parse(this.response));
         }
     }
 
     xhr.send(para);
 }
 
+function saveAccessToken(res) {
+    usertoken.access = res.access_token;
+    usertoken.refresh = res.refresh_token;
+    usertoken.access_time = res.expires_in * 1000;
+    usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
+    usertoken.access_req_time = Date.now();
+    usertoken.refresh_req_time = Date.now();
+
+    //Save var to storage
+    chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
+
+    //Set update for AccessToken
+    pendNewAccessToken(0.9 * res.expires_in * 1000);
+}
+
 function pendNewAccessToken(time) {
+    //Cap max time, else 0 will be used
     if (time > 2147483647) {
         time = 2147483647;
     }
@@ -213,21 +206,7 @@ function getUserToken() {
 
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            let res = JSON.parse(this.response);
-
-            //Save Tokens and Time in var
-            usertoken.access = res.access_token;
-            usertoken.refresh = res.refresh_token;
-            usertoken.access_time = res.expires_in * 1000;
-            usertoken.refresh_time = 28 * 24 * 60 * 60 * 1000;
-            usertoken.access_req_time = Date.now();
-            usertoken.refresh_req_time = Date.now();
-
-            //Save var to storage
-            chrome.storage.local.set({ MAL_User_Token: JSON.stringify(usertoken) }, function () { });
-
-            //Set update for AccessToken
-            pendNewAccessToken(0.9 * res.expires_in * 1000);
+            saveAccessToken(JSON.parse(this.response));
         }
     }
 
@@ -269,6 +248,7 @@ function getAnime(req, callb, nTry = 0) {
             }
         }
 
+        //Cut string else API will throw error
         if (req.name.length > 64)
             req.name = req.name.substring(0, 64);
 
@@ -279,7 +259,6 @@ function getAnime(req, callb, nTry = 0) {
         })
             .then(response => response.json())
             .then(responseJSON => {
-                console.log(responseJSON);
                 if (responseJSON.error) {
                     if (nTry == 10) {
                         callb({ error: "Couldn`t get Result from API:" + JSON.stringify(responseJSON) });
@@ -295,23 +274,63 @@ function getAnime(req, callb, nTry = 0) {
 }
 
 function finishedEpisode(req, callb) {
-    fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
-        method: "PUT",
-        headers: {
-            "Authorization": "Bearer " + usertoken.access,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: 'status=watching&num_watched_episodes=' + req.episode
-    })
-        .then(response => {
-            console.log(response);
-            response.json().then(responseJSON => callb(responseJSON));
-        });
 
+    //rating only exists if anime was finished
+    if (req.rating) {
+        fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + usertoken.access,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: 'status=completed&num_watched_episodes=' + req.episode + "&score=" + req.rating
+        })
+            .then(response => {
+                console.log(response);
+                response.json().then(responseJSON => callb(responseJSON));
+            });
+        return true;
+    }
+
+    getAnimeEpisodes(req.id, num_episodes => {
+        //req.force is if last episode isnt actually last episode
+        if (num_episodes == req.episode && req.force == false) {
+            callb({ last: true });
+        } else {
+            fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer " + usertoken.access,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: 'status=watching&num_watched_episodes=' + req.episode
+            })
+                .then(response => {
+                    console.log(response);
+                    response.json().then(responseJSON => callb(responseJSON));
+                });
+        }
+    })
     return true;
 }
 
-function validateSite(req,callb) {
+function getAnimeEpisodes(id, callb) {
+    //Gets the episode number of an anime
+    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + usertoken.access,
+        },
+    })
+        .then(response => {
+            response.json().then((json) => {
+                callb(json.num_episodes);
+            })
+        });
+}
+
+function validateSite(req, callb) {
+    //check if we have the site saved as json
     for (let site in sites) {
         if (req.url.match(sites[site].sitePattern)) {
             callb(sites[site]);
@@ -323,6 +342,7 @@ function validateSite(req,callb) {
 }
 
 function readDirectory(directory, callb) {
+    //Gets all json Pages
     let entries = [];
     directory.createReader().readEntries(function (results) {
         for (let page of results) {
@@ -333,6 +353,7 @@ function readDirectory(directory, callb) {
 }
 
 function initSites(callb) {
+    //Write the Pages Folder into a useable object
     chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
         storageRootEntry.getDirectory("Pages", { create: false }, function (directory) {
             readDirectory(directory, function (siteNames) {
@@ -357,6 +378,7 @@ function initSites(callb) {
 }
 
 function initSecret(callb) {
+    //Try to get the secret.json
     chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
         fileExists(storageRootEntry, 'Resources/secret.json', function (isExist) {
             if (isExist) {
@@ -378,5 +400,15 @@ function initSecret(callb) {
                 alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present");
             }
         });
+    });
+}
+
+function fileExists(storageRootEntry, fileName, callback) {
+    storageRootEntry.getFile(fileName, {
+        create: false
+    }, function () {
+        callback(true);
+    }, function () {
+        callback(false);
     });
 }

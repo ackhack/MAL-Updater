@@ -1,3 +1,6 @@
+3.2.0: 05.02.2021
+    -Anime can now be finished via Extension
+
 3.1.1: 02.02.2021
     -Added remove from storage function
     -httprequester is now persistent
