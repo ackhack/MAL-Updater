@@ -10,5 +10,6 @@
     "buttonParentType": "class",
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 2,
-    "ulMarginLeft": 2
+    "ulMarginLeft": 2,
+    "nextBookmark": "let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1); for (let node of document.getElementsByTagName('a')) { if (node.href == nexthref) {callb(window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1)); return;} } callb(undefined);"
 }

@@ -1,3 +1,6 @@
+3.3.0: 06.02.2021
+    -Auto Bookmark updating
+
 3.2.0: 05.02.2021
     -Anime can now be finished via Extension
 

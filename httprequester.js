@@ -11,6 +11,7 @@ var usertoken = {
 };
 var client;
 var sites = {};
+var bookmarkID;
 
 init();
 
@@ -31,6 +32,8 @@ chrome.runtime.onMessage.addListener(
                 return setCache(request);
             case "VALIDATE_SITE":
                 return validateSite(request, onSuccess);
+            case "CHANGED_BOOKMARK":
+                return updateBookmarkFolder(request.folderName);
             default:
                 return false;
         }
@@ -39,7 +42,7 @@ chrome.runtime.onMessage.addListener(
 
 function init() {
     //Init with callbacks for right order
-    initSecret(() => { initSites(() => { }) });
+    initSecret(() => { initSites(() => { initSettings(() => { }) }) });
 }
 
 function getAuthCode() {
@@ -286,8 +289,12 @@ function finishedEpisode(req, callb) {
             body: 'status=completed&num_watched_episodes=' + req.episode + "&score=" + req.rating
         })
             .then(response => {
-                console.log(response);
-                response.json().then(responseJSON => callb(responseJSON));
+                response.json().then(responseJSON => {
+                    if (req.episode == responseJSON.num_episodes_watched) {
+                        setBookmark(req.id, undefined);
+                    }
+                    callb(responseJSON);
+                });
             });
         return true;
     }
@@ -306,12 +313,71 @@ function finishedEpisode(req, callb) {
                 body: 'status=watching&num_watched_episodes=' + req.episode
             })
                 .then(response => {
-                    console.log(response);
-                    response.json().then(responseJSON => callb(responseJSON));
+                    response.json().then(responseJSON => {
+                        if (req.episode == responseJSON.num_episodes_watched) {
+                            setBookmark(req.id, req.nextURL);
+                        }
+                        callb(responseJSON)
+                    });
                 });
         }
     })
     return true;
+}
+
+function setBookmark(animeID, nextURL) {
+
+    let name = undefined;
+    //remove old bookmark
+    if (bookmarkID)
+        getBookmark(bookmarkID, res => {
+            if (res != undefined && res.children.length > 0) {
+                for (let child of res.children) {
+                    if (child.title.startsWith(animeID)) {
+                        name = child.title.substring(animeID.length + 1);
+                        chrome.bookmarks.remove(child.id, () => { });
+                        break;
+                    }
+                }
+            } else {
+                initSettings(() => { });
+            }
+
+        });
+
+    if (nextURL) {
+        //add new bookmark
+        if (name == undefined) {
+            fetch("https://api.myanimelist.net/v2/anime/" + animeID, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + usertoken.access,
+                },
+            })
+                .then(response => {
+                    response.json().then((json) => {
+                        name = json.title;
+                        addBookmark(animeID + ": " + name, nextURL);
+                    })
+                });
+        } else {
+            addBookmark(animeID + ": " + name, nextURL);
+        }
+    }
+}
+
+function addBookmark(name, url) {
+    getBookmark(bookmarkID, res => {
+        if (res != undefined) {
+            chrome.bookmarks.create({
+                "parentId": bookmarkID,
+                "title": name,
+                "url": url
+            }, () => { })
+        } else {
+            initSettings(() => { addBookmark(name, url); })
+        }
+    });
 }
 
 function getAnimeEpisodes(id, callb) {
@@ -383,7 +449,6 @@ function initSecret(callb) {
         fileExists(storageRootEntry, 'Resources/secret.json', function (isExist) {
             if (isExist) {
                 let url = chrome.runtime.getURL('Resources/secret.json');
-                console.log(url);
                 fetch(url)
                     .then((response) => {
                         response.json().then((json) => {
@@ -410,5 +475,75 @@ function fileExists(storageRootEntry, fileName, callback) {
         callback(true);
     }, function () {
         callback(false);
+    });
+}
+
+function initSettings(callb) {
+    try {
+        chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
+            if (res.MAL_Settings_Bookmarks != "") {
+                initBookmarkFolder(res.MAL_Settings_Bookmarks);
+            }
+            callb();
+        });
+    } catch (ex) {
+        chrome.storage.local.set({ "MAL_Settings_Bookmarks": "Anime" }, function () {
+            initBookmarkFolder("Anime");
+            callb();
+        });
+    }
+}
+
+function initBookmarkFolder(folderName) {
+
+    chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
+        if (result == {}) {
+            createBookmarkFolder(folderName);
+        } else {
+            getBookmark(result.MAL_Bookmark_ID, res => {
+                if (res != undefined) {
+                    bookmarkID = res.id;
+                } else {
+                    createBookmarkFolder(folderName);
+                }
+            });
+        }
+    });
+}
+
+function createBookmarkFolder(name) {
+    chrome.bookmarks.create({
+        'title': name,
+        'parentId': "1"
+    }, bookmark => {
+        bookmarkID = bookmark.id;
+        chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+    });
+}
+
+function updateBookmarkFolder(folderName) {
+    if (folderName == "") {
+        return true;
+    }
+    getBookmark(bookmarkID, res => {
+        if (res != undefined) {
+            chrome.bookmarks.update(bookmarkID, { title: folderName }, () => { });
+        } else {
+            createBookmarkFolder(folderName);
+        }
+    });
+    return true;
+}
+
+function getBookmark(id, callb) {
+    chrome.bookmarks.getSubTree("1", nodes => {
+        for (let node of nodes[0].children) {
+            console.log(node);
+            if (node.id == id) {
+                callb(node);
+                return;
+            }
+        }
+        callb(undefined);
     });
 }

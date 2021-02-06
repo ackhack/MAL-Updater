@@ -60,25 +60,29 @@ function getAnime() {
 function finishedEpisode(force = false) {
     //Reparsing the URL because it can change without Postback
     parseURL(window.location.toString());
-    chrome.runtime.sendMessage(
-        {
-            type: "SEND_ANIME_FINISHED",
-            id: animeID,
-            episode: episodeNumber,
-            force: force
-        },
-        data => {
-            if (data.last) {
-                finishedLastEpisode();
-            } else {
-                if (data.num_episodes_watched == episodeNumber) {
-                    alert("Successfully updated EpisodeNumber");
+
+    new Function("callb", site.nextBookmark)(nextURL => {
+        chrome.runtime.sendMessage(
+            {
+                type: "SEND_ANIME_FINISHED",
+                id: animeID,
+                episode: episodeNumber,
+                nextURL: nextURL,
+                force: force
+            },
+            data => {
+                if (data.last) {
+                    finishedLastEpisode();
                 } else {
-                    alert("An Error occured while updating the EpisodeNumber");
+                    if (data.num_episodes_watched == episodeNumber) {
+                        alert("Successfully updated EpisodeNumber");
+                    } else {
+                        alert("An Error occured while updating the EpisodeNumber");
+                    }
                 }
             }
-        }
-    );
+        );
+    });
 }
 
 function finishedLastEpisode() {
@@ -208,15 +212,6 @@ function recieveAnime(res) {
 function clickedLi(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
     animeID = li.value;
-    chrome.runtime.sendMessage(
-        {
-            type: "CACHE_ANIME",
-            site: site.siteName,
-            name: animeName,
-            id: animeID
-        },
-        () => { }
-    );
     afterAnimeID();
     document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
 }
@@ -230,10 +225,20 @@ function waitPageloadCache(nTry = 0) {
     if (getButtonParent() == null)
         setTimeout(() => { waitPageloadCache(nTry) }, 1000);
     else
-        afterAnimeID();
+        afterAnimeID(false);
 }
 
-function afterAnimeID() {
+function afterAnimeID(cache = true) {
+    if (cache)
+        chrome.runtime.sendMessage(
+            {
+                type: "CACHE_ANIME",
+                site: site.siteName,
+                name: animeName,
+                id: animeID
+            },
+            () => { }
+        );
     insertButton();
 }
 

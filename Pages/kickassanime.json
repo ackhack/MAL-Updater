@@ -10,5 +10,6 @@
     "buttonParentType": "id",
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 1,
-    "ulMarginLeft": 0
+    "ulMarginLeft": 0,
+    "nextBookmark": "for (let el of document.getElementsByClassName('ka-url-wrapper')) {if (el.innerText.includes('Next Episode')) {callb(el.href); return;}} callb(undefined);"
 }
