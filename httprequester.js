@@ -291,7 +291,7 @@ function finishedEpisode(req, callb) {
             .then(response => {
                 response.json().then(responseJSON => {
                     if (req.episode == responseJSON.num_episodes_watched) {
-                        setBookmark(req.id, undefined);
+                        setBookmark(req.id, req.url, undefined);
                     }
                     callb(responseJSON);
                 });
@@ -315,7 +315,7 @@ function finishedEpisode(req, callb) {
                 .then(response => {
                     response.json().then(responseJSON => {
                         if (req.episode == responseJSON.num_episodes_watched) {
-                            setBookmark(req.id, req.nextURL);
+                            setBookmark(req.id, req.url, req.nextURL);
                         }
                         callb(responseJSON)
                     });
@@ -325,7 +325,7 @@ function finishedEpisode(req, callb) {
     return true;
 }
 
-function setBookmark(animeID, nextURL) {
+function setBookmark(animeID, oldURL, nextURL) {
 
     let name = undefined;
     //remove old bookmark
@@ -333,16 +333,17 @@ function setBookmark(animeID, nextURL) {
         getBookmark(bookmarkID, res => {
             if (res != undefined && res.children.length > 0) {
                 for (let child of res.children) {
+                    if (child.url == oldURL) {
+                        chrome.bookmarks.remove(child.id, () => { });
+                    }
                     if (child.title.startsWith(animeID)) {
                         name = child.title.substring(animeID.length + 1);
                         chrome.bookmarks.remove(child.id, () => { });
-                        break;
                     }
                 }
             } else {
                 initSettings(() => { });
             }
-
         });
 
     if (nextURL) {

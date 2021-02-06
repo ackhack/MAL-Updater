@@ -68,6 +68,7 @@ function finishedEpisode(force = false) {
                 id: animeID,
                 episode: episodeNumber,
                 nextURL: nextURL,
+                url: window.location.toString(),
                 force: force
             },
             data => {

@@ -1,3 +1,6 @@
+3.3.1: 06.02.2021
+    -Bookmarks will now be removed with same id or same url
+
 3.3.0: 06.02.2021
     -Auto Bookmark updating
 
