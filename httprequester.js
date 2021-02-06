@@ -335,10 +335,11 @@ function setBookmark(animeID, oldURL, nextURL) {
                 for (let child of res.children) {
                     if (child.url == oldURL) {
                         chrome.bookmarks.remove(child.id, () => { });
-                    }
-                    if (child.title.startsWith(animeID)) {
-                        name = child.title.substring(animeID.length + 1);
-                        chrome.bookmarks.remove(child.id, () => { });
+                    } else {
+                        if (child.title.startsWith(animeID)) {
+                            name = child.title.substring(animeID.length + 1);
+                            chrome.bookmarks.remove(child.id, () => { });
+                        }                        
                     }
                 }
             } else {
