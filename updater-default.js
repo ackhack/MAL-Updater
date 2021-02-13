@@ -75,11 +75,7 @@ function finishedEpisode(force = false) {
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
-                    if (data.num_episodes_watched == episodeNumber) {
-                        alert("Successfully updated EpisodeNumber");
-                    } else {
-                        alert("An Error occured while updating the EpisodeNumber");
-                    }
+                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
                 }
             }
         );
@@ -89,7 +85,7 @@ function finishedEpisode(force = false) {
 function finishedLastEpisode(data) {
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_2";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 2em;font-size: larger;";
@@ -132,14 +128,33 @@ function clickedLastEpLi(li) {
             rating: li.value
         },
         data => {
-            if (data.num_episodes_watched == episodeNumber) {
-                alert("Successfully updated EpisodeNumber");
-            } else {
-                alert("An Error occured while updating the EpisodeNumber");
-            }
+            updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
             document.getElementById("MAL_UPDATER_DIV_2").style += "visibility: hidden;";
         }
     );
+}
+
+function updateEpisodeSuccess(success) {
+
+    if (success)
+        document.getElementById("MAL_UPDATER_BUTTON_1").style = "visibility: hidden;";
+
+    let div = document.createElement("div");
+    div.id = "MAL_UPDATER_DIV_3";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+
+    let p = document.createElement("p");
+    p.style = "margin-left:1.5em";
+    p.innerText = success ? "Successfully updated EpisodeNumber" : "An Error occured while updating the EpisodeNumber";
+
+    let abortBtn = document.createElement("button");
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3").style = "visibility: hidden;"; };
+    abortBtn.innerText = "OK";
+    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+
+    div.appendChild(p);
+    div.appendChild(abortBtn);
+    document.getElementsByTagName("body")[0].appendChild(div);
 }
 
 function recieveAnime(res) {
@@ -174,7 +189,7 @@ function recieveAnime(res) {
     //Main Div for Anime List
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 2em;font-size: larger;";

@@ -1,3 +1,6 @@
+3.3.3: 13.02.2021
+    -Alert after Episode finished is now a div
+
 3.3.2: 13.02.2021
     -Sequel Recommendation after last Episode
 
