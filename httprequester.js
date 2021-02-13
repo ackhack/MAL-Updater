@@ -299,10 +299,10 @@ function finishedEpisode(req, callb) {
         return true;
     }
 
-    getAnimeEpisodes(req.id, num_episodes => {
+    getAnimeDetails(req.id, res => {
         //req.force is if last episode isnt actually last episode
-        if (num_episodes == req.episode && req.force == false) {
-            callb({ last: true });
+        if (res.num_episodes == req.episode && req.force == false) {
+            callb({ last: true , next: getSequel(res.related_anime)});
         } else {
             fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
                 method: "PUT",
@@ -382,9 +382,9 @@ function addBookmark(name, url) {
     });
 }
 
-function getAnimeEpisodes(id, callb) {
+function getAnimeDetails(id, callb) {
     //Gets the episode number of an anime
-    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes", {
+    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime", {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + usertoken.access,
@@ -392,9 +392,18 @@ function getAnimeEpisodes(id, callb) {
     })
         .then(response => {
             response.json().then((json) => {
-                callb(json.num_episodes);
+                callb(json);
             })
         });
+}
+
+function getSequel(related) {
+    for (let rel of related) {
+        if (rel.relation_type == "sequel") {
+            return rel.node.title;
+        }
+    }
+    return undefined;
 }
 
 function validateSite(req, callb) {

@@ -73,7 +73,7 @@ function finishedEpisode(force = false) {
             },
             data => {
                 if (data.last) {
-                    finishedLastEpisode();
+                    finishedLastEpisode(data);
                 } else {
                     if (data.num_episodes_watched == episodeNumber) {
                         alert("Successfully updated EpisodeNumber");
@@ -86,7 +86,7 @@ function finishedEpisode(force = false) {
     });
 }
 
-function finishedLastEpisode() {
+function finishedLastEpisode(data) {
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_2";
     div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid" + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
@@ -112,8 +112,13 @@ function finishedLastEpisode() {
     abortBtn.innerText = "Not Last Episode";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
+    let pSequel = document.createElement("p");
+    pSequel.innerText = data.next ? "Sequel: " + data.next : "No Sequel found";
+    pSequel.style = "margin-left: 1.5em;";
+
     div.appendChild(paragrah);
     div.appendChild(ul);
+    div.appendChild(pSequel);
     div.appendChild(abortBtn);
     document.getElementsByTagName("body")[0].appendChild(div);
 }
