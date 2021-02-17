@@ -5,14 +5,36 @@
             background-color: rgb(33,33,33);
             color: white;
         }
+        .subDiv {
+            padding: 10px;
+            border: 1px solid white;
+        }
+        #pTitle {
+            font-size: large;
+        }
+        #btnVal {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <p>Settings</p>
+    <p id="pTitle">Settings</p>
     <input id="btnVal" type="button" value="Save">
-    <div>
-        <label for="tbBookmarks">Bookmarks</label>
-        <input id="tbBookmarks" type="text" placeholder="Foldername">
+    <div id="divSettings">
+        <div id="divActiveToogle" class="subDiv">
+            <input type="checkbox" id="cbActive">
+            <label for="cbActive">Active</label>
+        </div> 
+        <div id="divBookmarks" class="subDiv">
+            <label for="tbBookmarks">Bookmarks Folder</label>
+            <input id="tbBookmarks" type="text" placeholder="Foldername">
+        </div>
+        <div id="divCacheDelete" class="subDiv">
+            <input type="button" id="btnCacheDelete" value="Delete Cache">
+        </div>
+        <div id="divUnauthorize" class="subDiv">
+            <input type="button" id="btnUnauthorize" value="Unauthorize">
+        </div>
     </div>
     <script src="settings.js"></script>
 </body>

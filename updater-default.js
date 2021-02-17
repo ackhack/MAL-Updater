@@ -72,6 +72,7 @@ function finishedEpisode(force = false) {
                 force: force
             },
             data => {
+                console.log(data);
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
@@ -163,6 +164,11 @@ function recieveAnime(res) {
     if (res.error) {
         updateStatus("Did not get a expected Result");
         updateStatus(res.error);
+        return;
+    }
+
+    //Dont do anything if inactive
+    if (res.inactive) {
         return;
     }
 

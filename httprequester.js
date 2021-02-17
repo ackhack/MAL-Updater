@@ -12,6 +12,7 @@ var usertoken = {
 var client;
 var sites = {};
 var bookmarkID;
+var active;
 
 init();
 
@@ -34,6 +35,12 @@ chrome.runtime.onMessage.addListener(
                 return validateSite(request, onSuccess);
             case "CHANGED_BOOKMARK":
                 return updateBookmarkFolder(request.folderName);
+            case "DELETE_CACHE":
+                return deleteCache();
+            case "CHANGED_ACTIVE":
+                return changeActiveState(request.value);
+            case "UNAUTHORIZE":
+                return unauthorize();
             default:
                 return false;
         }
@@ -62,14 +69,6 @@ function getAuthCode() {
     } catch (ex) {
         getNewAuthCode();
     }
-}
-
-//Debug functions are only to be called via console
-function debug_removeStorage() {
-    chrome.storage.local.remove(["MAL_User_Token"], function (res) { console.log(res) });
-}
-function debug_clearStorage() {
-    chrome.storage.local.clear(function (res) { console.log(res) });
 }
 
 function removeAnimeCache(animename, sitename) {
@@ -237,6 +236,9 @@ function setCache(req) {
 }
 
 function getAnime(req, callb, nTry = 0) {
+    if (!active) {
+        callb({ inactive: true });
+    }
     nTry++;
     chrome.storage.local.get([req.site], function (result) {
 
@@ -302,7 +304,7 @@ function finishedEpisode(req, callb) {
     getAnimeDetails(req.id, res => {
         //req.force is if last episode isnt actually last episode
         if (res.num_episodes == req.episode && req.force == false) {
-            callb({ last: true , next: getSequel(res.related_anime)});
+            callb({ last: true, next: getSequel(res.related_anime) });
         } else {
             fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
                 method: "PUT",
@@ -339,7 +341,7 @@ function setBookmark(animeID, oldURL, nextURL) {
                         if (child.title.startsWith(animeID)) {
                             name = child.title.substring(animeID.length + 1);
                             chrome.bookmarks.remove(child.id, () => { });
-                        }                        
+                        }
                     }
                 }
             } else {
@@ -490,19 +492,44 @@ function fileExists(storageRootEntry, fileName, callback) {
 }
 
 function initSettings(callb) {
-    try {
-        chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
-            if (res.MAL_Settings_Bookmarks != "") {
-                initBookmarkFolder(res.MAL_Settings_Bookmarks);
-            }
-            callb();
-        });
-    } catch (ex) {
-        chrome.storage.local.set({ "MAL_Settings_Bookmarks": "Anime" }, function () {
-            initBookmarkFolder("Anime");
-            callb();
-        });
+    function setting1(callb) {
+        try {
+            chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
+                if (res.MAL_Settings_Bookmarks != "") {
+                    initBookmarkFolder(res.MAL_Settings_Bookmarks);
+                }
+                callb();
+            });
+
+        } catch (ex) {
+            chrome.storage.local.set({ "MAL_Settings_Bookmarks": "Anime" }, function () {
+                initBookmarkFolder("Anime");
+                callb();
+            });
+        }
     }
+    function setting2(callb) {
+        try {
+            chrome.storage.local.get("MAL_Settings_Active", function (res) {
+                if (res.MAL_Settings_Active == true || res.MAL_Settings_Active == false) {
+                    active = res.MAL_Settings_Active;
+                }
+                callb();
+            });
+        } catch (ex) {
+            chrome.storage.local.set({ "MAL_Settings_Active": true }, function (res) {
+                console.log(res);
+                active = true;
+                callb();
+            });
+        }
+    }
+
+    setting1(() => { 
+        setting2(() => { 
+            callb();
+        })
+    });
 }
 
 function initBookmarkFolder(folderName) {
@@ -549,7 +576,6 @@ function updateBookmarkFolder(folderName) {
 function getBookmark(id, callb) {
     chrome.bookmarks.getSubTree("1", nodes => {
         for (let node of nodes[0].children) {
-            console.log(node);
             if (node.id == id) {
                 callb(node);
                 return;
@@ -557,4 +583,28 @@ function getBookmark(id, callb) {
         }
         callb(undefined);
     });
+}
+
+function deleteCache() {
+    chrome.storage.local.get(null, function (items) {
+        for (let key of Object.keys(items)) {
+            if (key.startsWith("MAL_"))
+                continue;
+
+            chrome.storage.local.remove(key, () => { });
+        }
+    });
+    return true;
+}
+
+function changeActiveState(value) {
+    active = value;
+    return true;
+}
+
+function unauthorize() {
+    changeActiveState(false);
+    chrome.storage.local.remove("MAL_User_Token", () => { });
+    usertoken = undefined;
+    return true;
 }

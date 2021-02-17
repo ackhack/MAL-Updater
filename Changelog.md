@@ -1,3 +1,6 @@
+3.4.0: 17.02.2021
+    -Added more Settings
+
 3.3.3: 13.02.2021
     -Alert after Episode finished is now a div
 
