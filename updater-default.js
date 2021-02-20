@@ -2,6 +2,7 @@ var animeName;
 var episodeNumber;
 var animeID;
 var site;
+var finished = false;
 
 chrome.runtime.sendMessage(
     {
@@ -51,7 +52,8 @@ function getAnime() {
         {
             type: "GET_ANIME",
             site: site.siteName,
-            name: animeName
+            name: animeName,
+            episode: episodeNumber
         },
         data => recieveAnime(data)
     );
@@ -59,6 +61,7 @@ function getAnime() {
 
 function finishedEpisode(force = false) {
     //Reparsing the URL because it can change without Postback
+    finished = true;
     parseURL(window.location.toString());
 
     new Function("callb", site.nextBookmark)(nextURL => {
@@ -72,7 +75,7 @@ function finishedEpisode(force = false) {
                 force: force
             },
             data => {
-                console.log(data);
+                sendDiscordPresence(false);
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
@@ -105,7 +108,7 @@ function finishedLastEpisode(data) {
     }
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").style += "visibility: hidden;"; finishedEpisode(true); };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").style = "visibility: hidden;"; finishedEpisode(true); };
     abortBtn.innerText = "Not Last Episode";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
@@ -130,7 +133,7 @@ function clickedLastEpLi(li) {
         },
         data => {
             updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
-            document.getElementById("MAL_UPDATER_DIV_2").style += "visibility: hidden;";
+            document.getElementById("MAL_UPDATER_DIV_2").style = "visibility: hidden;";
         }
     );
 }
@@ -212,7 +215,7 @@ function recieveAnime(res) {
     divButton.style = "padding-left: 1.5em;padding-top: 5px;";
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;"; };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;"; };
     abortBtn.innerText = "Abort";
 
     let tbBtn = document.createElement("button");
@@ -221,7 +224,7 @@ function recieveAnime(res) {
         if (animeID != null && animeID != undefined && animeID != "") {
             alert("Inserted UserInput, cant guarantee it works");
             afterAnimeID();
-            document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
+            document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;";
         }
     };
     tbBtn.innerText = "Check ID";
@@ -240,7 +243,7 @@ function clickedLi(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
     animeID = li.value;
     afterAnimeID();
-    document.getElementById("MAL_UPDATER_DIV_1").style += "visibility: hidden;";
+    document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;";
 }
 
 function waitPageloadCache(nTry = 0) {
@@ -266,6 +269,7 @@ function afterAnimeID(cache = true) {
             },
             () => { }
         );
+    sendDiscordPresence(true);
     insertButton();
 }
 
@@ -295,4 +299,36 @@ function getButtonParent() {
         default:
             return null;
     }
+}
+
+window.onfocus = () => {
+    if (!finished)
+        sendDiscordPresence(true);
+}
+
+function sendDiscordPresence(active) {
+    if (animeName != undefined && episodeNumber != undefined) {
+        activeDiscord = active;
+        chrome.runtime.sendMessage(
+            {
+                type: "DISCORD_PRESENCE",
+                active: active,
+                name: animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                episode: episodeNumber
+            }
+        );
+    }
+}
+
+//Removes Discord Presence when window closes
+window.onbeforeunload = () => {
+    if (animeName != undefined && episodeNumber != undefined && !finished)
+        chrome.runtime.sendMessage(
+            {
+                type: "DISCORD_PRESENCE",
+                active: false,
+                name: animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                episode: episodeNumber
+            }
+        )
 }

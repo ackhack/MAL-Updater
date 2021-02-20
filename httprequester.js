@@ -518,16 +518,28 @@ function initSettings(callb) {
             });
         } catch (ex) {
             chrome.storage.local.set({ "MAL_Settings_Active": true }, function (res) {
-                console.log(res);
                 active = true;
                 callb();
             });
         }
     }
+    function setting3(callb) {
+        try {
+            chrome.storage.local.get("MAL_Settings_DiscordActive", function (_) {
+                callb();
+            });
+        } catch (ex) {
+            chrome.storage.local.set({ "MAL_Settings_DiscordActive": false }, function (res) {
+                callb();
+            });
+        }
+    }
 
-    setting1(() => { 
-        setting2(() => { 
-            callb();
+    setting1(() => {
+        setting2(() => {
+            setting3(() => {
+                callb();
+            })
         })
     });
 }

@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "description": "Updates MAL List",
     "manifest_version": 2,
     "permissions": [
@@ -9,7 +9,10 @@
         "tabs",
         "bookmarks",
         "*://*.myanimelist.net/*",
-        "*://*.github.com/*"
+        "*://*.github.com/*",
+        "webRequest",
+        "webRequestBlocking",
+        "https://discord.com/channels/@me"
     ],
     "content_scripts": [
         {
@@ -27,12 +30,20 @@
             "js": [
                 "updater-default.js"
             ]
+        },
+        {
+            "matches": [
+                "https://discord.com/channels/@me"
+            ],
+            "js": [
+                "discordRichPresence/discordRichPresenceInject.js"
+            ],
+            "run_at": "document_start",
+            "all_frames": true
         }
     ],
     "background": {
-        "scripts": [
-            "httprequester.js"
-        ]
+        "page": "background.html"
     },
     "web_accessible_resources": [
         "Resources/secret.json",

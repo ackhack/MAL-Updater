@@ -1,3 +1,7 @@
+3.5.0: 19.02.2021
+    -Added Discord Rich Presence
+    -Fixed Div not going invisible
+
 3.4.0: 17.02.2021
     -Added more Settings
 
