@@ -1,3 +1,6 @@
+3.5.1: 20.02.2021
+    -Reduced DRP Updates when switching to next Episode
+
 3.5.0: 19.02.2021
     -Added Discord Rich Presence
     -Fixed Div not going invisible

@@ -23,7 +23,10 @@ chrome.webRequest.onHeadersReceived.addListener(
     ].filter(Boolean)
 );
 
-var isActive = false;
+let isActive = false;
+let lastUpdate = Date.now();
+const resetTime = 10_000;
+let discordPort;
 
 chrome.storage.local.get("MAL_Settings_DiscordActive", function (res) {
     if (res.MAL_Settings_DiscordActive == true) {
@@ -52,25 +55,33 @@ function addDiscord() {
 }
 
 function removeDiscord() { 
-    let iframe = document.getElementById("iframe1");
-    if (iframe) {
-        iframe.remove();
-        console.log("Discord off");
-    }
+    setTimeout(()=> {
+        if (Date.now()-resetTime>lastUpdate) {
+            let iframe = document.getElementById("iframe1");
+            if (iframe) {
+                
+                iframe.remove();
+                console.log("Discord off");
+            }
+        }
+    },resetTime);
 }
 
-let discordPort;
 const resetActivity = () => {
     if (discordPort !== undefined) {
-        discordPort.postMessage({
-            type: 0,
-            name: "",
-            streamurl: "",
-            details: "",
-            state: "",
-            partycur: "",
-            partymax: "",
-        });
+        setTimeout(()=> {
+            if (Date.now()-resetTime>lastUpdate) {
+                discordPort.postMessage({
+                    type: 0,
+                    name: "",
+                    streamurl: "",
+                    details: "",
+                    state: "",
+                    partycur: "",
+                    partymax: "",
+                });
+            }
+        },resetTime);
     }
 };
 
@@ -108,6 +119,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (recentName == request.name && recentEpisode == request.episode) {
                             return;
                         }
+                        lastUpdate = Date.now();
                         recentName = request.name;
                         recentEpisode = request.episode;
                         setDiscordPresence({
