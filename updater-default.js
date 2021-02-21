@@ -28,7 +28,7 @@ function initSite(nTry = 0) {
         getAnime();
     else
         setTimeout(() => {
-            init(nTry);
+            initSite(nTry);
         }, 1000);
 }
 
@@ -52,17 +52,14 @@ function getAnime() {
         {
             type: "GET_ANIME",
             site: site.siteName,
-            name: animeName,
-            episode: episodeNumber
+            name: animeName
         },
         data => recieveAnime(data)
     );
 }
 
 function finishedEpisode(force = false) {
-    //Reparsing the URL because it can change without Postback
     finished = true;
-    parseURL(window.location.toString());
 
     new Function("callb", site.nextBookmark)(nextURL => {
         chrome.runtime.sendMessage(
@@ -308,7 +305,6 @@ window.onfocus = () => {
 
 function sendDiscordPresence(active) {
     if (animeName != undefined && episodeNumber != undefined) {
-        activeDiscord = active;
         chrome.runtime.sendMessage(
             {
                 type: "DISCORD_PRESENCE",
@@ -323,12 +319,24 @@ function sendDiscordPresence(active) {
 //Removes Discord Presence when window closes
 window.onbeforeunload = () => {
     if (animeName != undefined && episodeNumber != undefined && !finished)
-        chrome.runtime.sendMessage(
-            {
-                type: "DISCORD_PRESENCE",
-                active: false,
-                name: animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
-                episode: episodeNumber
-            }
-        )
+        sendDiscordPresence(false);
 }
+
+//Updates Info if URL changes
+let oldHref = document.location.href;
+window.onload = function () {
+    let bodyList = document.querySelector("body");
+    let observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (_) {
+            if (oldHref != document.location.href) {
+                oldHref = document.location.href;
+                parseURL(window.location.toString());
+            }
+        });
+    });
+    const config = {
+        childList: true,
+        subtree: true
+    };
+    observer.observe(bodyList, config);
+};

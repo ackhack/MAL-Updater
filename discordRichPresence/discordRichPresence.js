@@ -1,9 +1,9 @@
 //Enables Discord to be loaded into iframe
 chrome.webRequest.onHeadersReceived.addListener(
     function (info) {
-        var headers = info.responseHeaders;
-        for (var i = headers.length - 1; i >= 0; --i) {
-            var header = headers[i].name.toLowerCase();
+        let headers = info.responseHeaders;
+        for (let i = headers.length - 1; i >= 0; --i) {
+            let header = headers[i].name.toLowerCase();
             if (header == "x-frame-options" || header == "frame-options") {
                 headers.splice(i, 1); // Remove header
             }
@@ -23,10 +23,12 @@ chrome.webRequest.onHeadersReceived.addListener(
     ].filter(Boolean)
 );
 
+const resetTime = 10_000;
 let isActive = false;
 let lastUpdate = Date.now();
-const resetTime = 10_000;
 let discordPort;
+let recentName = "";
+let recentEpisode = 0;
 
 chrome.storage.local.get("MAL_Settings_DiscordActive", function (res) {
     if (res.MAL_Settings_DiscordActive == true) {
@@ -42,7 +44,7 @@ function changeActiveDiscordState(val) {
     return true;
 }
 
-function addDiscord() {  
+function addDiscord() {
     if (document.getElementById("iframe1") == null) {
         let iframe = document.createElement("iframe");
         iframe.height = "1px";
@@ -54,36 +56,13 @@ function addDiscord() {
     }
 }
 
-function removeDiscord() { 
-    setTimeout(()=> {
-        if (Date.now()-resetTime>lastUpdate) {
-            let iframe = document.getElementById("iframe1");
-            if (iframe) {
-                
-                iframe.remove();
-                console.log("Discord off");
-            }
-        }
-    },resetTime);
-}
-
-const resetActivity = () => {
-    if (discordPort !== undefined) {
-        setTimeout(()=> {
-            if (Date.now()-resetTime>lastUpdate) {
-                discordPort.postMessage({
-                    type: 0,
-                    name: "",
-                    streamurl: "",
-                    details: "",
-                    state: "",
-                    partycur: "",
-                    partymax: "",
-                });
-            }
-        },resetTime);
+function removeDiscord() {
+    let iframe = document.getElementById("iframe1");
+    if (iframe) {
+        iframe.remove();
+        console.log("Discord off");
     }
-};
+}
 
 chrome.runtime.onConnect.addListener((port) => {
     if (port.name == "discord") {
@@ -93,7 +72,6 @@ chrome.runtime.onConnect.addListener((port) => {
         }
         discordPort = port;
         console.info("Discord port opened");
-        resetActivity();
         port.onDisconnect.addListener(() => {
             console.info("Discord port closed");
             discordPort = undefined;
@@ -104,8 +82,7 @@ chrome.runtime.onConnect.addListener((port) => {
     }
 });
 
-var recentName = "";
-var recentEpisode = 0;
+
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -133,10 +110,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         });
                     } else {
                         if (recentName == request.name && recentEpisode == request.episode) {
-                            recentName = undefined;
-                            recentEpisode = undefined;
-                            resetActivity();
-                            removeDiscord();
+                            setTimeout(() => {
+                                if (Date.now() - resetTime > lastUpdate) {
+                                    recentName = undefined;
+                                    recentEpisode = undefined;
+                                    removeDiscord();
+                                }
+                            }, resetTime);
                         }
                     }
                 })

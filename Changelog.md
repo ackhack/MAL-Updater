@@ -1,3 +1,7 @@
+3.5.2: 21.02.2021
+    -Reduced DRP Updates
+    -Better URL-Change handeling
+
 3.5.1: 20.02.2021
     -Reduced DRP Updates when switching to next Episode
 
