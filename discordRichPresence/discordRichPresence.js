@@ -40,6 +40,10 @@ function changeActiveDiscordState(val) {
     isActive = val;
     if (!val) {
         removeDiscord();
+    } else {
+        if (confirm("Please make to sure be logged in in DiscordWeb")) {
+            chrome.tabs.create({url:"https://discord.com/login"},()=> {})
+        }
     }
     return true;
 }

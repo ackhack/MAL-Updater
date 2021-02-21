@@ -1,3 +1,6 @@
+3.5.3: 22.02.2021
+    -Added Login Prompt when activating DRP
+
 3.5.2: 21.02.2021
     -Reduced DRP Updates
     -Better URL-Change handeling

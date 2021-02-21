@@ -34,6 +34,8 @@ function initSite(nTry = 0) {
 
 function parseURL(url) {
     //Get name and episode from URL
+    if (site == undefined)
+        return false;
 
     let res = url.match(site.urlPattern);
 
