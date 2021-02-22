@@ -1,3 +1,6 @@
+3.5.4: 22.02.2021
+    -Cleaned up settings.html
+
 3.5.3: 22.02.2021
     -Added Login Prompt when activating DRP
 
