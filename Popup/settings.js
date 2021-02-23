@@ -4,6 +4,7 @@ function init() {
     document.getElementById("btnVal").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
+    document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
     document.getElementById("btnCacheDelete").onclick = deleteCache;
     document.getElementById("btnUnauthorize").onclick = unauthorize;
 
@@ -16,11 +17,14 @@ function init() {
     getActiveDiscordState(active => {
         document.getElementById("cbActiveDiscord").checked = active;
     })
+    getCheckLastEpisode(active => {
+        document.getElementById("cbCheckLastEpisode").checked = active;
+    })
 }
 
 function getActiveState(callb) {
     chrome.storage.local.get("MAL_Settings_Active", res => {
-        if (res.MAL_Settings_Active != "")
+        if (res.MAL_Settings_Active !== "")
             callb(res.MAL_Settings_Active);
         else
             callb(false);
@@ -29,7 +33,7 @@ function getActiveState(callb) {
 
 function getBookmarkFolderName(callb) {
     chrome.storage.local.get("MAL_Settings_Bookmarks", res => {
-        if (res.MAL_Settings_Bookmarks != "")
+        if (res.MAL_Settings_Bookmarks !== "")
             callb(res.MAL_Settings_Bookmarks);
         else
             callb("Anime");
@@ -38,13 +42,21 @@ function getBookmarkFolderName(callb) {
 
 function getActiveDiscordState(callb) {
     chrome.storage.local.get("MAL_Settings_DiscordActive", res => {
-        if (res.MAL_Settings_DiscordActive != "")
+        if (res.MAL_Settings_DiscordActive !== "")
             callb(res.MAL_Settings_DiscordActive);
         else
             callb(false);
     });
 }
 
+function getCheckLastEpisode(callb) {
+    chrome.storage.local.get("MAL_Settings_CheckLastEpisode", res => {
+        if (res.MAL_Settings_CheckLastEpisode !== "")
+            callb(res.MAL_Settings_CheckLastEpisode);
+        else
+            callb(true);
+    });
+}
 
 function changeBookmarks() {
     chrome.storage.local.set({ "MAL_Settings_Bookmarks": document.getElementById("tbBookmarks").value }, function () {
@@ -99,4 +111,17 @@ function unauthorize() {
         },
         () => { }
     );
+}
+
+function changeCheckLastEpisode(event) {
+    chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": event.target.checked }, function (res) {
+        console.log(event.target.checked);
+        chrome.runtime.sendMessage(
+            {
+                type: "CHANGED_CHECK_LAST_EPISODE",
+                value: event.target.checked
+            },
+            () => { }
+        );
+    });
 }

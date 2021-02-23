@@ -54,7 +54,8 @@ function getAnime() {
         {
             type: "GET_ANIME",
             site: site.siteName,
-            name: animeName
+            name: animeName,
+            episode: episodeNumber
         },
         data => recieveAnime(data)
     );
@@ -78,7 +79,7 @@ function finishedEpisode(force = false) {
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
-                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
+                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber,nextURL);
                 }
             }
         );
@@ -107,7 +108,7 @@ function finishedLastEpisode(data) {
     }
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").style = "visibility: hidden;"; finishedEpisode(true); };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").remove(); finishedEpisode(true); };
     abortBtn.innerText = "Not Last Episode";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
@@ -132,15 +133,15 @@ function clickedLastEpLi(li) {
         },
         data => {
             updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
-            document.getElementById("MAL_UPDATER_DIV_2").style = "visibility: hidden;";
+            document.getElementById("MAL_UPDATER_DIV_2").remove();
         }
     );
 }
 
-function updateEpisodeSuccess(success) {
+function updateEpisodeSuccess(success,nextURL) {
 
     if (success)
-        document.getElementById("MAL_UPDATER_BUTTON_1").style = "visibility: hidden;";
+        document.getElementById("MAL_UPDATER_BUTTON_1").remove();
 
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_3";
@@ -151,12 +152,21 @@ function updateEpisodeSuccess(success) {
     p.innerText = success ? "Successfully updated EpisodeNumber" : "An Error occured while updating the EpisodeNumber";
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3").style = "visibility: hidden;"; };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3").remove() };
     abortBtn.innerText = "OK";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     div.appendChild(p);
     div.appendChild(abortBtn);
+
+    if (nextURL && success) {
+        let nextBtn = document.createElement("button");
+        nextBtn.onclick = () => {window.open(nextURL,"_self")};
+        nextBtn.innerText = "Next EP";
+        nextBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+        div.appendChild(nextBtn);
+    }
+    
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
@@ -172,6 +182,12 @@ function recieveAnime(res) {
     //Dont do anything if inactive
     if (res.inactive) {
         return;
+    }
+
+    if (res.lastWatched != undefined) {
+        if (!res.lastWatched) {
+            showInfo("This is not the next Episode!","Your last watched Episode is EP" + res.lastEpisode);
+        }
     }
 
     //If id was recieved from cache, dont create Elements
@@ -214,7 +230,7 @@ function recieveAnime(res) {
     divButton.style = "padding-left: 1.5em;padding-top: 5px;";
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;"; };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1").remove() };
     abortBtn.innerText = "Abort";
 
     let tbBtn = document.createElement("button");
@@ -223,7 +239,7 @@ function recieveAnime(res) {
         if (animeID != null && animeID != undefined && animeID != "") {
             alert("Inserted UserInput, cant guarantee it works");
             afterAnimeID();
-            document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;";
+            document.getElementById("MAL_UPDATER_DIV_1").remove();
         }
     };
     tbBtn.innerText = "Check ID";
@@ -242,7 +258,7 @@ function clickedLi(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
     animeID = li.value;
     afterAnimeID();
-    document.getElementById("MAL_UPDATER_DIV_1").style = "visibility: hidden;";
+    document.getElementById("MAL_UPDATER_DIV_1").remove();
 }
 
 function waitPageloadCache(nTry = 0) {
@@ -267,7 +283,7 @@ function afterAnimeID(cache = true) {
                 id: animeID
             },
             () => { }
-        );
+        )
     sendDiscordPresence(true);
     insertButton();
 }
@@ -342,3 +358,26 @@ window.onload = function () {
     };
     observer.observe(bodyList, config);
 };
+
+function showInfo(header,text) {
+    let div = document.createElement("div");
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+
+    let pHeader = document.createElement("p");
+    pHeader.style = "padding-left: 1.5em;font-size: larger;";
+    pHeader.innerText = header;
+
+    let pText = document.createElement("p");
+    pText.style = "padding-left: 2em;";
+    pText.innerText = text;
+
+    let abortBtn = document.createElement("button");
+    abortBtn.onclick = () => { div.remove()};
+    abortBtn.innerText = "OK";
+    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+
+    div.appendChild(pHeader);
+    div.appendChild(pText);
+    div.appendChild(abortBtn);
+    document.getElementsByTagName("body")[0].appendChild(div);
+}

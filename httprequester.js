@@ -13,6 +13,7 @@ var client;
 var sites = {};
 var bookmarkID;
 var active;
+var checkLastEpisodeBool;
 
 init();
 
@@ -41,6 +42,8 @@ chrome.runtime.onMessage.addListener(
                 return changeActiveState(request.value);
             case "UNAUTHORIZE":
                 return unauthorize();
+            case "CHANGED_CHECK_LAST_EPISODE":
+                return changeCheckLastEpisode(request.value);
             default:
                 return false;
         }
@@ -248,7 +251,14 @@ function getAnime(req, callb, nTry = 0) {
 
             if (cache[req.name]) {
                 console.log("Cached: " + req.name);
-                callb({ cache: cache[req.name] });
+                checkLastEpisode(cache[req.name], req.episode, (lastWatched,episode) => {
+                    callb({
+                        cache: cache[req.name],
+                        lastWatched: lastWatched,
+                        lastEpisode: episode
+                    });
+                })
+
                 return true;
             }
         }
@@ -271,11 +281,37 @@ function getAnime(req, callb, nTry = 0) {
                         getAnime(req, callb, nTry);
                     }
                 } else {
-                    callb(responseJSON);
+                    checkLastEpisode(responseJSON.id, req.episode, (lastWatched,episode) => {
+                        responseJSON.lastWatched = lastWatched;
+                        responseJSON.lastEpisode = episode;
+                        callb(responseJSON);
+                    });
                 }
             });
     });
     return true;
+}
+
+function checkLastEpisode(id, episode, callb) {
+    if (checkLastEpisodeBool == false) {
+        callb(undefined,undefined);
+        return;
+    }
+    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=my_list_status", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + usertoken.access,
+        },
+    })
+        .then(response => {
+            response.json().then((json) => {
+                if (json.my_list_status) {
+                    callb(episode - 1 == json.my_list_status.num_episodes_watched,json.my_list_status.num_episodes_watched);
+                } else {
+                    callb(undefined,undefined);
+                }
+            })
+        });
 }
 
 function finishedEpisode(req, callb) {
@@ -611,6 +647,11 @@ function deleteCache() {
 
 function changeActiveState(value) {
     active = value;
+    return true;
+}
+
+function changeCheckLastEpisode(value) {
+    checkLastEpisodeBool = value;
     return true;
 }
 

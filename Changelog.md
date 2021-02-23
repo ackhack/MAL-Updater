@@ -1,3 +1,7 @@
+3.5.5: 23.02.2021
+    -Added Setting to check if this Episode is next
+    -Added next Button to Episode Finished Div
+
 3.5.4: 22.02.2021
     -Cleaned up settings.html
 
