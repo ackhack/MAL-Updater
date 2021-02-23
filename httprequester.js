@@ -297,6 +297,10 @@ function checkLastEpisode(id, episode, callb) {
         callb(undefined,undefined);
         return;
     }
+    if (episode == 1) {
+        callb(true,undefined);
+        return;
+    }
     fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=my_list_status", {
         method: "GET",
         headers: {
