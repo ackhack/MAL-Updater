@@ -251,7 +251,7 @@ function getAnime(req, callb, nTry = 0) {
 
             if (cache[req.name]) {
                 console.log("Cached: " + req.name);
-                checkLastEpisode(cache[req.name], req.episode, (lastWatched,episode) => {
+                checkLastEpisode(cache[req.name], req.episode, (lastWatched, episode) => {
                     callb({
                         cache: cache[req.name],
                         lastWatched: lastWatched,
@@ -281,7 +281,7 @@ function getAnime(req, callb, nTry = 0) {
                         getAnime(req, callb, nTry);
                     }
                 } else {
-                    checkLastEpisode(responseJSON.id, req.episode, (lastWatched,episode) => {
+                    checkLastEpisode(responseJSON.id, req.episode, (lastWatched, episode) => {
                         responseJSON.lastWatched = lastWatched;
                         responseJSON.lastEpisode = episode;
                         callb(responseJSON);
@@ -294,11 +294,11 @@ function getAnime(req, callb, nTry = 0) {
 
 function checkLastEpisode(id, episode, callb) {
     if (checkLastEpisodeBool == false) {
-        callb(undefined,undefined);
+        callb(undefined, undefined);
         return;
     }
-    if (episode == 1) {
-        callb(true,undefined);
+    if (episode == 1 || episode == 0) {
+        callb(true, undefined);
         return;
     }
     fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=my_list_status", {
@@ -310,9 +310,12 @@ function checkLastEpisode(id, episode, callb) {
         .then(response => {
             response.json().then((json) => {
                 if (json.my_list_status) {
-                    callb(episode - 1 == json.my_list_status.num_episodes_watched,json.my_list_status.num_episodes_watched);
+                    if (json.my_list_status.num_episodes_watched)
+                        callb(episode - 1 == json.my_list_status.num_episodes_watched, json.my_list_status.num_episodes_watched);
+                    else
+                        callb(true, undefined);
                 } else {
-                    callb(undefined,undefined);
+                    callb(undefined, undefined);
                 }
             })
         });
