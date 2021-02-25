@@ -22,6 +22,8 @@ function init() {
     })
 }
 
+//#region Init
+
 function getActiveState(callb) {
     chrome.storage.local.get("MAL_Settings_Active", res => {
         if (res.MAL_Settings_Active !== "")
@@ -57,6 +59,10 @@ function getCheckLastEpisode(callb) {
             callb(true);
     });
 }
+
+//#endregion
+
+//#region Setting Functions
 
 function changeBookmarks() {
     chrome.storage.local.set({ "MAL_Settings_Bookmarks": document.getElementById("tbBookmarks").value }, function () {
@@ -125,3 +131,5 @@ function changeCheckLastEpisode(event) {
         );
     });
 }
+
+//#endregion

@@ -1,3 +1,7 @@
+3.5.6: 24.02.2021
+    -Added Regions to Code
+    -Set limit to DRP Updates
+
 3.5.5: 23.02.2021
     -Added Setting to check if this Episode is next
     -Added next Button to Episode Finished Div

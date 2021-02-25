@@ -23,9 +23,10 @@ chrome.webRequest.onHeadersReceived.addListener(
     ].filter(Boolean)
 );
 
-const resetTime = 10_000;
+const updateCycleTime = 10_000;
 let isActive = false;
 let lastUpdate = Date.now();
+let updateQueue = undefined;
 let discordPort;
 let recentName = "";
 let recentEpisode = 0;
@@ -42,7 +43,7 @@ function changeActiveDiscordState(val) {
         removeDiscord();
     } else {
         if (confirm("Please make to sure be logged in in DiscordWeb")) {
-            chrome.tabs.create({url:"https://discord.com/login"},()=> {})
+            chrome.tabs.create({ url: "https://discord.com/login" }, () => { })
         }
     }
     return true;
@@ -86,8 +87,6 @@ chrome.runtime.onConnect.addListener((port) => {
     }
 });
 
-
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "CHANGED_ACTIVE_DISCORD":
@@ -100,7 +99,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         if (recentName == request.name && recentEpisode == request.episode) {
                             return;
                         }
-                        lastUpdate = Date.now();
                         recentName = request.name;
                         recentEpisode = request.episode;
                         setDiscordPresence({
@@ -115,12 +113,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     } else {
                         if (recentName == request.name && recentEpisode == request.episode) {
                             setTimeout(() => {
-                                if (Date.now() - resetTime > lastUpdate) {
+                                if (Date.now() - updateCycleTime > lastUpdate && updateQueue === undefined) {
                                     recentName = undefined;
                                     recentEpisode = undefined;
                                     removeDiscord();
                                 }
-                            }, resetTime);
+                            }, updateCycleTime);
                         }
                     }
                 })
@@ -149,5 +147,25 @@ function waitForLoad(callb, nTry = 0) {
 }
 
 function setDiscordPresence(obj) {
-    discordPort.postMessage(obj);
+
+    //Renew UpdateQueue if new DRP is avaiable
+    if (updateQueue !== undefined) {
+        updateQueue = obj;
+        return;
+    }
+
+    let time = Date.now();
+    if (time - updateCycleTime > lastUpdate) {
+        //Send Update instant if lastUpdate is old
+        lastUpdate = time;
+        discordPort.postMessage(obj);
+    } else {
+        //Send Update when some Time has passed
+        updateQueue = obj;
+        setTimeout(() => {
+            lastUpdate = Date.now();
+            discordPort.postMessage(updateQueue);
+            updateQueue = undefined;
+        }, updateCycleTime - (time - lastUpdate));
+    }
 }

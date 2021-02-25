@@ -55,6 +55,8 @@ function init() {
     initSecret(() => { initSites(() => { initSettings(() => { }) }) });
 }
 
+//#region Authentification
+
 function getAuthCode() {
 
     try {
@@ -72,15 +74,6 @@ function getAuthCode() {
     } catch (ex) {
         getNewAuthCode();
     }
-}
-
-function removeAnimeCache(animename, sitename) {
-    chrome.storage.local.get([sitename], function (result) {
-
-        result[sitename][animename] = undefined;
-
-        chrome.storage.local.set({ [sitename]: result }, function () { });
-    });
 }
 
 function parseUserToken() {
@@ -218,25 +211,9 @@ function getUserToken() {
     xhr.send(para);
 }
 
-function closeTab(sender) {
-    chrome.tabs.remove(sender.tab.id);
-}
+//#endregion
 
-function setCache(req) {
-    //Save names in storage
-    chrome.storage.local.get([req.site], function (result) {
-
-        let cache = {};
-
-        if (result != {} && result[req.site] != undefined) {
-            cache = result[req.site];
-        }
-        cache[req.name] = req.id;
-
-        chrome.storage.local.set({ [req.site]: cache }, function () { });
-    });
-    return true;
-}
+//#region Anime-Realted
 
 function getAnime(req, callb, nTry = 0) {
     if (!active) {
@@ -370,6 +347,62 @@ function finishedEpisode(req, callb) {
     return true;
 }
 
+function getAnimeDetails(id, callb) {
+    //Gets the episode number of an anime
+    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + usertoken.access,
+        },
+    })
+        .then(response => {
+            response.json().then((json) => {
+                callb(json);
+            })
+        });
+}
+
+function getSequel(related) {
+    for (let rel of related) {
+        if (rel.relation_type == "sequel") {
+            return rel.node.title;
+        }
+    }
+    return undefined;
+}
+
+function setCache(req) {
+    //Save names in storage
+    chrome.storage.local.get([req.site], function (result) {
+
+        let cache = {};
+
+        if (result != {} && result[req.site] != undefined) {
+            cache = result[req.site];
+        }
+        cache[req.name] = req.id;
+
+        chrome.storage.local.set({ [req.site]: cache }, function () { });
+    });
+    return true;
+}
+
+function deleteCache() {
+    chrome.storage.local.get(null, function (items) {
+        for (let key of Object.keys(items)) {
+            if (key.startsWith("MAL_"))
+                continue;
+
+            chrome.storage.local.remove(key, () => { });
+        }
+    });
+    return true;
+}
+
+//#endregion
+
+//#region Bookmarks
+
 function setBookmark(animeID, oldURL, nextURL) {
 
     let name = undefined;
@@ -427,41 +460,45 @@ function addBookmark(name, url) {
     });
 }
 
-function getAnimeDetails(id, callb) {
-    //Gets the episode number of an anime
-    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime", {
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer " + usertoken.access,
-        },
-    })
-        .then(response => {
-            response.json().then((json) => {
-                callb(json);
-            })
-        });
+function createBookmarkFolder(name) {
+    chrome.bookmarks.create({
+        'title': name,
+        'parentId': "1"
+    }, bookmark => {
+        bookmarkID = bookmark.id;
+        chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+    });
 }
 
-function getSequel(related) {
-    for (let rel of related) {
-        if (rel.relation_type == "sequel") {
-            return rel.node.title;
-        }
+function updateBookmarkFolder(folderName) {
+    if (folderName == "") {
+        return true;
     }
-    return undefined;
+    getBookmark(bookmarkID, res => {
+        if (res != undefined) {
+            chrome.bookmarks.update(bookmarkID, { title: folderName }, () => { });
+        } else {
+            createBookmarkFolder(folderName);
+        }
+    });
+    return true;
 }
 
-function validateSite(req, callb) {
-    //check if we have the site saved as json
-    for (let site in sites) {
-        if (req.url.match(sites[site].sitePattern)) {
-            callb(sites[site]);
-            return true;
+function getBookmark(id, callb) {
+    chrome.bookmarks.getSubTree("1", nodes => {
+        for (let node of nodes[0].children) {
+            if (node.id == id) {
+                callb(node);
+                return;
+            }
         }
-    }
-    callb(undefined);
-    return false;
+        callb(undefined);
+    });
 }
+
+//#endregion
+
+//#region Init
 
 function readDirectory(directory, callb) {
     //Gets all json Pages
@@ -604,52 +641,23 @@ function initBookmarkFolder(folderName) {
     });
 }
 
-function createBookmarkFolder(name) {
-    chrome.bookmarks.create({
-        'title': name,
-        'parentId': "1"
-    }, bookmark => {
-        bookmarkID = bookmark.id;
-        chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
-    });
-}
+//#endregion
 
-function updateBookmarkFolder(folderName) {
-    if (folderName == "") {
-        return true;
+//#region Runtime Functions
+
+function closeTab(sender) {
+    chrome.tabs.remove(sender.tab.id);
+}
+function validateSite(req, callb) {
+    //check if we have the site saved as json
+    for (let site in sites) {
+        if (req.url.match(sites[site].sitePattern)) {
+            callb(sites[site]);
+            return true;
+        }
     }
-    getBookmark(bookmarkID, res => {
-        if (res != undefined) {
-            chrome.bookmarks.update(bookmarkID, { title: folderName }, () => { });
-        } else {
-            createBookmarkFolder(folderName);
-        }
-    });
-    return true;
-}
-
-function getBookmark(id, callb) {
-    chrome.bookmarks.getSubTree("1", nodes => {
-        for (let node of nodes[0].children) {
-            if (node.id == id) {
-                callb(node);
-                return;
-            }
-        }
-        callb(undefined);
-    });
-}
-
-function deleteCache() {
-    chrome.storage.local.get(null, function (items) {
-        for (let key of Object.keys(items)) {
-            if (key.startsWith("MAL_"))
-                continue;
-
-            chrome.storage.local.remove(key, () => { });
-        }
-    });
-    return true;
+    callb(undefined);
+    return false;
 }
 
 function changeActiveState(value) {
@@ -668,3 +676,5 @@ function unauthorize() {
     usertoken = undefined;
     return true;
 }
+
+//#endregion
