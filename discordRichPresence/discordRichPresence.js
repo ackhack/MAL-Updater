@@ -23,7 +23,7 @@ chrome.webRequest.onHeadersReceived.addListener(
     ].filter(Boolean)
 );
 
-const updateCycleTime = 10_000;
+const updateCycleTime = 15_000;
 let isActive = false;
 let lastUpdate = Date.now();
 let updateQueue = undefined;

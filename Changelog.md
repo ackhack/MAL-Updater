@@ -1,3 +1,7 @@
+3.5.7: 26.02.2021
+    -Added Option to Binge Watch
+    -Changed DRP Update Time to 15sec
+
 3.5.6: 24.02.2021
     -Added Regions to Code
     -Set limit to DRP Updates

@@ -79,7 +79,11 @@ function recieveAnime(res) {
 
     if (res.lastWatched != undefined) {
         if (!res.lastWatched) {
-            showInfo("This is not the next Episode!","Your last watched Episode is EP" + res.lastEpisode);
+            let bingeBtn = document.createElement("button");
+            bingeBtn.onclick = () => {bingeWatching();bingeBtn.parentElement.remove()}
+            bingeBtn.innerText = "Binge Watching";
+            bingeBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+            showInfo("This is not the next Episode!","Your last watched Episode is EP" + res.lastEpisode,[bingeBtn]);
         }
     }
 
@@ -323,6 +327,13 @@ function updateEpisodeSuccess(success,nextURL) {
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
+function bingeWatching() {
+    chrome.runtime.sendMessage({
+        type:"BINGE_WATCHING",
+        id: animeID
+    });
+}
+
 //#endregion
 
 //#region Discord
@@ -374,7 +385,7 @@ window.onload = function () {
 };
 
 //Shows Infotext in middle of Screen as Div
-function showInfo(header,text) {
+function showInfo(header,text,buttons = []) {
     let div = document.createElement("div");
     div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
@@ -394,5 +405,8 @@ function showInfo(header,text) {
     div.appendChild(pHeader);
     div.appendChild(pText);
     div.appendChild(abortBtn);
+    for(let btn of buttons) {
+        div.appendChild(btn);
+    }
     document.getElementsByTagName("body")[0].appendChild(div);
 }

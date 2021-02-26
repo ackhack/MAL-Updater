@@ -14,6 +14,7 @@ var sites = {};
 var bookmarkID;
 var active;
 var checkLastEpisodeBool;
+var binge = new Set();
 
 init();
 
@@ -44,6 +45,8 @@ chrome.runtime.onMessage.addListener(
                 return unauthorize();
             case "CHANGED_CHECK_LAST_EPISODE":
                 return changeCheckLastEpisode(request.value);
+            case "BINGE_WATCHING":
+                return addBinge(request.id);
             default:
                 return false;
         }
@@ -278,6 +281,11 @@ function checkLastEpisode(id, episode, callb) {
         callb(true, undefined);
         return;
     }
+    if (binge.has(id)) {
+        callb(true, undefined);
+        return;  
+    }
+    
     fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=my_list_status", {
         method: "GET",
         headers: {
@@ -299,6 +307,8 @@ function checkLastEpisode(id, episode, callb) {
 }
 
 function finishedEpisode(req, callb) {
+
+    removeBinge(req.id);
 
     //rating only exists if anime was finished
     if (req.rating) {
@@ -674,6 +684,17 @@ function unauthorize() {
     changeActiveState(false);
     chrome.storage.local.remove("MAL_User_Token", () => { });
     usertoken = undefined;
+    return true;
+}
+
+function addBinge(id) {
+    binge.add(id);
+    return true;
+}
+
+function removeBinge(id) {
+    if (binge.has(id))
+        binge.delete(id);
     return true;
 }
 
