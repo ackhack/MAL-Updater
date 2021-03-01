@@ -1,7 +1,7 @@
 {
     "sitePattern": ".*9anime\\.[a-z]+\\/watch\\/.*",
     "siteName": "9anime",
-    "urlPattern": "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]{4}(\\/ep-(\\d+)|\\?ep=(\\d+))?.*",
+    "urlPattern": "https?:\\/\\/.*9anime.*\\/watch\\/(.*)\\.[a-z0-9A-Z]*(\\/ep-(\\d+)|\\?ep=(\\d+))?.*",
     "nameMatch": 1,
     "episodeMatch": 3,
     "pageColor": "rgb(73, 37, 123)",

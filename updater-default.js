@@ -42,7 +42,6 @@ function parseURL(url) {
     let res = url.match(site.urlPattern);
 
     if (!res) {
-        updateStatus("No RegEx match", "No Anime found in URL");
         return false;
     } else {
         animeName = res[site.nameMatch];
@@ -67,7 +66,7 @@ function recieveAnime(res) {
 
     //Error handeling
     if (res.error) {
-        updateStatus("Did not get a expected Result");
+        updateStatus("Did not get a expected Result from BGScript");
         updateStatus(res.error);
         return;
     }
@@ -409,4 +408,9 @@ function showInfo(header,text,buttons = []) {
         div.appendChild(btn);
     }
     document.getElementsByTagName("body")[0].appendChild(div);
+}
+
+
+function updateStatus(text) {
+    console.log(text);
 }

@@ -1,3 +1,6 @@
+3.5.8: 01.03.2021
+    -Fixed some 9anime Links not working
+
 3.5.7: 26.02.2021
     -Added Option to Binge Watch
     -Changed DRP Update Time to 15sec
