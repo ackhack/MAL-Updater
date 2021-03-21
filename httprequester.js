@@ -261,10 +261,14 @@ function getAnime(req, callb, nTry = 0) {
                         getAnime(req, callb, nTry);
                     }
                 } else {
+                    console.log(responseJSON);
                     checkLastEpisode(responseJSON.id, req.episode, (lastWatched, episode) => {
                         responseJSON.lastWatched = lastWatched;
                         responseJSON.lastEpisode = episode;
-                        callb(responseJSON);
+                        getDisplayMode(displayMode => {
+                            responseJSON.displayMode = displayMode;
+                            callb(responseJSON);
+                        })
                     });
                 }
             });
@@ -277,7 +281,7 @@ function checkLastEpisode(id, episode, callb) {
         callb(undefined, undefined);
         return;
     }
-    if (episode == 1 || episode == 0) {
+    if (episode == 1 || episode == 0 || id === undefined) {
         callb(true, undefined);
         return;
     }
@@ -355,6 +359,18 @@ function finishedEpisode(req, callb) {
         }
     })
     return true;
+}
+
+function getDisplayMode(callb) {
+    chrome.storage.local.get(["MAL_Settings_DisplayMode"], function (result) {
+
+        if (result != {} && result["MAL_Settings_DisplayMode"] != undefined) {
+            callb(result["MAL_Settings_DisplayMode"]);
+            return;
+        }
+        chrome.storage.local.set({ ["MAL_Settings_DisplayMode"]: false }, function () { });
+        callb(false);
+    });
 }
 
 function getAnimeDetails(id, callb) {

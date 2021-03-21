@@ -7,6 +7,8 @@ function init() {
     document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
     document.getElementById("btnCacheDelete").onclick = deleteCache;
     document.getElementById("btnUnauthorize").onclick = unauthorize;
+    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
+    document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
 
     getActiveState(active => {
         document.getElementById("cbActive").checked = active;
@@ -19,6 +21,9 @@ function init() {
     })
     getCheckLastEpisode(active => {
         document.getElementById("cbCheckLastEpisode").checked = active;
+    })
+    getDisplayMode(active => {
+        document.getElementById("cbDisplayMode").checked = active;
     })
 }
 
@@ -57,6 +62,15 @@ function getCheckLastEpisode(callb) {
             callb(res.MAL_Settings_CheckLastEpisode);
         else
             callb(true);
+    });
+}
+
+function getDisplayMode(callb) {
+    chrome.storage.local.get("MAL_Settings_DisplayMode", res => {
+        if (res.MAL_Settings_DisplayMode !== "")
+            callb(res.MAL_Settings_DisplayMode);
+        else
+            callb(false);
     });
 }
 
@@ -119,6 +133,15 @@ function unauthorize() {
     );
 }
 
+function removeDiscord() {
+    chrome.runtime.sendMessage(
+        {
+            type: "REMOVE_DRP"
+        },
+        () => { }
+    );
+}
+
 function changeCheckLastEpisode(event) {
     chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": event.target.checked }, function (res) {
         console.log(event.target.checked);
@@ -129,6 +152,11 @@ function changeCheckLastEpisode(event) {
             },
             () => { }
         );
+    });
+}
+
+function changeDisplayMode(event) {
+    chrome.storage.local.set({ "MAL_Settings_DisplayMode": event.target.checked }, function (res) {
     });
 }
 

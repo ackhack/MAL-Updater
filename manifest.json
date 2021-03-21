@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "3.5.8",
+    "version": "3.5.9",
     "description": "Updates MAL List",
     "manifest_version": 2,
     "permissions": [
@@ -12,7 +12,8 @@
         "*://*.github.com/*",
         "webRequest",
         "webRequestBlocking",
-        "https://discord.com/channels/@me"
+        "https://discord.com/channels/@me",
+        "contentSettings"
     ],
     "content_scripts": [
         {

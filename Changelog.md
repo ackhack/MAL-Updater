@@ -1,3 +1,8 @@
+3.5.9:
+    -Fixed Finishing Anime not removing Bookmark
+    -Added Force Remove DRP Button to Settings
+    -Anime Pick Window now shows Images
+
 3.5.8: 01.03.2021
     -Fixed some 9anime Links not working
 

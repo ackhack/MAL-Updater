@@ -93,33 +93,24 @@ function recieveAnime(res) {
         return;
     }
 
-    //Create the HTML ELements needed for User Interaction
-    let ul = document.createElement("ul");
-    ul.style = "margin-left:" + site.ulMarginLeft + "em;";
-
-    for (let elem of res.data) {
-        let li = document.createElement("li");
-        li.style = "cursor: pointer;";
-        li.value = elem.node.id;
-        li.innerText = elem.node.title;
-        li.onclick = () => clickedLi(li);
-        ul.appendChild(li);
-    }
+    //Create the HTML ELements needed for User 
+    
+    let mainList = createMainList(res);
 
     //Main Div for Anime List
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
-    paragrah.style = "padding-left: 2em;font-size: larger;";
-    paragrah.innerText = "Which Anime is this?"
+    paragrah.style = "padding-left: 1.5em;font-size: xx-large;";
+    paragrah.innerText = "Which Anime is this?";
 
     let textbox = document.createElement("input");
     textbox.id = "MAL_UPDATER_INPUT_1";
     textbox.type = "text";
     textbox.placeholder = "If not in List, enter MAL ID here";
-    textbox.style = "width: -webkit-fill-available;margin-left: 1.5em;";
+    textbox.style = "width: -webkit-fill-available;margin-left: 1.5em;margin-top:1.5em;";
 
     //Div with the two Buttons
     let divButton = document.createElement("div");
@@ -144,13 +135,13 @@ function recieveAnime(res) {
     divButton.appendChild(abortBtn);
 
     div.appendChild(paragrah);
-    div.appendChild(ul);
+    div.appendChild(mainList);
     div.appendChild(textbox);
     div.appendChild(divButton);
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
-function clickedLi(li) {
+function clickedAnimeOption(li) {
     //Save Anime to Cache, insert the Finished button and hide the Div
     animeID = li.value;
     afterAnimeID();
@@ -169,6 +160,60 @@ function waitPageloadCache(nTry = 0) {
         afterAnimeID(false);
 }
 
+function createMainList(res) {
+    console.log(res);
+    if (res.displayMode === false) {
+        let ul = document.createElement("ul");
+        ul.style = "margin-left:" + site.ulMarginLeft + "em;";
+    
+        for (let elem of res.data) {
+            let li = document.createElement("li");
+            li.style = "cursor: pointer;";
+            li.value = elem.node.id;
+            li.innerText = elem.node.title;
+            li.onclick = () => clickedAnimeOption(li);
+            ul.appendChild(li);
+        }
+        return ul;
+    } else {
+        let table = document.createElement("table");
+        table.style = "margin-left:" + site.ulMarginLeft + "em;";
+
+        let counter = 0;
+        let currTr = document.createElement("div");
+        for (let elem of res.data) {
+            if (counter % 5 == 0) {
+                table.appendChild(currTr);
+                currTr = document.createElement("tr");
+            }
+            let td = document.createElement("td");
+            
+            let para = document.createElement("p");
+            para.innerText = elem.node.title;
+
+            let img = document.createElement("img");
+            img.src = elem.node.main_picture.medium;
+            img.alt = elem.node.title;
+            img.style = "width:100%;max-width:200px";
+            
+            let li = document.createElement("li");
+            li.style="visibility: hidden;";
+            li.value = elem.node.id;
+
+            td.style = "cursor: pointer;border: 3px solid white;padding-top: 10px;padding-right: 10px;padding-left: 10px;padding-bottom: 10px;";
+            td.onclick = () => clickedAnimeOption(li);
+            td.appendChild(para);
+            td.appendChild(img);
+            td.appendChild(li);
+
+            currTr.appendChild(td);
+            counter++;
+        }
+        console.log(currTr);
+        table.appendChild(currTr);
+        return table;
+    }
+}
 
 function afterAnimeID(cache = true) {
     if (cache)
@@ -190,6 +235,7 @@ function insertButton() {
     btnFinish.id = "MAL_UPDATER_BUTTON_1";
     btnFinish.style = "width: 20em;height: 3em;background-color: " + site.bgColor + ";border: 3px solid " + site.pageColor + ";color: white;";
     btnFinish.textContent = "Finished Episode";
+    btnFinish.title = animeID;
     btnFinish.onclick = () => { finishedEpisode(); };
     let navbar = getButtonParent();
     for (let i = 0; i < site.parentIndex; i++) {
@@ -285,7 +331,8 @@ function clickedLastEpLi(li) {
             type: "SEND_ANIME_FINISHED",
             id: animeID,
             episode: episodeNumber,
-            rating: li.value
+            rating: li.value,
+            url: window.location.toString()
         },
         data => {
             updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);

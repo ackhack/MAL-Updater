@@ -50,11 +50,11 @@ function changeActiveDiscordState(val) {
 }
 
 function addDiscord() {
-    if (document.getElementById("iframe1") == null) {
+    if (document.getElementById("iframeDiscord") == null) {
         let iframe = document.createElement("iframe");
         iframe.height = "1px";
         iframe.width = "1px";
-        iframe.id = "iframe1";
+        iframe.id = "iframeDiscord";
         iframe.src = "https://discord.com/channels/@me";
         document.documentElement.appendChild(iframe);
         console.log("Discord on");
@@ -62,11 +62,13 @@ function addDiscord() {
 }
 
 function removeDiscord() {
-    let iframe = document.getElementById("iframe1");
+    let iframe = document.getElementById("iframeDiscord");
     if (iframe) {
         iframe.remove();
         console.log("Discord off");
+        return true;
     }
+    return false;
 }
 
 chrome.runtime.onConnect.addListener((port) => {
@@ -91,6 +93,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "CHANGED_ACTIVE_DISCORD":
             return changeActiveDiscordState(request.value);
+        case "REMOVE_DRP":
+            return removeDiscord();
         case "DISCORD_PRESENCE":
             if (isActive) {
                 addDiscord();
