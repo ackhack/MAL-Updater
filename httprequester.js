@@ -261,7 +261,6 @@ function getAnime(req, callb, nTry = 0) {
                         getAnime(req, callb, nTry);
                     }
                 } else {
-                    console.log(responseJSON);
                     checkLastEpisode(responseJSON.id, req.episode, (lastWatched, episode) => {
                         responseJSON.lastWatched = lastWatched;
                         responseJSON.lastEpisode = episode;

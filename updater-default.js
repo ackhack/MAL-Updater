@@ -161,7 +161,7 @@ function waitPageloadCache(nTry = 0) {
 }
 
 function createMainList(res) {
-    console.log(res);
+    //Returns the List displaying the Animes to pick from
     if (res.displayMode === false) {
         let ul = document.createElement("ul");
         ul.style = "margin-left:" + site.ulMarginLeft + "em;";
@@ -181,6 +181,7 @@ function createMainList(res) {
 
         let counter = 0;
         let currTr = document.createElement("div");
+
         for (let elem of res.data) {
             if (counter % 5 == 0) {
                 table.appendChild(currTr);
@@ -200,7 +201,7 @@ function createMainList(res) {
             li.style="visibility: hidden;";
             li.value = elem.node.id;
 
-            td.style = "cursor: pointer;border: 3px solid white;padding-top: 10px;padding-right: 10px;padding-left: 10px;padding-bottom: 10px;";
+            td.style = "cursor: pointer;border: 3px solid " + site.pageColor + "!important;padding:7px;margin:3px";
             td.onclick = () => clickedAnimeOption(li);
             td.appendChild(para);
             td.appendChild(img);
@@ -209,7 +210,7 @@ function createMainList(res) {
             currTr.appendChild(td);
             counter++;
         }
-        console.log(currTr);
+
         table.appendChild(currTr);
         return table;
     }
