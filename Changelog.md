@@ -1,4 +1,4 @@
-3.5.10:
+3.5.10: 30.03.2021
     -Optimized new Anime Pick Window
     -Changed Anime Rate Window to Select Tag
     -Fixed Error not being able to mark Anime as completed
