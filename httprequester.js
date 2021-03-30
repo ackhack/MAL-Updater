@@ -286,9 +286,9 @@ function checkLastEpisode(id, episode, callb) {
     }
     if (binge.has(id)) {
         callb(true, undefined);
-        return;  
+        return;
     }
-    
+
     fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=my_list_status", {
         method: "GET",
         headers: {
@@ -321,7 +321,7 @@ function finishedEpisode(req, callb) {
                 "Authorization": "Bearer " + usertoken.access,
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: 'status=completed&num_watched_episodes=' + req.episode + "&score=" + req.rating
+            body: 'status=completed&num_watched_episodes=' + req.episode + '&score=' + req.rating
         })
             .then(response => {
                 response.json().then(responseJSON => {
@@ -332,32 +332,32 @@ function finishedEpisode(req, callb) {
                 });
             });
         return true;
-    }
-
-    getAnimeDetails(req.id, res => {
-        //req.force is if last episode isnt actually last episode
-        if (res.num_episodes == req.episode && req.force == false) {
-            callb({ last: true, next: getSequel(res.related_anime) });
-        } else {
-            fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + usertoken.access,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: 'status=watching&num_watched_episodes=' + req.episode
-            })
-                .then(response => {
-                    response.json().then(responseJSON => {
-                        if (req.episode == responseJSON.num_episodes_watched) {
-                            setBookmark(req.id, req.url, req.nextURL);
-                        }
-                        callb(responseJSON)
+    } else {
+        getAnimeDetails(req.id, res => {
+            //req.force is if last episode isnt actually last episode
+            if (res.num_episodes == req.episode && req.force == false) {
+                callb({ last: true, next: getSequel(res.related_anime) });
+            } else {
+                fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "Bearer " + usertoken.access,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: 'status=watching&num_watched_episodes=' + req.episode
+                })
+                    .then(response => {
+                        response.json().then(responseJSON => {
+                            if (req.episode == responseJSON.num_episodes_watched) {
+                                setBookmark(req.id, req.url, req.nextURL);
+                            }
+                            callb(responseJSON)
+                        });
                     });
-                });
-        }
-    })
-    return true;
+            }
+        })
+        return true;
+    }
 }
 
 function getDisplayMode(callb) {
@@ -550,11 +550,10 @@ function initSites(callb) {
                                     sites[name.substring(0, name.length - 5)] = json;
 
                                 curSite++;
-                                if (curSite == siteNames.length) {
+                                if (curSite == siteNames.length)
                                     callb();
-                                }
                             })
-                        });
+                        }).catch(err => console.log(err));
                 }
             });
         })

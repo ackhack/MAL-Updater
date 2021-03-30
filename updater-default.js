@@ -79,10 +79,10 @@ function recieveAnime(res) {
     if (res.lastWatched != undefined) {
         if (!res.lastWatched) {
             let bingeBtn = document.createElement("button");
-            bingeBtn.onclick = () => {bingeWatching();bingeBtn.parentElement.remove()}
+            bingeBtn.onclick = () => { bingeWatching(); bingeBtn.parentElement.remove() }
             bingeBtn.innerText = "Binge Watching";
             bingeBtn.style = "margin-left: 1.5em;margin-top: 5px;";
-            showInfo("This is not the next Episode!","Your last watched Episode is EP" + res.lastEpisode,[bingeBtn]);
+            showInfo("This is not the next Episode!", "Your last watched Episode is EP" + res.lastEpisode, [bingeBtn]);
         }
     }
 
@@ -94,7 +94,7 @@ function recieveAnime(res) {
     }
 
     //Create the HTML ELements needed for User 
-    
+
     let mainList = createMainList(res);
 
     //Main Div for Anime List
@@ -165,7 +165,7 @@ function createMainList(res) {
     if (res.displayMode === false) {
         let ul = document.createElement("ul");
         ul.style = "margin-left:" + site.ulMarginLeft + "em;";
-    
+
         for (let elem of res.data) {
             let li = document.createElement("li");
             li.style = "cursor: pointer;";
@@ -180,15 +180,15 @@ function createMainList(res) {
         table.style = "margin-left:" + site.ulMarginLeft + "em;";
 
         let counter = 0;
-        let currTr = document.createElement("div");
+        let currTr = document.createElement("tr");
 
         for (let elem of res.data) {
-            if (counter % 5 == 0) {
+            if (counter % 5 == 0 && counter != 0) {
                 table.appendChild(currTr);
                 currTr = document.createElement("tr");
             }
             let td = document.createElement("td");
-            
+
             let para = document.createElement("p");
             para.innerText = elem.node.title;
 
@@ -196,9 +196,9 @@ function createMainList(res) {
             img.src = elem.node.main_picture.medium;
             img.alt = elem.node.title;
             img.style = "width:100%;max-width:200px";
-            
+
             let li = document.createElement("li");
-            li.style="visibility: hidden;";
+            li.style = "visibility: hidden;";
             li.value = elem.node.id;
 
             td.style = "cursor: pointer;border: 3px solid " + site.pageColor + "!important;padding:7px;margin:3px";
@@ -282,7 +282,7 @@ function finishedEpisode(force = false) {
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
-                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber,nextURL);
+                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber, nextURL);
                 }
             }
         );
@@ -295,20 +295,23 @@ function finishedLastEpisode(data) {
     div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
-    paragrah.style = "padding-left: 2em;font-size: larger;";
+    paragrah.style = "padding-left: 2em;font-size: x-large;";
     paragrah.innerText = "Rate Anime";
 
-    let ul = document.createElement("ul");
-    ul.style = "margin-left:" + site.ulMarginLeft + "em;";
+    let select = document.createElement("select");
+    select.style = "margin-left:2em;";
 
     for (let i = 0; i < 10; i++) {
-        let li = document.createElement("li");
-        li.style = "cursor: pointer;";
-        li.value = i + 1;
-        li.innerText = i + 1;
-        li.onclick = () => clickedLastEpLi(li);
-        ul.appendChild(li);
+        let opt = document.createElement("option");
+        opt.value = i + 1;
+        opt.innerText = i + 1;
+        select.appendChild(opt);
     }
+
+    let commitBtn = document.createElement("button");
+    commitBtn.onclick = () => { clickedLastEp(select.value); document.getElementById("MAL_UPDATER_DIV_2").remove();};
+    commitBtn.innerText = "Rate";
+    commitBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     let abortBtn = document.createElement("button");
     abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2").remove(); finishedEpisode(true); };
@@ -317,22 +320,23 @@ function finishedLastEpisode(data) {
 
     let pSequel = document.createElement("p");
     pSequel.innerText = data.next ? "Sequel: " + data.next : "No Sequel found";
-    pSequel.style = "margin-left: 1.5em;";
+    pSequel.style = "margin-left: 1.5em;margin-top: 1em;";
 
     div.appendChild(paragrah);
-    div.appendChild(ul);
+    div.appendChild(select);
+    div.appendChild(commitBtn);
     div.appendChild(pSequel);
     div.appendChild(abortBtn);
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
-function clickedLastEpLi(li) {
+function clickedLastEp(value) {
     chrome.runtime.sendMessage(
         {
             type: "SEND_ANIME_FINISHED",
             id: animeID,
             episode: episodeNumber,
-            rating: li.value,
+            rating: value,
             url: window.location.toString()
         },
         data => {
@@ -342,7 +346,7 @@ function clickedLastEpLi(li) {
     );
 }
 
-function updateEpisodeSuccess(success,nextURL) {
+function updateEpisodeSuccess(success, nextURL) {
 
     if (success)
         document.getElementById("MAL_UPDATER_BUTTON_1").remove();
@@ -365,18 +369,18 @@ function updateEpisodeSuccess(success,nextURL) {
 
     if (nextURL && success) {
         let nextBtn = document.createElement("button");
-        nextBtn.onclick = () => {window.open(nextURL,"_self")};
+        nextBtn.onclick = () => { window.open(nextURL, "_self") };
         nextBtn.innerText = "Next EP";
         nextBtn.style = "margin-left: 1.5em;margin-top: 5px;";
         div.appendChild(nextBtn);
     }
-    
+
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
 function bingeWatching() {
     chrome.runtime.sendMessage({
-        type:"BINGE_WATCHING",
+        type: "BINGE_WATCHING",
         id: animeID
     });
 }
@@ -432,7 +436,7 @@ window.onload = function () {
 };
 
 //Shows Infotext in middle of Screen as Div
-function showInfo(header,text,buttons = []) {
+function showInfo(header, text, buttons = []) {
     let div = document.createElement("div");
     div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
@@ -445,14 +449,14 @@ function showInfo(header,text,buttons = []) {
     pText.innerText = text;
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { div.remove()};
+    abortBtn.onclick = () => { div.remove() };
     abortBtn.innerText = "OK";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     div.appendChild(pHeader);
     div.appendChild(pText);
     div.appendChild(abortBtn);
-    for(let btn of buttons) {
+    for (let btn of buttons) {
         div.appendChild(btn);
     }
     document.getElementsByTagName("body")[0].appendChild(div);

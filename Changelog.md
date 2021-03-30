@@ -1,4 +1,9 @@
-3.5.9:
+3.5.10:
+    -Optimized new Anime Pick Window
+    -Changed Anime Rate Window to Select Tag
+    -Fixed Error not being able to mark Anime as completed
+
+3.5.9: 21.03.2021
     -Fixed Finishing Anime not removing Bookmark
     -Added Force Remove DRP Button to Settings
     -Anime Pick Window now shows Images
