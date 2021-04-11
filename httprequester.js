@@ -11,6 +11,7 @@ var usertoken = {
 };
 var client;
 var sites = {};
+var animeCache;
 var bookmarkID;
 var active;
 var checkLastEpisodeBool;
@@ -55,7 +56,7 @@ chrome.runtime.onMessage.addListener(
 
 function init() {
     //Init with callbacks for right order
-    initSecret(() => { initSites(() => { initSettings(() => { }) }) });
+    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
 }
 
 //#region Authentification
@@ -158,7 +159,6 @@ function getNewAuthCode() {
 }
 
 function randomString() {
-    //return "NklUDX_CzS8qrMGWaDzgKs6VqrinuVFHa0xnpWPDy7_fggtM6kAar4jnTwOgzK7nPYfE9n60rsY4fhDExWzr5bf7sEvMMmSXcT2hWkCstFGIJKoaimoq5GvAEQD8NZ8g";
     return generateId((Math.random() * 85) + 43);
 }
 
@@ -173,7 +173,6 @@ function generateId(len) {
 }
 
 function getStateID() {
-    //return "RequestID69420";
     return "RequestID" + parseFloat(Math.random().toString()).toFixed(10);
 }
 
@@ -223,27 +222,25 @@ function getAnime(req, callb, nTry = 0) {
         callb({ inactive: true });
     }
     nTry++;
-    chrome.storage.local.get([req.site], function (result) {
 
-        //Try to get name from cache
-        if (nTry == 1 && result != {} && result[req.site] != undefined) {
-            cache = result[req.site];
+    let cached = nTry == 1 ? getCache(req.site, req.name) : undefined;
 
-            if (cache[req.name]) {
-                console.log("Cached: " + req.name);
-                checkLastEpisode(cache[req.name], req.episode, (lastWatched, episode) => {
-                    callb({
-                        cache: cache[req.name],
-                        lastWatched: lastWatched,
-                        lastEpisode: episode
-                    });
-                })
+    if (cached !== undefined) {
 
-                return true;
-            }
-        }
+        console.log("Cached: " + req.name);
+        checkLastEpisode(cached.meta.id, req.episode, (lastWatched, episode) => {
+            callb({
+                cache: cached.meta.title,
+                lastWatched: lastWatched,
+                lastEpisode: episode
+            });
+        })
 
-        //Cut string else API will throw error
+        return true;
+
+    } else {
+
+        //API max charNumber is 64
         if (req.name.length > 64)
             req.name = req.name.substring(0, 64);
 
@@ -271,8 +268,8 @@ function getAnime(req, callb, nTry = 0) {
                     });
                 }
             });
-    });
-    return true;
+        return true;
+    }
 }
 
 function checkLastEpisode(id, episode, callb) {
@@ -333,29 +330,32 @@ function finishedEpisode(req, callb) {
             });
         return true;
     } else {
-        getAnimeDetails(req.id, res => {
-            //req.force is if last episode isnt actually last episode
-            if (res.num_episodes == req.episode && req.force == false) {
-                callb({ last: true, next: getSequel(res.related_anime) });
-            } else {
-                fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": "Bearer " + usertoken.access,
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: 'status=watching&num_watched_episodes=' + req.episode
-                })
-                    .then(response => {
-                        response.json().then(responseJSON => {
-                            if (req.episode == responseJSON.num_episodes_watched) {
-                                setBookmark(req.id, req.url, req.nextURL);
-                            }
-                            callb(responseJSON)
-                        });
+        let anime = getCacheById(req.id);
+
+        if (anime === undefined) {
+            callb({ num_episodes_watched: -1 });
+        }
+
+        if (anime.meta.num_episodes == req.episode && req.force == false) {
+            callb({ last: true, next: getSequel(anime.meta.related_anime) });
+        } else {
+            fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer " + usertoken.access,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: 'status=watching&num_watched_episodes=' + req.episode
+            })
+                .then(response => {
+                    response.json().then(responseJSON => {
+                        if (req.episode == responseJSON.num_episodes_watched) {
+                            setBookmark(req.id, req.url, req.nextURL);
+                        }
+                        callb(responseJSON)
                     });
-            }
-        })
+                });
+        }
         return true;
     }
 }
@@ -367,8 +367,8 @@ function getDisplayMode(callb) {
             callb(result["MAL_Settings_DisplayMode"]);
             return;
         }
-        chrome.storage.local.set({ ["MAL_Settings_DisplayMode"]: false }, function () { });
-        callb(false);
+        chrome.storage.local.set({ ["MAL_Settings_DisplayMode"]: true }, function () { });
+        callb(true);
     });
 }
 
@@ -397,31 +397,48 @@ function getSequel(related) {
 }
 
 function setCache(req) {
-    //Save names in storage
-    chrome.storage.local.get([req.site], function (result) {
+    if (animeCache[req.id] === undefined) {
+        getAnimeDetails(req.id, (json) => {
 
-        let cache = {};
+            json["id"] = req.id;
 
-        if (result != {} && result[req.site] != undefined) {
-            cache = result[req.site];
-        }
-        cache[req.name] = req.id;
-
-        chrome.storage.local.set({ [req.site]: cache }, function () { });
-    });
+            animeCache[req.id] = {
+                meta: json,
+                [req.site]: req.name
+            };
+            console.log(animeCache);
+            syncCache();
+        })
+    } else {
+        animeCache[req.id][req.site] = req.name;
+        syncCache();
+    }
     return true;
 }
 
-function deleteCache() {
-    chrome.storage.local.get(null, function (items) {
-        for (let key of Object.keys(items)) {
-            if (key.startsWith("MAL_"))
-                continue;
+function getCache(site, name) {
 
-            chrome.storage.local.remove(key, () => { });
+    for (let elem in animeCache) {
+        if (animeCache[elem][site] === name) {
+            return animeCache[elem];
         }
-    });
+    }
+    return undefined;
+}
+
+function getCacheById(id) {
+    return animeCache[id];
+}
+
+function deleteCache() {
+    animeCache = {};
+    syncCache();
     return true;
+}
+
+function syncCache(callb = () => { }) {
+    //Save to local Storage
+    chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () { callb() });
 }
 
 //#endregion
@@ -430,7 +447,8 @@ function deleteCache() {
 
 function setBookmark(animeID, oldURL, nextURL) {
 
-    let name = undefined;
+    let anime = getCacheById(animeID);
+    let name = anime === undefined ? undefined : anime.meta.title;
     //remove old bookmark
     if (bookmarkID)
         getBookmark(bookmarkID, res => {
@@ -486,12 +504,24 @@ function addBookmark(name, url) {
 }
 
 function createBookmarkFolder(name) {
-    chrome.bookmarks.create({
-        'title': name,
-        'parentId': "1"
-    }, bookmark => {
-        bookmarkID = bookmark.id;
-        chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+    chrome.bookmarks.search(name, (result) => {
+
+        for (let bookmark of result) {
+            if (bookmark.title === name && bookmark.url == undefined) {
+                bookmarkID = bookmark.id;
+                chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+                return;
+            }
+        }
+
+        chrome.bookmarks.create({
+            'title': name,
+            'parentId': "1"
+        }, bookmark => {
+            bookmarkID = bookmark.id;
+            chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+        });
+        return;
     });
 }
 
@@ -597,52 +627,65 @@ function fileExists(storageRootEntry, fileName, callback) {
 
 function initSettings(callb) {
     function setting1(callb) {
-        try {
-            chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
-                if (res.MAL_Settings_Bookmarks != "") {
-                    initBookmarkFolder(res.MAL_Settings_Bookmarks);
-                }
-                callb();
-            });
-
-        } catch (ex) {
-            chrome.storage.local.set({ "MAL_Settings_Bookmarks": "Anime" }, function () {
-                initBookmarkFolder("Anime");
-                callb();
-            });
-        }
+        chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
+            if (res.MAL_Settings_Bookmarks != "" && res.MAL_Settings_Bookmarks != undefined) {
+                initBookmarkFolder(res.MAL_Settings_Bookmarks);
+            }
+            callb();
+        });
     }
     function setting2(callb) {
-        try {
-            chrome.storage.local.get("MAL_Settings_Active", function (res) {
-                if (res.MAL_Settings_Active == true || res.MAL_Settings_Active == false) {
-                    active = res.MAL_Settings_Active;
-                }
-                callb();
-            });
-        } catch (ex) {
-            chrome.storage.local.set({ "MAL_Settings_Active": true }, function (res) {
+        chrome.storage.local.get("MAL_Settings_Active", function (res) {
+            if (res.MAL_Settings_Active != "" && res.MAL_Settings_Active != undefined) {
+                active = res.MAL_Settings_Active;
+            } else {
                 active = true;
-                callb();
-            });
-        }
+            }
+            callb();
+        });
     }
     function setting3(callb) {
-        try {
-            chrome.storage.local.get("MAL_Settings_DiscordActive", function (_) {
-                callb();
-            });
-        } catch (ex) {
-            chrome.storage.local.set({ "MAL_Settings_DiscordActive": false }, function (res) {
-                callb();
-            });
-        }
+        chrome.storage.local.get("MAL_Settings_DiscordActive", function (res) {
+            if (res.MAL_Settings_DiscordActive == "" && res.MAL_Settings_DiscordActive == undefined) {
+                chrome.storage.local.set({ "MAL_Settings_DiscordActive": false }, function (res) {
+                    callb();
+                });
+                return;
+            }
+            callb();
+        });
+    }
+    function setting4(callb) {
+        chrome.storage.local.get("MAL_Settings_CheckLastEpisode", function (res) {
+            if (res.MAL_Settings_CheckLastEpisode == "" && res.MAL_Settings_CheckLastEpisode == undefined) {
+                chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": true }, function (res) {
+                    callb();
+                });
+                return;
+            }
+            callb();
+        });
+    }
+    function setting5(callb) {
+        chrome.storage.local.get("MAL_Settings_DisplayMode", function (res) {
+            if (res.MAL_Settings_DisplayMode == "" && res.MAL_Settings_DisplayMode == undefined) {
+                chrome.storage.local.set({ "MAL_Settings_DisplayMode": true }, function (res) {
+                    callb();
+                });
+                return;
+            }
+            callb();
+        });
     }
 
     setting1(() => {
         setting2(() => {
             setting3(() => {
-                callb();
+                setting4(() => {
+                    setting5(() => {
+                        callb();
+                    })
+                })
             })
         })
     });
@@ -650,18 +693,30 @@ function initSettings(callb) {
 
 function initBookmarkFolder(folderName) {
 
-    chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
-        if (result == {}) {
-            createBookmarkFolder(folderName);
-        } else {
-            getBookmark(result.MAL_Bookmark_ID, res => {
-                if (res != undefined) {
-                    bookmarkID = res.id;
-                } else {
-                    createBookmarkFolder(folderName);
-                }
-            });
-        }
+    if (folderName !== undefined && folderName !== "")
+        chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
+            if (result == {}) {
+                createBookmarkFolder(folderName);
+            } else {
+                getBookmark(result.MAL_Bookmark_ID, res => {
+                    if (res != undefined) {
+                        bookmarkID = res.id;
+                    } else {
+                        createBookmarkFolder(folderName);
+                    }
+                });
+            }
+        });
+}
+
+function initCache(callb) {
+    chrome.storage.local.get("MAL_AnimeCache", function (result) {
+        if (result)
+            animeCache = result["MAL_AnimeCache"] ?? {};
+        else
+            animeCache = {};
+
+        callb();
     });
 }
 

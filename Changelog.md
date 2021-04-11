@@ -1,3 +1,8 @@
+4.0.0: 11.04.2021
+    -Reworked Cache to make less API-Calls
+    -Fixed Issues when initalizing Settings
+    -Can now use existing Bookmark Folders
+
 3.5.10: 30.03.2021
     -Optimized new Anime Pick Window
     -Changed Anime Rate Window to Select Tag

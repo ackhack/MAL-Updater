@@ -31,25 +31,25 @@ function init() {
 
 function getActiveState(callb) {
     chrome.storage.local.get("MAL_Settings_Active", res => {
-        if (res.MAL_Settings_Active !== "")
+        if (res.MAL_Settings_Active !== "" && res.MAL_Settings_Active !== undefined)
             callb(res.MAL_Settings_Active);
         else
-            callb(false);
+            callb(true);
     });
 }
 
 function getBookmarkFolderName(callb) {
     chrome.storage.local.get("MAL_Settings_Bookmarks", res => {
-        if (res.MAL_Settings_Bookmarks !== "")
+        if (res.MAL_Settings_Bookmarks !== "" && res.MAL_Settings_Bookmarks !== undefined)
             callb(res.MAL_Settings_Bookmarks);
         else
-            callb("Anime");
+            callb("");
     });
 }
 
 function getActiveDiscordState(callb) {
     chrome.storage.local.get("MAL_Settings_DiscordActive", res => {
-        if (res.MAL_Settings_DiscordActive !== "")
+        if (res.MAL_Settings_DiscordActive !== "" && res.MAL_Settings_DiscordActive !== undefined)
             callb(res.MAL_Settings_DiscordActive);
         else
             callb(false);
@@ -58,7 +58,7 @@ function getActiveDiscordState(callb) {
 
 function getCheckLastEpisode(callb) {
     chrome.storage.local.get("MAL_Settings_CheckLastEpisode", res => {
-        if (res.MAL_Settings_CheckLastEpisode !== "")
+        if (res.MAL_Settings_CheckLastEpisode !== "" && res.MAL_Settings_CheckLastEpisode !== undefined)
             callb(res.MAL_Settings_CheckLastEpisode);
         else
             callb(true);
@@ -67,10 +67,10 @@ function getCheckLastEpisode(callb) {
 
 function getDisplayMode(callb) {
     chrome.storage.local.get("MAL_Settings_DisplayMode", res => {
-        if (res.MAL_Settings_DisplayMode !== "")
+        if (res.MAL_Settings_DisplayMode !== "" && res.MAL_Settings_DisplayMode !== undefined)
             callb(res.MAL_Settings_DisplayMode);
         else
-            callb(false);
+            callb(true);
     });
 }
 

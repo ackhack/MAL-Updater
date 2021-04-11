@@ -309,7 +309,7 @@ function finishedLastEpisode(data) {
     }
 
     let commitBtn = document.createElement("button");
-    commitBtn.onclick = () => { clickedLastEp(select.value); document.getElementById("MAL_UPDATER_DIV_2").remove();};
+    commitBtn.onclick = () => { clickedLastEp(select.value); document.getElementById("MAL_UPDATER_DIV_2").remove(); };
     commitBtn.innerText = "Rate";
     commitBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
