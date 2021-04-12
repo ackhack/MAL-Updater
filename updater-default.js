@@ -122,11 +122,15 @@ function recieveAnime(res) {
 
     let tbBtn = document.createElement("button");
     tbBtn.onclick = () => {
-        animeID = document.getElementById("MAL_UPDATER_INPUT_1").value;
-        if (animeID != null && animeID != undefined && animeID != "") {
+        let id = parseInt(document.getElementById("MAL_UPDATER_INPUT_1").value);
+
+        if (id !== undefined && id !== NaN) {
             alert("Inserted UserInput, cant guarantee it works");
+            animeID = id;
             afterAnimeID();
             document.getElementById("MAL_UPDATER_DIV_1").remove();
+        } else {
+            alert("Could not parse Number, please retry");
         }
     };
     tbBtn.innerText = "Check ID";

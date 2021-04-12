@@ -334,6 +334,7 @@ function finishedEpisode(req, callb) {
 
         if (anime === undefined) {
             callb({ num_episodes_watched: -1 });
+            return;
         }
 
         if (anime.meta.num_episodes == req.episode && req.force == false) {

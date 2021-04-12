@@ -1,3 +1,6 @@
+4.0.1: 12.04.2021
+    -Manually inputting the AnimeID works again
+
 4.0.0: 11.04.2021
     -Reworked Cache to make less API-Calls
     -Fixed Issues when initalizing Settings
