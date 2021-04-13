@@ -3,6 +3,7 @@ var episodeNumber;
 var animeID;
 var site;
 var finished = false;
+var activeAPICalls = new Set();
 
 //#region Init
 
@@ -51,6 +52,7 @@ function parseURL(url) {
 }
 
 function getAnime() {
+    apiCallSent("GET_ANIME");
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
@@ -58,7 +60,10 @@ function getAnime() {
             name: animeName,
             episode: episodeNumber
         },
-        data => recieveAnime(data)
+        data => {
+            apiCallRecieved("GET_ANIME");
+            recieveAnime(data);
+        }
     );
 }
 
@@ -272,6 +277,7 @@ function finishedEpisode(force = false) {
     finished = true;
 
     new Function("callb", site.nextBookmark)(nextURL => {
+        apiCallSent("SEND_ANIME_FINISHED");
         chrome.runtime.sendMessage(
             {
                 type: "SEND_ANIME_FINISHED",
@@ -282,6 +288,7 @@ function finishedEpisode(force = false) {
                 force: force
             },
             data => {
+                apiCallRecieved("SEND_ANIME_FINISHED");
                 sendDiscordPresence(false);
                 if (data.last) {
                     finishedLastEpisode(data);
@@ -335,6 +342,7 @@ function finishedLastEpisode(data) {
 }
 
 function clickedLastEp(value) {
+    apiCallSent("SEND_ANIME_FINISHED");
     chrome.runtime.sendMessage(
         {
             type: "SEND_ANIME_FINISHED",
@@ -344,6 +352,7 @@ function clickedLastEp(value) {
             url: window.location.toString()
         },
         data => {
+            apiCallRecieved("SEND_ANIME_FINISHED");
             updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
             document.getElementById("MAL_UPDATER_DIV_2").remove();
         }
@@ -469,4 +478,35 @@ function showInfo(header, text, buttons = []) {
 
 function updateStatus(text) {
     console.log(text);
+}
+
+function apiCallSent(name) {
+    activeAPICalls.add(name);
+    setTimeout(()=> {
+        activeAPICalls.delete(name);
+        showDelayMessage();
+    },5_000);
+}
+
+function apiCallRecieved(name) {
+    if (activeAPICalls.has(name)) {
+        activeAPICalls.delete(name);
+        removeDelayMessage();
+    }
+}
+
+function showDelayMessage() {
+    if (document.getElementById("MAL_UPDATER_BUTTON_2") === undefined) {
+        let button = document.createElement("button");
+        button.id = "MAL_UPDATER_BUTTON_2";
+        button.innerText = "OK";
+        button.style = "margin-left: 1.5em;margin-top: 5px;";
+        button.click = () => {removeDelayMessage()};
+
+        showInfo("MAL","The MAL API appears to be quiet slow at the moment",[button]);
+    }
+}
+
+function removeDelayMessage() {
+    document.getElementById("MAL_UPDATER_BUTTON_2")?.parentElement.remove();
 }

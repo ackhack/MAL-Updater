@@ -1,3 +1,6 @@
+4.1.0: 13.04.2021
+    -Added MEssage to warn the USer about slow API
+
 4.0.1: 12.04.2021
     -Manually inputting the AnimeID works again
 
