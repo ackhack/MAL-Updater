@@ -168,7 +168,7 @@ function setDiscordPresence(obj) {
         updateQueue = obj;
         setTimeout(() => {
             lastUpdate = Date.now();
-            discordPort.postMessage(updateQueue);
+            discordPort?.postMessage(updateQueue);
             updateQueue = undefined;
         }, updateCycleTime - (time - lastUpdate));
     }

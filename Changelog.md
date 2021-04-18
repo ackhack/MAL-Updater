@@ -1,5 +1,8 @@
+4.1.1: 18.04.2021
+    -Fixed Error that Cache not returning ID
+
 4.1.0: 13.04.2021
-    -Added MEssage to warn the USer about slow API
+    -Added Message to warn the User about slow API
 
 4.0.1: 12.04.2021
     -Manually inputting the AnimeID works again

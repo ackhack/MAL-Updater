@@ -230,7 +230,8 @@ function getAnime(req, callb, nTry = 0) {
         console.log("Cached: " + req.name);
         checkLastEpisode(cached.meta.id, req.episode, (lastWatched, episode) => {
             callb({
-                cache: cached.meta.title,
+                cache: cached.meta.id,
+                name: cached.meta.title,
                 lastWatched: lastWatched,
                 lastEpisode: episode
             });
@@ -330,7 +331,10 @@ function finishedEpisode(req, callb) {
             });
         return true;
     } else {
+        console.log(req);
         let anime = getCacheById(req.id);
+
+        console.log(anime);
 
         if (anime === undefined) {
             callb({ num_episodes_watched: -1 });
