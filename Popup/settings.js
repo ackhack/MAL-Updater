@@ -9,6 +9,7 @@ function init() {
     document.getElementById("btnUnauthorize").onclick = unauthorize;
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
     document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
+    document.getElementById("pVersion").onclick = versionClicked;
 
     getActiveState(active => {
         document.getElementById("cbActive").checked = active;
@@ -25,6 +26,7 @@ function init() {
     getDisplayMode(active => {
         document.getElementById("cbDisplayMode").checked = active;
     })
+    getCurrentVersion();
 }
 
 //#region Init
@@ -72,6 +74,40 @@ function getDisplayMode(callb) {
         else
             callb(true);
     });
+}
+
+function getCurrentVersion() {
+
+    function hasUpdate(oldVersion, newVersion) {
+        let oldSplit = oldVersion.split(".");
+        let newSplit = newVersion.split(".");
+
+        for (let i = 0; i < oldSplit.length;i++) {
+            if (oldSplit[i] < newSplit[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    fetch(chrome.runtime.getURL('manifest.json'))
+        .then((response) => {
+            response.json().then((json) => {
+                document.getElementById("pVersion").innerText = "Version: " + json.version;
+            })
+        }).catch(err => console.log(err));
+
+    fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/master/manifest.json")
+        .then((response) => {
+            response.json().then((json) => {
+                if (json.version) {
+                    let p = document.getElementById("pVersion");
+                    if (hasUpdate(p.innerText.substring(7), json.version)) {
+                        p.innerText = "New Version Available: " + json.version;
+                    }
+                }
+            })
+        }).catch(err => console.log(err));
 }
 
 //#endregion
@@ -158,6 +194,10 @@ function changeCheckLastEpisode(event) {
 function changeDisplayMode(event) {
     chrome.storage.local.set({ "MAL_Settings_DisplayMode": event.target.checked }, function (res) {
     });
+}
+
+function versionClicked() {
+    window.open("https://github.com/ackhack/MAL-Updater");
 }
 
 //#endregion

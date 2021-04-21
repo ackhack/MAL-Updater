@@ -1,8 +1,12 @@
+4.1.2: 21.04.2021
+    -Fixed Changelog
+    -Added VersionChecker to SettingsPage
+
 4.1.1: 18.04.2021
-    -Fixed Error that Cache not returning ID
+    -Fixed Error that Cache is not returning ID
 
 4.1.0: 13.04.2021
-    -Added Message to warn the User about slow API
+    -Added Message to notify the User about slow API
 
 4.0.1: 12.04.2021
     -Manually inputting the AnimeID works again
@@ -87,7 +91,7 @@
     -Added some logging to httprequester
     -Fixed Error when name is longer than 64 chars
 
-2.2.1: 29.1.2021
+2.2.1: 29.01.2021
     -Fixed User Input ID
 
 2.2.0: 28.01.2021
