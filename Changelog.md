@@ -1,3 +1,6 @@
+4.1.3: 21.04.2021
+    -Extension now notifies the User when an Update is available
+
 4.1.2: 21.04.2021
     -Fixed Changelog
     -Added VersionChecker to SettingsPage

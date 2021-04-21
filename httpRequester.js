@@ -48,6 +48,8 @@ chrome.runtime.onMessage.addListener(
                 return changeCheckLastEpisode(request.value);
             case "BINGE_WATCHING":
                 return addBinge(request.id);
+            case "GET_NEWEST_VERSION":
+                return checkUpdate(onSuccess);
             default:
                 return false;
         }
@@ -56,6 +58,11 @@ chrome.runtime.onMessage.addListener(
 
 function init() {
     //Init with callbacks for right order
+    checkUpdate(result => {
+        if (result.update) {
+            chrome.browserAction.setBadgeText({text: "1"});
+        }
+    });
     initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
 }
 
@@ -769,6 +776,40 @@ function addBinge(id) {
 function removeBinge(id) {
     if (binge.has(id))
         binge.delete(id);
+    return true;
+}
+
+function checkUpdate(callb) {
+    function hasUpdate(oldVersion, newVersion) {
+        let oldSplit = oldVersion.split(".");
+        let newSplit = newVersion.split(".");
+
+        for (let i = 0; i < oldSplit.length; i++) {
+            if (oldSplit[i] < newSplit[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    fetch(chrome.runtime.getURL('manifest.json'))
+        .then((response) => {
+            response.json().then((json) => {
+                let oldVersion = json.version;
+                fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/master/manifest.json")
+                    .then((response) => {
+                        response.json().then((json) => {
+                            if (json.version) {
+                                callb({
+                                    update: hasUpdate(oldVersion, json.version),
+                                    version: json.version
+                                });
+                            }
+                        })
+                    })
+            })
+        }).catch(err => console.log(err));
+    
     return true;
 }
 

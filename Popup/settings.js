@@ -1,6 +1,8 @@
 init();
 function init() {
 
+    resetNotificationCounter();
+
     document.getElementById("btnVal").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
@@ -26,10 +28,16 @@ function init() {
     getDisplayMode(active => {
         document.getElementById("cbDisplayMode").checked = active;
     })
-    getCurrentVersion();
+    getCurrentVersion(versionText => {
+        document.getElementById("pVersion").innerText = versionText;
+    });
 }
 
 //#region Init
+
+function resetNotificationCounter() {
+    chrome.browserAction.setBadgeText({text: ""});
+}
 
 function getActiveState(callb) {
     chrome.storage.local.get("MAL_Settings_Active", res => {
@@ -76,38 +84,20 @@ function getDisplayMode(callb) {
     });
 }
 
-function getCurrentVersion() {
+function getCurrentVersion(callb) {
 
-    function hasUpdate(oldVersion, newVersion) {
-        let oldSplit = oldVersion.split(".");
-        let newSplit = newVersion.split(".");
-
-        for (let i = 0; i < oldSplit.length;i++) {
-            if (oldSplit[i] < newSplit[i]) {
-                return true;
+    chrome.runtime.sendMessage(
+        {
+            type: "GET_NEWEST_VERSION"
+        },
+        (result) => {
+            if (result.update) {
+                callb("New Version Available: " + result.version);
+            } else {
+                callb("Version: " + result.version);
             }
         }
-        return false;
-    }
-
-    fetch(chrome.runtime.getURL('manifest.json'))
-        .then((response) => {
-            response.json().then((json) => {
-                document.getElementById("pVersion").innerText = "Version: " + json.version;
-            })
-        }).catch(err => console.log(err));
-
-    fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/master/manifest.json")
-        .then((response) => {
-            response.json().then((json) => {
-                if (json.version) {
-                    let p = document.getElementById("pVersion");
-                    if (hasUpdate(p.innerText.substring(7), json.version)) {
-                        p.innerText = "New Version Available: " + json.version;
-                    }
-                }
-            })
-        }).catch(err => console.log(err));
+    );
 }
 
 //#endregion
