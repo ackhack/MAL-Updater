@@ -1,3 +1,7 @@
+4.1.4: 25.04.2021
+    -Improved Authentification-Site
+    -Reactivating Updating now gets Usertoken when necessary
+
 4.1.3: 21.04.2021
     -Extension now notifies the User when an Update is available
 

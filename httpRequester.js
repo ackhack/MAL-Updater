@@ -753,6 +753,9 @@ function validateSite(req, callb) {
 
 function changeActiveState(value) {
     active = value;
+    if (active && usertoken === undefined) {
+        getAuthCode();
+    }
     return true;
 }
 
