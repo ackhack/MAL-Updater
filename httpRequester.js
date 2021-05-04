@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(
             case "CLOSE_TAB":
                 return closeTab(sender);
             case "CACHE_ANIME":
-                return setCache(request);
+                return setCache(request,onSuccess);
             case "VALIDATE_SITE":
                 return validateSite(request, onSuccess);
             case "CHANGED_BOOKMARK":
@@ -408,7 +408,7 @@ function getSequel(related) {
     return undefined;
 }
 
-function setCache(req) {
+function setCache(req,callb = () => {}) {
     if (animeCache[req.id] === undefined) {
         getAnimeDetails(req.id, (json) => {
 
@@ -420,10 +420,12 @@ function setCache(req) {
             };
             console.log(animeCache);
             syncCache();
+            callb(animeCache[req.id]);
         })
     } else {
         animeCache[req.id][req.site] = req.name;
         syncCache();
+        callb(animeCache[req.id]);
     }
     return true;
 }

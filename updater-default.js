@@ -1,6 +1,7 @@
 var animeName;
 var episodeNumber;
 var animeID;
+var realname;
 var site;
 var finished = false;
 var activeAPICalls = new Set();
@@ -94,6 +95,7 @@ function recieveAnime(res) {
     //If id was recieved from cache, dont create Elements
     if (res.cache) {
         animeID = res.cache;
+        realname = res.name;
         waitPageloadCache();
         return;
     }
@@ -226,7 +228,7 @@ function createMainList(res) {
 }
 
 function afterAnimeID(cache = true) {
-    if (cache)
+    if (cache) {
         chrome.runtime.sendMessage(
             {
                 type: "CACHE_ANIME",
@@ -234,10 +236,16 @@ function afterAnimeID(cache = true) {
                 name: animeName,
                 id: animeID
             },
-            () => { }
+            (res) => {
+                realname = res.meta.title;
+                sendDiscordPresence(true);
+                insertButton();
+            }
         )
+    } else {
     sendDiscordPresence(true);
-    insertButton();
+    insertButton();        
+    }
 }
 
 function insertButton() {
@@ -408,7 +416,7 @@ function sendDiscordPresence(active) {
             {
                 type: "DISCORD_PRESENCE",
                 active: active,
-                name: animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                name: realname ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
                 episode: episodeNumber
             }
         );
@@ -416,7 +424,7 @@ function sendDiscordPresence(active) {
 }
 
 //Shows Discord Presence when window gets focus
-window.onfocus = () => {
+window.onfocus = (ev) => {
     if (animeName != undefined && episodeNumber != undefined && !finished)
         sendDiscordPresence(true);
 }
@@ -482,10 +490,10 @@ function updateStatus(text) {
 
 function apiCallSent(name) {
     activeAPICalls.add(name);
-    setTimeout(()=> {
+    setTimeout(() => {
         activeAPICalls.delete(name);
         showDelayMessage();
-    },5_000);
+    }, 5_000);
 }
 
 function apiCallRecieved(name) {
@@ -501,9 +509,9 @@ function showDelayMessage() {
         button.id = "MAL_UPDATER_BUTTON_2";
         button.innerText = "OK";
         button.style = "margin-left: 1.5em;margin-top: 5px;";
-        button.click = () => {removeDelayMessage()};
+        button.click = () => { removeDelayMessage() };
 
-        showInfo("MAL","The MAL API appears to be quiet slow at the moment",[button]);
+        showInfo("MAL", "The MAL API appears to be quiet slow at the moment", [button]);
     }
 }
 
