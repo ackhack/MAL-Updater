@@ -237,8 +237,8 @@ function getAnime(req, callb, nTry = 0) {
         console.log("Cached: " + req.name);
         checkLastEpisode(cached.meta.id, req.episode, (lastWatched, episode) => {
             callb({
-                cache: cached.meta.id,
-                name: cached.meta.title,
+                meta: cached.meta,
+                cache: true,
                 lastWatched: lastWatched,
                 lastEpisode: episode
             });
@@ -252,7 +252,7 @@ function getAnime(req, callb, nTry = 0) {
         if (req.name.length > 64)
             req.name = req.name.substring(0, 64);
 
-        fetch("https://api.myanimelist.net/v2/anime?limit=10&q=" + req.name, {
+        fetch("https://api.myanimelist.net/v2/anime?fields=alternative_titles?limit=10&q=" + req.name, {
             headers: {
                 Authorization: "Bearer " + usertoken.access
             }
@@ -386,7 +386,7 @@ function getDisplayMode(callb) {
 
 function getAnimeDetails(id, callb) {
     //Gets the episode number of an anime
-    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime", {
+    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime,alternative_titles", {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + usertoken.access,

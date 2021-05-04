@@ -110,9 +110,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             name: "Anime",
                             streamurl: "",
                             details: request.name,
-                            state: request.episode,
-                            partycur: "",
-                            partymax: "",
+                            state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
+                            partycur: request.episode.toString() ?? "",
+                            partymax: request.maxEpisode.toString() ?? "",
                         });
                     } else {
                         if (recentName == request.name && recentEpisode == request.episode) {

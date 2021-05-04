@@ -1,7 +1,7 @@
 var animeName;
 var episodeNumber;
 var animeID;
-var realname;
+var metaData;
 var site;
 var finished = false;
 var activeAPICalls = new Set();
@@ -94,8 +94,8 @@ function recieveAnime(res) {
 
     //If id was recieved from cache, dont create Elements
     if (res.cache) {
-        animeID = res.cache;
-        realname = res.name;
+        animeID = res.meta.id;
+        metaData = res.meta;
         waitPageloadCache();
         return;
     }
@@ -201,7 +201,7 @@ function createMainList(res) {
             let td = document.createElement("td");
 
             let para = document.createElement("p");
-            para.innerText = elem.node.title;
+            para.innerText = elem.node.alternative_titles?.en ?? elem.node.title;
 
             let img = document.createElement("img");
             img.src = elem.node.main_picture.medium;
@@ -237,7 +237,7 @@ function afterAnimeID(cache = true) {
                 id: animeID
             },
             (res) => {
-                realname = res.meta.title;
+                metaData = res.meta;
                 sendDiscordPresence(true);
                 insertButton();
             }
@@ -411,13 +411,14 @@ function bingeWatching() {
 //#region Discord
 
 function sendDiscordPresence(active) {
-    if (animeName != undefined && episodeNumber != undefined) {
+    if (animeName != undefined && episodeNumber != undefined && metaData != undefined) {
         chrome.runtime.sendMessage(
             {
                 type: "DISCORD_PRESENCE",
                 active: active,
-                name: realname ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
-                episode: episodeNumber
+                name: metaData.alternative_titles?.en ?? metaData.title ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                episode: episodeNumber,
+                maxEpisode: metaData.num_episodes
             }
         );
     }
