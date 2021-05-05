@@ -142,7 +142,7 @@ function waitForLoad(callb, nTry = 0) {
     }
 
     nTry++;
-    if (nTry == 10)
+    if (nTry > 9)
         return;
 
     setTimeout(() => {

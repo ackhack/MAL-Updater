@@ -260,7 +260,7 @@ function getAnime(req, callb, nTry = 0) {
             .then(response => response.json())
             .then(responseJSON => {
                 if (responseJSON.error) {
-                    if (nTry == 10) {
+                    if (nTry > 9) {
                         callb({ error: "Couldn`t get Result from API:" + JSON.stringify(responseJSON) });
                     } else {
                         getAnime(req, callb, nTry);

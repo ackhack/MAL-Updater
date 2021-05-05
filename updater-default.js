@@ -24,7 +24,7 @@ chrome.runtime.sendMessage(
 function initSite(nTry = 0) {
 
     //Retrying because URL can change without Postback
-    if (nTry == 10)
+    if (nTry > 9)
         return;
     nTry++;
 
@@ -161,7 +161,7 @@ function clickedAnimeOption(li) {
 
 function waitPageloadCache(nTry = 0) {
     //Have to wait for Site to load so btnFinished can be placed
-    if (nTry == 10) {
+    if (nTry > 9) {
         alert("MAL Updater couldnt place the Button, stopping the extension for now");
     }
     nTry++;
@@ -201,7 +201,10 @@ function createMainList(res) {
             let td = document.createElement("td");
 
             let para = document.createElement("p");
-            para.innerText = elem.node.alternative_titles?.en ?? elem.node.title;
+            if (elem.node.alternative_titles?.en)
+                para.innerText = elem.node.alternative_titles.en;
+            else
+                para.innerText = elem.node.title;
 
             let img = document.createElement("img");
             img.src = elem.node.main_picture.medium;
@@ -243,8 +246,8 @@ function afterAnimeID(cache = true) {
             }
         )
     } else {
-    sendDiscordPresence(true);
-    insertButton();        
+        sendDiscordPresence(true);
+        insertButton();
     }
 }
 
@@ -416,7 +419,7 @@ function sendDiscordPresence(active) {
             {
                 type: "DISCORD_PRESENCE",
                 active: active,
-                name: metaData.alternative_titles?.en ?? metaData.title ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                name: getAnimeName() ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
                 episode: episodeNumber,
                 maxEpisode: metaData.num_episodes
             }
@@ -518,4 +521,13 @@ function showDelayMessage() {
 
 function removeDelayMessage() {
     document.getElementById("MAL_UPDATER_BUTTON_2")?.parentElement.remove();
+}
+
+function getAnimeName() {
+    if (metaData.alternative_titles) {
+        if (metaData.alternative_titles.en) {
+            return metaData.alternative_titles.en;
+        }
+    }
+    return metaData.title;
 }

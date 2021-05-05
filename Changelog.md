@@ -1,3 +1,6 @@
+4.1.6: 05.05.2021
+    -BugFixes
+
 4.1.5: 04.05.2021
     -DRP now shows Metaname instead of Sitename
     -English Title is preffered over Japanese Title
