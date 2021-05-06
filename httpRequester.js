@@ -14,6 +14,7 @@ var sites = {};
 var animeCache;
 var bookmarkID;
 var active;
+var bookmarkActive;
 var checkLastEpisodeBool;
 var binge = new Set();
 
@@ -33,13 +34,13 @@ chrome.runtime.onMessage.addListener(
             case "CLOSE_TAB":
                 return closeTab(sender);
             case "CACHE_ANIME":
-                return setCache(request,onSuccess);
+                return setCache(request, onSuccess);
             case "VALIDATE_SITE":
                 return validateSite(request, onSuccess);
             case "CHANGED_BOOKMARK":
-                return updateBookmarkFolder(request.folderName);
+                return updateBookmarkFolder(request);
             case "DELETE_CACHE":
-                return deleteCache();
+                return deleteCache(request.query, onSuccess);
             case "CHANGED_ACTIVE":
                 return changeActiveState(request.value);
             case "UNAUTHORIZE":
@@ -60,7 +61,7 @@ function init() {
     //Init with callbacks for right order
     checkUpdate(result => {
         if (result.update) {
-            chrome.browserAction.setBadgeText({text: "1"});
+            chrome.browserAction.setBadgeText({ text: "1" });
         }
     });
     initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
@@ -408,7 +409,7 @@ function getSequel(related) {
     return undefined;
 }
 
-function setCache(req,callb = () => {}) {
+function setCache(req, callb = () => { }) {
     if (animeCache[req.id] === undefined) {
         getAnimeDetails(req.id, (json) => {
 
@@ -444,10 +445,45 @@ function getCacheById(id) {
     return animeCache[id];
 }
 
-function deleteCache() {
-    animeCache = {};
-    syncCache();
-    return true;
+function deleteCache(query = {}, callb = () => { }) {
+    if (query.all) {
+        animeCache = {};
+        syncCache();
+        callb(true);
+        return true;
+    }
+
+    if (query.id) {
+        delete animeCache[id];
+        syncCache();
+        callb(true);
+        return true;
+    }
+
+    if (query.url) {
+        validateSite(query, (site) => {
+
+            if (site === undefined)
+                return;
+
+            let res = query.url.match(site.urlPattern);
+
+            if (res) {
+                for (let elem in animeCache) {
+                    if (animeCache[elem][site.siteName] === res[site.nameMatch]) {
+                        delete animeCache[elem][site.siteName];
+                        syncCache();
+                        callb(true);
+                        return;
+                    }
+                }
+            }
+
+        });
+        return true;
+    }
+    callb(false);
+    return false;
 }
 
 function syncCache(callb = () => { }) {
@@ -460,6 +496,10 @@ function syncCache(callb = () => { }) {
 //#region Bookmarks
 
 function setBookmark(animeID, oldURL, nextURL) {
+
+    if (!bookmarkActive) {
+        return;
+    }
 
     let anime = getCacheById(animeID);
     let name = anime === undefined ? undefined : anime.meta.title;
@@ -539,15 +579,19 @@ function createBookmarkFolder(name) {
     });
 }
 
-function updateBookmarkFolder(folderName) {
-    if (folderName == "") {
+function updateBookmarkFolder(req) {
+    if (req.active === true || req.active === false) {
+        bookmarkActive = req.active;
+        return true;
+    }
+    if (req.folderName == "") {
         return true;
     }
     getBookmark(bookmarkID, res => {
         if (res != undefined) {
-            chrome.bookmarks.update(bookmarkID, { title: folderName }, () => { });
+            chrome.bookmarks.update(bookmarkID, { title: req.folderName }, () => { });
         } else {
-            createBookmarkFolder(folderName);
+            createBookmarkFolder(req.folderName);
         }
     });
     return true;
@@ -691,13 +735,25 @@ function initSettings(callb) {
             callb();
         });
     }
+    function setting6(callb) {
+        chrome.storage.local.get("MAL_Settings_Bookmarks_Active", function (res) {
+            if (res.MAL_Settings_Bookmarks_Active != "" && res.MAL_Settings_Bookmarks_Active != undefined) {
+                bookmarkActive = res.MAL_Settings_Bookmarks_Active;
+            } else {
+                bookmarkActive = true;
+            }
+            callb();
+        });
+    }
 
     setting1(() => {
         setting2(() => {
             setting3(() => {
                 setting4(() => {
                     setting5(() => {
-                        callb();
+                        setting6(() => {
+                            callb();
+                        })
                     })
                 })
             })
@@ -790,6 +846,9 @@ function checkUpdate(callb) {
         let newSplit = newVersion.split(".");
 
         for (let i = 0; i < oldSplit.length; i++) {
+            if (oldSplit[i] > newSplit[i]) {
+                return false;
+            }
             if (oldSplit[i] < newSplit[i]) {
                 return true;
             }
@@ -807,14 +866,14 @@ function checkUpdate(callb) {
                             if (json.version) {
                                 callb({
                                     update: hasUpdate(oldVersion, json.version),
-                                    version: json.version
+                                    version: oldVersion
                                 });
                             }
                         })
                     })
             })
         }).catch(err => console.log(err));
-    
+
     return true;
 }
 

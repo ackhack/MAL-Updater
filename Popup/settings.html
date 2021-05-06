@@ -4,6 +4,7 @@
     body {
       background-color: rgb(33, 33, 33);
       color: white;
+      min-width: 150px;
     }
     .subDiv {
       padding: 10px;
@@ -12,57 +13,125 @@
     #pTitle {
       font-size: large;
     }
+    #btnBack {
+      margin-bottom: 5px;
+      border: 1px solid white;
+      color: inherit;
+      background: inherit;
+      display: none;
+    }
+    .settingDiv {
+      display: none;
+    }
+    .settingDiv * {
+      display: inherit;
+    }
+    #pVersion {
+      margin: 0;
+    }
+    .mainBtn {
+      border: none;
+      color: inherit;
+      background: inherit;
+      text-align: center;
+      width: -webkit-fill-available;
+    }
+    button:hover {
+      cursor: pointer;
+    }
+    input[type="button"] {
+      border: 1px solid white;
+      color: inherit;
+      background: inherit;
+      font-size: inherit;
+      width: -webkit-fill-available;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
     #btnVal {
       margin-top: 10px;
     }
     #tbBookmarks {
       margin-top: 5px;
     }
-    #pVersion {
-      margin: 0;
-    }
     #pVersion:hover {
       cursor: pointer;
+    }
+    #pVersion {
+      text-align: center;
+      width: -webkit-fill-available;
     }
   </style>
 </head>
 <body>
   <p id="pTitle">Settings</p>
+  <button id="btnBack">Back</button>
   <div id="divSettings">
-    <div id="divActiveToogle" class="subDiv">
-      <input type="checkbox" id="cbActive" />
-      <label for="cbActive">Update MAL</label>
+    <!-- Main Buttons-->
+    <div id="divGeneric" class="subDiv mainDiv">
+      <button id="btnGeneric" class="mainBtn">Generic</button>
     </div>
-    <div id="divBookmarks" class="subDiv">
-      <label id="lblBookmarks" for="tbBookmarks"
-        >Bookmarks Folder <br />(Empty=Deactivated)</label
-      >
-      <input id="tbBookmarks" type="text" placeholder="Foldername" />
-      <input id="btnVal" type="button" value="Save" />
+    <div id="divCache" class="subDiv mainDiv">
+      <button id="btnCache" class="mainBtn">Cache</button>
     </div>
-    <div id="divCacheDelete" class="subDiv">
-      <input type="button" id="btnCacheDelete" value="Delete Cache" />
+    <div id="divBookmark" class="subDiv mainDiv">
+      <button id="btnBookmark" class="mainBtn">Bookmark</button>
     </div>
-    <div id="divUnauthorize" class="subDiv">
-      <input type="button" id="btnUnauthorize" value="Unauthorize" />
+    <div id="divDiscord" class="subDiv mainDiv">
+      <button id="btnDiscord" class="mainBtn">Discord</button>
     </div>
-    <div id="divRemoveDiscord" class="subDiv">
-      <input type="button" id="btnRemoveDiscord" value="Remove DRP" />
-    </div>
-    <div id="divActiveDiscordToogle" class="subDiv">
-      <input type="checkbox" id="cbActiveDiscord" />
-      <label for="cbActiveDiscord">Discord Presence</label>
-    </div>
-    <div id="divCheckLastEpisode" class="subDiv">
-      <input type="checkbox" id="cbCheckLastEpisode" />
-      <label for="cbCheckLastEpisode">Check if concurrent Episode</label>
-    </div>
-    <div id="divDisplayMode" class="subDiv">
-      <input type="checkbox" id="cbDisplayMode" />
-      <label for="cbDisplayMode">Show Pictures in Anime Pick Window</label>
-    </div>
-    <div id="divVersion" class="subDiv">
+    <div id="divVersion" class="subDiv mainDiv ignored">
       <p id="pVersion">Loading...</p>
+    </div>
+    <!-- Settings-->
+    <div id="divGenericSettings" class="settingDiv">
+      <div id="divActiveToogle" class="subDiv">
+        <input type="checkbox" id="cbActive" />
+        <label for="cbActive">Active</label>
+      </div>
+      <div id="divCheckLastEpisode" class="subDiv">
+        <input type="checkbox" id="cbCheckLastEpisode" />
+        <label for="cbCheckLastEpisode">Check if concurrent Episode</label>
+      </div>
+      <div id="divDisplayMode" class="subDiv">
+        <input type="checkbox" id="cbDisplayMode" />
+        <label for="cbDisplayMode">Show Pictures in Anime Pick Window</label>
+      </div>
+      <div id="divUnauthorize" class="subDiv">
+        <input type="button" id="btnUnauthorize" value="Unauthorize" />
+      </div>
+    </div>
+
+    <div id="divCacheSettings" class="settingDiv">
+      <div id="divCacheDeleteAll" class="subDiv">
+        <input type="button" id="btnCacheDeleteAll" value="Delete full Cache" />
+      </div>
+      <div id="btnCacheDeleteThis" class="subDiv">
+        <input type="button" id="btnCacheDeleteThis" value="Delete active Cache"/>
+      </div>
+    </div>
+
+    <div id="divBookmarkSettings" class="settingDiv">
+      <div id="divBookmarksActive" class="subDiv">
+        <input type="checkbox" id="cbBookmarksActive" />
+        <label for="cbBookmarksActive">Active</label>
+      </div>
+      <div id="divBookmarksFolder" class="subDiv">
+        <label id="lblBookmarks" for="tbBookmarks">Bookmarks Folder</label>
+        <input id="tbBookmarks" type="text" placeholder="Foldername" />
+        <input id="btnBookmarkSave" type="button" value="Save" />
+      </div>
+    </div>
+
+    <div id="divDiscordSettings" class="settingDiv">
+      <div id="divActiveDiscordToogle" class="subDiv">
+        <input type="checkbox" id="cbActiveDiscord" />
+        <label for="cbActiveDiscord">Active</label>
+      </div>
+      <div id="divRemoveDiscord" class="subDiv">
+        <input type="button" id="btnRemoveDiscord" value="Remove DRP" />
+      </div>
     </div>
   </div>
   <script src="settings.js"></script>

@@ -38,7 +38,7 @@ function initSite(nTry = 0) {
 
 function parseURL(url) {
     //Get name and episode from URL
-    if (site == undefined)
+    if (site === undefined)
         return false;
 
     let res = url.match(site.urlPattern);
@@ -381,7 +381,7 @@ function updateEpisodeSuccess(success, nextURL) {
 
     let p = document.createElement("p");
     p.style = "margin-left:1.5em";
-    p.innerText = success ? "Successfully updated EpisodeNumber" : "An Error occured while updating the EpisodeNumber";
+    p.innerText = (success ? "Successfully updated EpisodeNumber" : "An Error occured while updating the EpisodeNumber") + "\n" + getAnimeName() + ": Episode " + episodeNumber;
 
     let abortBtn = document.createElement("button");
     abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3").remove() };
@@ -419,7 +419,7 @@ function sendDiscordPresence(active) {
             {
                 type: "DISCORD_PRESENCE",
                 active: active,
-                name: getAnimeName() ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1),
+                name: getAnimeName(),
                 episode: episodeNumber,
                 maxEpisode: metaData.num_episodes
             }
@@ -529,5 +529,5 @@ function getAnimeName() {
             return metaData.alternative_titles.en;
         }
     }
-    return metaData.title;
+    return metaData.title ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1);
 }

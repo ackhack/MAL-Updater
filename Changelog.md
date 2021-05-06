@@ -1,3 +1,8 @@
+4.2.0:
+    -Can now clear specific Cache in Debug
+    -Shows AnimeName in UpdateSuccesMessage
+    -Refractored Settings Page
+
 4.1.6: 05.05.2021
     -BugFixes
 

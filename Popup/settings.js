@@ -1,17 +1,29 @@
 init();
+
+//#region Init
+
 function init() {
-
     resetNotificationCounter();
+    initMenu();
+    initButtons();
+    initSettings();
+}
 
-    document.getElementById("btnVal").onclick = changeBookmarks;
+function initButtons() {
+    document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
     document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
-    document.getElementById("btnCacheDelete").onclick = deleteCache;
+    document.getElementById("btnCacheDeleteAll").onclick = _ => deleteCache({ all: true });
+    document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
     document.getElementById("btnUnauthorize").onclick = unauthorize;
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
     document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
+    document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("pVersion").onclick = versionClicked;
+}
+
+function initSettings() {
 
     getActiveState(active => {
         document.getElementById("cbActive").checked = active;
@@ -31,12 +43,21 @@ function init() {
     getCurrentVersion(versionText => {
         document.getElementById("pVersion").innerText = versionText;
     });
+    getBookmarkActive(active => {
+        document.getElementById("cbBookmarksActive").checked = active;
+    })
 }
 
-//#region Init
+function initMenu() {
+    Array.from(document.getElementsByClassName("mainBtn")).forEach(btn => {
+        if (!btn.className.includes("ignored"))
+            btn.onclick = (ev) => clickedButton(ev);
+    });
+    document.getElementById("btnBack").onclick = clickedBackButton;
+}
 
 function resetNotificationCounter() {
-    chrome.browserAction.setBadgeText({text: ""});
+    chrome.browserAction.setBadgeText({ text: "" });
 }
 
 function getActiveState(callb) {
@@ -54,6 +75,15 @@ function getBookmarkFolderName(callb) {
             callb(res.MAL_Settings_Bookmarks);
         else
             callb("");
+    });
+}
+
+function getBookmarkActive(callb) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Active", res => {
+        if (res.MAL_Settings_Bookmarks_Active !== "" && res.MAL_Settings_Bookmarks_Active !== undefined)
+            callb(res.MAL_Settings_Bookmarks_Active);
+        else
+            callb(true);
     });
 }
 
@@ -116,6 +146,18 @@ function changeBookmarks() {
     });
 }
 
+function changeBookmarkActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked }, function () {
+        chrome.runtime.sendMessage(
+            {
+                type: "CHANGED_BOOKMARK",
+                active: event.target.checked
+            },
+            () => { }
+        );
+    });
+}
+
 function changeActiveState(event) {
     chrome.storage.local.set({ "MAL_Settings_Active": event.target.checked }, function () {
         chrome.runtime.sendMessage(
@@ -139,13 +181,35 @@ function changeActiveDiscordState(event) {
     });
 }
 
-function deleteCache() {
-    chrome.runtime.sendMessage(
-        {
-            type: "DELETE_CACHE"
-        },
-        () => { }
-    );
+function deleteCache(query = {}) {
+    if (query.all) {
+        chrome.runtime.sendMessage(
+            {
+                type: "DELETE_CACHE",
+                query: query
+            },
+            () => { }
+        );
+    }
+    if (query.current) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+
+            // since only one tab should be active and in the current window at once
+            // the return variable should only have one entry
+            if (tabs[0]) {
+                chrome.runtime.sendMessage(
+                    {
+                        type: "DELETE_CACHE",
+                        query: { url: tabs[0].url }
+                    },
+                    (result) => {
+                        alert(result ? "Cache has been cleared" : "An Error has occured");
+                    }
+                );
+
+            }
+        });
+    }
 }
 
 function unauthorize() {
@@ -188,6 +252,24 @@ function changeDisplayMode(event) {
 
 function versionClicked() {
     window.open("https://github.com/ackhack/MAL-Updater");
+}
+
+//#endregion
+
+//#region Menu
+
+function clickedButton(ev) {
+    document.getElementById("btnBack").style = "display:block";
+    Array.from(document.getElementsByClassName("mainDiv")).forEach(div => { div.style = "display:none" });
+    document.getElementById(ev.target.parentElement.id + "Settings").style = "display:block";
+    document.getElementById("pTitle").innerText = ev.target.innerText + " Settings";
+}
+
+function clickedBackButton() {
+    document.getElementById("btnBack").style = "display:none";
+    Array.from(document.getElementById("divSettings").children).forEach(div => { div.style = "display:none" });
+    Array.from(document.getElementsByClassName("mainDiv")).forEach(div => { div.style = "display:block" });
+    document.getElementById("pTitle").innerText = "Settings";
 }
 
 //#endregion
