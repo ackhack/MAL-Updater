@@ -51,6 +51,8 @@ chrome.runtime.onMessage.addListener(
                 return addBinge(request.id);
             case "GET_NEWEST_VERSION":
                 return checkUpdate(onSuccess);
+            case "SYNC_CACHE":
+                return initCache(onSuccess);
             default:
                 return false;
         }
@@ -486,9 +488,9 @@ function deleteCache(query = {}, callb = () => { }) {
     return false;
 }
 
-function syncCache(callb = () => { }) {
+function syncCache() {
     //Save to local Storage
-    chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () { callb() });
+    chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () { });
 }
 
 //#endregion

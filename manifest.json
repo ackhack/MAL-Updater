@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "4.2.0",
+    "version": "4.3.0",
     "description": "Updates MAL List",
     "manifest_version": 2,
     "permissions": [
@@ -48,7 +48,8 @@
     },
     "web_accessible_resources": [
         "Resources/secret.json",
-        "Pages/*"
+        "Pages/*",
+        "Popup/cacheviewer.html"
     ],
     "icons": {
         "64": "Resources/icon.png"

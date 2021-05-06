@@ -1,4 +1,7 @@
-4.2.0:
+4.3.0: 07.05.2021
+    -Implemented CacheViewer
+
+4.2.0: 07.05.2021
     -Can now clear specific Cache in Debug
     -Shows AnimeName in UpdateSuccesMessage
     -Refractored Settings Page

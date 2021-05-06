@@ -21,6 +21,7 @@ function initButtons() {
     document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("pVersion").onclick = versionClicked;
+    document.getElementById("btnCacheViewer").onclick = showCache;
 }
 
 function initSettings() {
@@ -252,6 +253,13 @@ function changeDisplayMode(event) {
 
 function versionClicked() {
     window.open("https://github.com/ackhack/MAL-Updater");
+}
+
+function showCache() {
+    fetch(chrome.runtime.getURL('Popup/cacheviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
 }
 
 //#endregion

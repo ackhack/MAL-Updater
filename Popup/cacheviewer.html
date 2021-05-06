@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+  <style>
+    body {
+      background-color: rgb(33, 33, 33);
+      color: white;
+    }
+    /* Dropdown Button */
+    .dropbtn {
+      background-color: rgb(33, 33, 33);
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+      border: 1px solid white;
+      margin-bottom: 5px;
+    }
+
+    /* The container <div> - needed to position the dropdown content */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Dropdown Content (Hidden by Default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f1f1f1;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {
+      background-color: #ddd;
+    }
+
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Change the background color of the dropdown button when the dropdown content is shown */
+    .dropdown:hover .dropbtn {
+      background-color: rgb(0, 0, 0);
+    }
+
+    .card {
+      border: 2px solid white;
+      font-size: x-large;
+      padding: 5px 5px 7px 5px;
+      margin: 5px 0 5px 0;
+    }
+
+    .card:hover {
+      cursor: pointer;
+    }
+
+    #metaDiv {
+      display: none;
+      border: 2px solid white;
+      color: inherit;
+      background-color: inherit;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 200px;
+    }
+
+    #metaInfo {
+      padding: 5px 5px 5px 5px;
+    }
+
+    #metaButtons {
+      border-top: 2px solid white;
+      padding: 5px 5px 5px 5px;
+      text-align: right;
+    }
+
+    .metaBtn {
+      border: 1px solid white;
+      color: inherit;
+      background: inherit;
+      font-size: inherit;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      font-size: x-large;
+    }
+
+    .metaBtn:hover {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <p style="font-size: x-large">Cache</p>
+  <div class="dropdown">
+    <button id="btnSort" class="dropbtn">Sort</button>
+    <div class="dropdown-content">
+      <a href="#" class="dropdownOption">ID</a>
+      <a href="#" class="dropdownOption">9Anime</a>
+      <a href="#" class="dropdownOption">KickAssAnime</a>
+      <a href="#" class="dropdownOption">GoGoAnimeHub</a>
+    </div>
+  </div>
+  <div id="mainDiv"></div>
+  <div id="metaDiv">
+    <div id="metaInfo"></div>
+    <div id="metaButtons">
+      <input
+        type="button"
+        id="btnDelete"
+        class="metaBtn"
+        value="Delete from Cache"
+      />
+      <input type="button" id="btnClose" class="metaBtn" value="Close" />
+    </div>
+  </div>
+  <script src="cacheviewer.js"></script>
+</body>
