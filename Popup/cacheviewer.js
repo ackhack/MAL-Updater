@@ -68,7 +68,7 @@ function clickedCard(event) {
     currCard = JSON.parse(event.target.children[0].innerText);
     document.getElementById("metaDiv").style = "display: block";
     document.getElementById("metaInfo").innerHTML = "";
-    document.getElementById("metaInfo").appendChild(createDivFromMeta(event.target.children[0].innerText));
+    document.getElementById("metaInfo").appendChild(createListFromMeta(event.target.children[0].innerText));
 }
 
 function closedMeta() {
@@ -92,8 +92,11 @@ function syncCache() {
     });
 }
 
-function createDivFromMeta(cardString) {
+function createListFromMeta(cardString) {
     let card = JSON.parse(cardString);
+
+    let ul = document.createElement("ul");
+    ul.style = "font-size: x-large;";
 
     let div = document.createElement("div");
     div.style = "font-size: x-large;";
@@ -103,23 +106,27 @@ function createDivFromMeta(cardString) {
     let id = document.createElement("div");
 
     for (let elem in card) {
+
         if (elem == "meta") {
             for (let subelem in card[elem]) {
+
+                let li = document.createElement("li");
+
                 if (subelem == "id") {
-                    id.innerText = "ID: " + card[elem][subelem];
+                    li.innerText = "ID: " + card[elem][subelem];
+                    ul.insertBefore(li, ul.children[0]);
                     continue;
                 }
-                let metaSub = document.createElement("div");
-                metaSub.style = "border-top: 2px solid white;";
-                metaSub.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
-                meta.appendChild(metaSub);
+
+                li.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
+                ul.appendChild(li);
             }
             continue;
         }
-        sites.innerText += "\n" + elem + ": " + card[elem];
+        let li = document.createElement("li");
+        li.innerText += elem + ": " + card[elem];
+        ul.appendChild(li);
     }
-    div.appendChild(id);
-    div.appendChild(sites);
-    div.appendChild(meta);
-    return div;
+
+    return ul;
 }
