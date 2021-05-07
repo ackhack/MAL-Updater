@@ -98,13 +98,6 @@ function createListFromMeta(cardString) {
     let ul = document.createElement("ul");
     ul.style = "font-size: x-large;";
 
-    let div = document.createElement("div");
-    div.style = "font-size: x-large;";
-    let meta = document.createElement("div");
-    let sites = document.createElement("div");
-    sites.style = "border-top: 2px solid white;";
-    let id = document.createElement("div");
-
     for (let elem in card) {
 
         if (elem == "meta") {
