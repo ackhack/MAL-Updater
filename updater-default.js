@@ -474,7 +474,7 @@ function showInfo(header, text, buttons = []) {
     pText.innerText = text;
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { div.remove() };
+    abortBtn.onclick = () => { div.remove(); };
     abortBtn.innerText = "OK";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
@@ -495,8 +495,9 @@ function updateStatus(text) {
 function apiCallSent(name) {
     activeAPICalls.add(name);
     setTimeout(() => {
-        activeAPICalls.delete(name);
-        showDelayMessage();
+        if (activeAPICalls.has(name)) {
+            showDelayMessage();
+        }
     }, 5_000);
 }
 
@@ -508,14 +509,8 @@ function apiCallRecieved(name) {
 }
 
 function showDelayMessage() {
-    if (document.getElementById("MAL_UPDATER_BUTTON_2") === undefined) {
-        let button = document.createElement("button");
-        button.id = "MAL_UPDATER_BUTTON_2";
-        button.innerText = "OK";
-        button.style = "margin-left: 1.5em;margin-top: 5px;";
-        button.click = () => { removeDelayMessage() };
-
-        showInfo("MAL", "The MAL API appears to be quiet slow at the moment", [button]);
+    if (document.getElementById("MAL_UPDATER_BUTTON_2") === null) {
+        showInfo("MAL", "The MAL API appears to be quiet slow at the moment");
     }
 }
 

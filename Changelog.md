@@ -1,3 +1,6 @@
+4.3.2: 07.05.2021
+    -Fixed Slow API Call Detection
+
 4.3.1: 07.05.2021
     -Cacheviewer now uses UL for MetaData
 
