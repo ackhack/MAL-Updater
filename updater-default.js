@@ -375,13 +375,15 @@ function updateEpisodeSuccess(success, nextURL) {
     if (success)
         document.getElementById("MAL_UPDATER_BUTTON_1").remove();
 
+    let borderColor = success ? "rgb(0,220,0)" : "rgb(255,0,0)";
+
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_3";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + borderColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let p = document.createElement("p");
-    p.style = "margin-left:1.5em";
-    p.innerText = (success ? "Successfully updated EpisodeNumber" : "An Error occured while updating the EpisodeNumber") + "\n" + getAnimeName() + ": Episode " + episodeNumber;
+    p.style = "margin-left:1.5em;margin-bottom:5px;";
+    p.innerText = (success ? "✅Successfully updated EpisodeNumber✅" : "❌An Error occured while updating the EpisodeNumber❌") + "\n" + getAnimeName() + ": Episode " + episodeNumber;
 
     let abortBtn = document.createElement("button");
     abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3").remove() };

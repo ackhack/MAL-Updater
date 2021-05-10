@@ -1,3 +1,6 @@
+4.3.3: 10.05.2021
+    -Episode Update Message better Visuals
+
 4.3.2: 07.05.2021
     -Fixed Slow API Call Detection
 
