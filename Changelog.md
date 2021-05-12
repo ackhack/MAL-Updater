@@ -1,3 +1,6 @@
+4.3.4: 12.05.2021
+    -Now automatically picks Server on KAA
+
 4.3.3: 10.05.2021
     -Episode Update Message better Visuals
 
