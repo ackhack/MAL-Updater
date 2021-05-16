@@ -59,16 +59,6 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-function init() {
-    //Init with callbacks for right order
-    checkUpdate(result => {
-        if (result.update) {
-            chrome.browserAction.setBadgeText({ text: "1" });
-        }
-    });
-    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
-}
-
 //#region Authentification
 
 function getAuthCode() {
@@ -652,6 +642,12 @@ function getBookmark(id, callb) {
 
 //#region Init
 
+function init() {
+    //Init with callbacks for right order
+    checkUpdateCycle();
+    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
+}
+
 function readDirectory(directory, callb) {
     //Gets all json Pages
     let entries = [];
@@ -826,6 +822,16 @@ function initCache(callb) {
             animeCache = {};
 
         callb();
+    });
+}
+
+function checkUpdateCycle() {
+    checkUpdate(result => {
+        if (result.update) {
+            chrome.browserAction.setBadgeText({ text: "1" });
+            return;
+        }
+        setTimeout(()=>{checkUpdateCycle()},1_800_000);
     });
 }
 

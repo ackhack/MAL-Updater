@@ -1,6 +1,7 @@
 4.3.5: 16.05.2021
     -Improved 9anime urlPattern
     -Bookmarks from different Sites will now be deleted aswell
+    -Checks every 30Min for an Update
 
 4.3.4: 12.05.2021
     -Now automatically picks Server on KAA
