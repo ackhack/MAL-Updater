@@ -510,12 +510,49 @@ function setBookmark(animeID, oldURL, nextURL) {
         getBookmark(bookmarkID, res => {
             if (res != undefined && res.children.length > 0) {
                 for (let child of res.children) {
+
+                    if (child.url === undefined)
+                        continue;
+
                     if (child.url == oldURL) {
                         chrome.bookmarks.remove(child.id, () => { });
-                    } else {
-                        if (child.title.startsWith(animeID)) {
-                            name = child.title.substring(animeID.length + 1);
+                        return;
+                    }
+
+                    if (child.title.startsWith(animeID)) {
+                        name = child.title.substring(animeID.length + 1);
+                        chrome.bookmarks.remove(child.id, () => { });
+                        return;
+                    }
+                }
+                for (let site in anime) {
+                    if (site == "meta")
+                        continue;
+
+                    let pattern = sites[site].urlPattern;
+                    let indexOpen = 0;
+
+                    for (let i = 0; i < sites[site].nameMatch; i++) {
+                        indexOpen = pattern.indexOf("(", indexOpen);
+                    }
+
+                    if (indexOpen == -1)
+                        continue;
+
+                    let indexClosed = pattern.indexOf(")", indexOpen);
+
+                    if (indexClosed == -1)
+                    continue;
+
+                    let actPattern = pattern.slice(0, indexOpen) + anime[site] + pattern.slice(indexClosed + 1);
+
+                    for (let child of res.children) {
+                        if (child.url === undefined)
+                            continue;
+
+                        if (child.url.match(actPattern)) {
                             chrome.bookmarks.remove(child.id, () => { });
+                            return;
                         }
                     }
                 }
