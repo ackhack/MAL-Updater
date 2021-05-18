@@ -841,6 +841,7 @@ function checkUpdateCycle() {
 
 function closeTab(sender) {
     chrome.tabs.remove(sender.tab.id);
+    return true;
 }
 function validateSite(req, callb) {
     //check if we have the site saved as json

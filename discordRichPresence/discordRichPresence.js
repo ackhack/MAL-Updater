@@ -111,8 +111,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             streamurl: "",
                             details: request.name,
                             state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
-                            partycur: request.episode.toString() ?? "",
-                            partymax: request.maxEpisode.toString() ?? "",
+                            partycur: "",
+                            partymax: "",
                         });
                     } else {
                         if (recentName == request.name && recentEpisode == request.episode) {
