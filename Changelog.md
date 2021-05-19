@@ -1,3 +1,6 @@
+4.4.0: 20.05.2021
+    -Now renames Bookmarks in BookmarkFolder
+
 4.3.6: 18.05.2021
     -Fixed DRP sometimes not working
     -Fixed message port closed without response

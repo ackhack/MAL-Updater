@@ -401,6 +401,19 @@ function getSequel(related) {
     return undefined;
 }
 
+function getTitle(anime) {
+    if (anime.meta.alternative_titles) {
+        if (anime.meta.alternative_titles.en) {
+            return anime.meta.alternative_titles.en;
+        }
+    }
+    return anime.meta.title;
+}
+
+//#endregion
+
+//#region Cache
+
 function setCache(req, callb = () => { }) {
     if (animeCache[req.id] === undefined) {
         getAnimeDetails(req.id, (json) => {
@@ -494,7 +507,7 @@ function setBookmark(animeID, oldURL, nextURL) {
     }
 
     let anime = getCacheById(animeID);
-    let name = anime === undefined ? undefined : anime.meta.title;
+    let name = anime === undefined ? "" : getTitle(anime);
     //remove old bookmark
     if (bookmarkID)
         getBookmark(bookmarkID, res => {
@@ -532,7 +545,7 @@ function setBookmark(animeID, oldURL, nextURL) {
                     let indexClosed = pattern.indexOf(")", indexOpen);
 
                     if (indexClosed == -1)
-                    continue;
+                        continue;
 
                     let actPattern = pattern.slice(0, indexOpen) + anime[site] + pattern.slice(indexClosed + 1);
 
@@ -636,6 +649,31 @@ function getBookmark(id, callb) {
         }
         callb(undefined);
     });
+}
+
+function bookmarkAdded(bookmark) {
+    if (!bookmarkActive || bookmark.parentId !== bookmarkID || bookmark.url == undefined)
+        return;
+
+    for (let site in sites) {
+
+        let match = bookmark.url.match(sites[site].urlPattern);
+        if (match != null) {
+            let anime = getCache(site, match[sites[site].nameMatch]);
+
+            if (anime !== undefined) {
+                let name = anime.meta.id + ": " + getTitle(anime);
+
+                if (bookmark.title == name)
+                    return;
+
+                chrome.bookmarks.remove(bookmark.id, () => {
+                    addBookmark(anime.meta.id + ": " + getTitle(anime), bookmark.url);
+                });
+            }
+            return;
+        }
+    }
 }
 
 //#endregion
@@ -774,6 +812,7 @@ function initSettings(callb) {
         chrome.storage.local.get("MAL_Settings_Bookmarks_Active", function (res) {
             if (res.MAL_Settings_Bookmarks_Active != "" && res.MAL_Settings_Bookmarks_Active != undefined) {
                 bookmarkActive = res.MAL_Settings_Bookmarks_Active;
+                initBookmarkEvent();
             } else {
                 bookmarkActive = true;
             }
@@ -798,7 +837,7 @@ function initSettings(callb) {
 
 function initBookmarkFolder(folderName) {
 
-    if (folderName !== undefined && folderName !== "")
+    if (folderName !== undefined && folderName !== "") {
         chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
             if (result == {}) {
                 createBookmarkFolder(folderName);
@@ -812,6 +851,7 @@ function initBookmarkFolder(folderName) {
                 });
             }
         });
+    }
 }
 
 function initCache(callb) {
@@ -825,13 +865,19 @@ function initCache(callb) {
     });
 }
 
+function initBookmarkEvent() {
+    chrome.bookmarks.onCreated.addListener((_, bookmark) => {
+        bookmarkAdded(bookmark);
+    });
+}
+
 function checkUpdateCycle() {
     checkUpdate(result => {
         if (result.update) {
             chrome.browserAction.setBadgeText({ text: "1" });
             return;
         }
-        setTimeout(()=>{checkUpdateCycle()},1_800_000);
+        setTimeout(() => { checkUpdateCycle() }, 1_800_000);
     });
 }
 
