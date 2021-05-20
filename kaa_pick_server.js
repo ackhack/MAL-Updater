@@ -1,17 +1,18 @@
 const prios = ["PINK-BIRD", "SAPPHIRE-DUCK", "DAILYMOTION", "BETAPLAYER", "THETA-ORIGINAL", "A-KICKASSANIME", "BETASERVER3"];
-init();
+initServerPick();
 
-function init(nTry = 0) {
+function initServerPick(nTry = 0) {
     if (nTry >= 20) {
         return;
     }
 
     let list = document.getElementById("server-list");
+
     if (list !== null) {
         selectServer(list);
     } else {
         nTry++;
-        setTimeout(() => { init(nTry) }, 200);
+        setTimeout(() => { initServerPick(nTry); }, 200);
     }
 }
 

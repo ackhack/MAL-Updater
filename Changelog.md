@@ -1,5 +1,8 @@
+4.5.0: 21.05.2021
+    -Players can now skip 1:30 when double pressing 's'
+
 4.4.0: 20.05.2021
-    -Now renames Bookmarks in BookmarkFolder
+    -Now renames user-added Bookmarks in BookmarkFolder
 
 4.3.6: 18.05.2021
     -Fixed DRP sometimes not working
