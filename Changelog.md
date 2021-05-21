@@ -1,3 +1,6 @@
+4.5.1: 21.05.2021
+    -Made KAA skip more reliable
+
 4.5.0: 21.05.2021
     -Players can now skip 1:30 when double pressing 's'
 

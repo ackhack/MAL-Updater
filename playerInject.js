@@ -12,7 +12,7 @@ function init() {
 
 function addKeyListener(nTry = 0) {
     if (document.getElementsByTagName("video").length > 0) {
-        if (!window.location.toString().includes("gogo-play.tv") && !window.location.toString().includes("kaa-play.me"))
+        if (!window.location.toString().includes("gogo-play.tv"))
             document.body.addEventListener("keypress", (ev) => keyListener(ev));
         else
             document.getElementsByTagName("video")[0].addEventListener("keypress", (ev) => keyListener(ev));
@@ -38,6 +38,6 @@ function handleSkip() {
     } else {
         let vids = document.getElementsByTagName("video");
         if (vids.length > 0)
-            vids[0].currentTime += 90;
+            vids[0].currentTime += 87;
     }
 }
