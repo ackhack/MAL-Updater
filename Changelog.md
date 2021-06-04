@@ -1,3 +1,7 @@
+5.0.0: 04.06.2021
+    -Refractor of CodeBase
+    -Improved Player Skips
+
 4.5.1: 21.05.2021
     -Made KAA skip more reliable
 

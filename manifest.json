@@ -29,7 +29,7 @@
                 "<all_urls>"
             ],
             "js": [
-                "updater-default.js"
+                "InjectScripts/updater-default.js"
             ]
         },
         {
@@ -47,7 +47,7 @@
                 "https://kaa-play.me/dust/*"
             ],
             "js": [
-                "kaa_pick_server.js"
+                "InjectScripts/kaa_pick_server.js"
             ],
             "run_at": "document_idle",
             "all_frames": true
@@ -58,21 +58,26 @@
                 "https://gogo-play.tv/*",
                 "https://www.mp4upload.com/*",
                 "https://mcloud.to/embed/*",
-                "https://vidstream.pro/e/*"
+                "https://vidstream.pro/e/*",
+                "https://www.dailymotion.com/embed/video/*",
+                "https://betaplayer.life/api/embed/*",
+                "https://streamani.net/*",
+                "https://vidstreamz.online/embed/*"
             ],
             "js": [
-                "playerInject.js"
+                "InjectScripts/playerInject.js"
             ],
             "run_at": "document_idle",
             "all_frames": true
         }
     ],
     "background": {
-        "page": "background.html"
+        "page": "BackgroundScripts/background.html"
     },
     "web_accessible_resources": [
         "Resources/secret.json",
         "Pages/*",
+        "BackgroundScripts/*",
         "Popup/cacheviewer.html"
     ],
     "icons": {

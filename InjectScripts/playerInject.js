@@ -12,10 +12,7 @@ function init() {
 
 function addKeyListener(nTry = 0) {
     if (document.getElementsByTagName("video").length > 0) {
-        if (!window.location.toString().includes("gogo-play.tv"))
-            document.body.addEventListener("keypress", (ev) => keyListener(ev));
-        else
-            document.getElementsByTagName("video")[0].addEventListener("keypress", (ev) => keyListener(ev));
+        document.addEventListener("keypress", (ev) => keyListener(ev));
     }
     else {
         if (nTry < 20) {
