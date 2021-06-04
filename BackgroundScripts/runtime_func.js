@@ -1,5 +1,3 @@
-//#region Runtime Functions
-
 function closeTab(sender) {
     chrome.tabs.remove(sender.tab.id);
     return true;
@@ -83,5 +81,3 @@ function checkUpdate(callb) {
 
     return true;
 }
-
-//#endregion

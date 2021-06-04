@@ -1,5 +1,3 @@
-//#region Cache
-
 function setCache(req, callb = () => { }) {
     if (animeCache[req.id] === undefined) {
         getAnimeDetails(req.id, (json) => {
@@ -81,5 +79,3 @@ function syncCache() {
     //Save to local Storage
     chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () { });
 }
-
-//#endregion

@@ -1,24 +1,3 @@
-var code_verifier;
-var stateID;
-var auth_token;
-var usertoken = {
-    access: undefined,
-    refresh: undefined,
-    access_time: undefined,
-    refresh_time: undefined,
-    access_req_time: undefined,
-    refresh_req_time: undefined
-};
-var client;
-var sites = {};
-var animeCache;
-var bookmarkID;
-var active;
-var bookmarkActive;
-var bookmarkautoActive;
-var checkLastEpisodeBool;
-var binge = new Set();
-
 chrome.runtime.onMessage.addListener(
     //Listener for HTTPReqeust
     //Needed because content_scripts cant run them
@@ -38,8 +17,6 @@ chrome.runtime.onMessage.addListener(
                 return validateSite(request, onSuccess);
             case "CHANGED_BOOKMARK":
                 return updateBookmarkFolder(request);
-            case "CHANGED_BOOKMARK_AUTO":
-                return setAutoBookmark(request);
             case "DELETE_CACHE":
                 return deleteCache(request.query, onSuccess);
             case "CHANGED_ACTIVE":

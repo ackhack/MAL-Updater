@@ -6,7 +6,7 @@
     -Made KAA skip more reliable
 
 4.5.0: 21.05.2021
-    -Players can now skip 1:30 when double pressing 's'
+    -Players can now skip 1:27 when double pressing 's'
 
 4.4.0: 20.05.2021
     -Now renames user-added Bookmarks in BookmarkFolder

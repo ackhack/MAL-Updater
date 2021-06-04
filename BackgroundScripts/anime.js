@@ -1,5 +1,8 @@
-
-//#region Anime-Realted
+var sites = {};
+var active;
+var checkLastEpisodeBool;
+var binge = new Set();
+var animeCache;
 
 function getAnime(req, callb, nTry = 0) {
     if (!active) {
@@ -193,5 +196,3 @@ function getTitle(anime) {
     }
     return anime.meta.title;
 }
-
-//#endregion

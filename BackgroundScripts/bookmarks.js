@@ -1,4 +1,7 @@
-//#region Bookmarks
+var bookmarkID;
+var bookmarkActive;
+var bookmarkautoActive;
+var bookmarkAutoRunning = false;
 
 function setBookmark(animeID, oldURL, nextURL) {
 
@@ -175,10 +178,3 @@ function renameBookmark(bookmark) {
         }
     }
 }
-
-function setAutoBookmark(req) {
-    bookmarkautoActive = req.active;
-    return true;
-}
-
-//#endregion

@@ -1,5 +1,3 @@
-//#region Init
-
 init();
 
 function init() {
@@ -145,7 +143,9 @@ function initSettings(callb) {
         chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", function (res) {
             if (res.MAL_Settings_Bookmarks_Auto != "" && res.MAL_Settings_Bookmarks_Auto != undefined) {
                 bookmarkautoActive = res.MAL_Settings_Bookmarks_Auto;
-                initBookmarkEvent();
+                if (bookmarkautoActive) {
+                    checkBookmarks();
+                }
             } else {
                 bookmarkautoActive = false;
             }
@@ -215,5 +215,3 @@ function checkUpdateCycle() {
         setTimeout(() => { checkUpdateCycle() }, 1_800_000);
     });
 }
-
-//#endregion

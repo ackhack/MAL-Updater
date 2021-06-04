@@ -1,4 +1,15 @@
-//#region Authentification
+var client;
+var code_verifier;
+var stateID;
+var auth_token;
+var usertoken = {
+    access: undefined,
+    refresh: undefined,
+    access_time: undefined,
+    refresh_time: undefined,
+    access_req_time: undefined,
+    refresh_req_time: undefined
+};
 
 function getAuthCode() {
 
@@ -151,5 +162,3 @@ function getUserToken() {
 
     xhr.send(para);
 }
-
-//#endregion

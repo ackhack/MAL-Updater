@@ -20,7 +20,6 @@ function initButtons() {
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
     document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
-    document.getElementById("cbBookmarksAuto").onchange = changeBookmarkAuto;
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
 }
@@ -47,9 +46,6 @@ function initSettings() {
     })
     getBookmarkActive(active => {
         document.getElementById("cbBookmarksActive").checked = active;
-    })
-    getBookmarkAutoActive(active => {
-        document.getElementById("cbBookmarksAuto").checked = active;
     })
 }
 
@@ -89,15 +85,6 @@ function getBookmarkActive(callb) {
             callb(res.MAL_Settings_Bookmarks_Active);
         else
             callb(true);
-    });
-}
-
-function getBookmarkAutoActive(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", res => {
-        if (res.MAL_Settings_Bookmarks_Auto !== "" && res.MAL_Settings_Bookmarks_Auto !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Auto);
-        else
-            callb(false);
     });
 }
 
@@ -165,18 +152,6 @@ function changeBookmarkActive(event) {
         chrome.runtime.sendMessage(
             {
                 type: "CHANGED_BOOKMARK_AUTO",
-                active: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
-function changeBookmarkAuto(event) {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked }, function () {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_BOOKMARK",
                 active: event.target.checked
             },
             () => { }
