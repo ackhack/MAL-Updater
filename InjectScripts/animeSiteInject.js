@@ -28,8 +28,9 @@ function initSite(nTry = 0) {
         return;
     nTry++;
 
-    if (parseURL(window.location.toString()))
+    if (parseURL(window.location.toString())) {
         getAnime();
+    }
     else
         setTimeout(() => {
             initSite(nTry);
@@ -300,7 +301,7 @@ function finishedEpisode(force = false) {
             },
             data => {
                 apiCallRecieved("SEND_ANIME_FINISHED");
-                sendDiscordPresence(false);
+                sendWatchedInfo();
                 if (data.last) {
                     finishedLastEpisode(data);
                 } else {
@@ -365,7 +366,7 @@ function clickedLastEp(value) {
         data => {
             apiCallRecieved("SEND_ANIME_FINISHED");
             updateEpisodeSuccess(data.num_episodes_watched == episodeNumber);
-            document.getElementById("MAL_UPDATER_DIV_2").remove();
+            document.getElementById("MAL_UPDATER_DIV_2")?.remove();
         }
     );
 }
@@ -527,4 +528,18 @@ function getAnimeName() {
         }
     }
     return metaData.title ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1);
+}
+
+function sendWatchedInfo() {
+    if (animeName != undefined && episodeNumber != undefined && metaData != undefined) {
+        sendDiscordPresence(false);
+        chrome.runtime.sendMessage(
+            {
+                type: "ANIME_WATCHED_INFO",
+                name: getAnimeName(),
+                episode: episodeNumber,
+                maxEpisode: metaData.num_episodes
+            }
+        );
+    }
 }

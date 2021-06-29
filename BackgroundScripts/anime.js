@@ -128,26 +128,35 @@ function finishedEpisode(req, callb) {
             return;
         }
 
-        if (anime.meta.num_episodes == req.episode && req.force == false) {
-            callb({ last: true, next: getSequel(anime.meta.related_anime) });
-        } else {
-            fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + usertoken.access,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: 'status=watching&num_watched_episodes=' + req.episode
-            })
-                .then(response => {
-                    response.json().then(responseJSON => {
-                        if (req.episode == responseJSON.num_episodes_watched) {
-                            setBookmark(req.id, req.url, req.nextURL);
-                        }
-                        callb(responseJSON)
+        function updateEpisode() {
+            if (anime.meta.num_episodes == req.episode && req.force == false) {
+                callb({ last: true, next: getAnimeSequel(anime.meta.related_anime) });
+            } else {
+                fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "Bearer " + usertoken.access,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: 'status=watching&num_watched_episodes=' + req.episode
+                })
+                    .then(response => {
+                        response.json().then(responseJSON => {
+                            if (req.episode == responseJSON.num_episodes_watched) {
+                                setBookmark(req.id, req.url, req.nextURL);
+                            }
+                            callb(responseJSON)
+                        });
                     });
-                });
+            }
         }
+
+        if (anime.meta.num_episodes == undefined || anime.meta.num_episodes == 0) {
+            setCache({ id: req.id,force:true },()=>{updateEpisode()});
+        } else {
+            updateEpisode();
+        }
+
         return true;
     }
 }
@@ -179,7 +188,7 @@ function getAnimeDetails(id, callb) {
         });
 }
 
-function getSequel(related) {
+function getAnimeSequel(related) {
     for (let rel of related) {
         if (rel.relation_type == "sequel") {
             return rel.node.title;
@@ -188,7 +197,7 @@ function getSequel(related) {
     return undefined;
 }
 
-function getTitle(anime) {
+function getAnimeTitle(anime) {
     if (anime.meta.alternative_titles) {
         if (anime.meta.alternative_titles.en) {
             return anime.meta.alternative_titles.en;

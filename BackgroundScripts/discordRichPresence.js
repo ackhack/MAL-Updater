@@ -68,10 +68,13 @@ function removeDiscord() {
         console.log("Discord off");
         return true;
     }
-    return false;
+    return true;
 }
 
 chrome.runtime.onConnect.addListener((port) => {
+    if (!isActive) {
+        return;
+    }
     if (port.name == "discord") {
         if (discordPort !== undefined) {
             discordPort.postMessage({ action: "close" });

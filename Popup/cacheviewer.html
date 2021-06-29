@@ -105,12 +105,19 @@
 <body>
   <p style="font-size: x-large">Cache</p>
   <div class="dropdown">
-    <button id="btnSort" class="dropbtn">Sort</button>
+    <button id="btnFilter" class="dropbtn">Filter: All</button>
     <div class="dropdown-content">
-      <a href="#" class="dropdownOption">ID</a>
-      <a href="#" class="dropdownOption">9Anime</a>
-      <a href="#" class="dropdownOption">KickAssAnime</a>
-      <a href="#" class="dropdownOption">GoGoAnimeHub</a>
+      <a href="#" class="dropdownOptionFilter">All</a>
+      <a href="#" class="dropdownOptionFilter">9Anime</a>
+      <a href="#" class="dropdownOptionFilter">KickAssAnime</a>
+      <a href="#" class="dropdownOptionFilter">GoGoAnimeHub</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <button id="btnSort" class="dropbtn">Sort: Name</button>
+    <div class="dropdown-content">
+      <a href="#" class="dropdownOptionSort">ID</a>
+      <a href="#" class="dropdownOptionSort">Name</a>
     </div>
   </div>
   <div id="mainDiv"></div>

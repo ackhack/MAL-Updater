@@ -10,7 +10,7 @@ function setBookmark(animeID, oldURL, nextURL) {
     }
 
     let anime = getCacheById(animeID);
-    let name = anime === undefined ? "" : getTitle(anime);
+    let name = anime === undefined ? "" : getAnimeTitle(anime);
     //remove old bookmark
     if (bookmarkID)
         getBookmark(bookmarkID, res => {
@@ -158,23 +158,15 @@ function renameBookmark(bookmark) {
     if (!bookmarkActive || bookmark.parentId !== bookmarkID || bookmark.url == undefined)
         return;
 
-    for (let site in sites) {
+    let anime = getCacheByURL(bookmark.url);
 
-        let match = bookmark.url.match(sites[site].urlPattern);
-        if (match != null) {
-            let anime = getCache(site, match[sites[site].nameMatch]);
-
-            if (anime !== undefined) {
-                let name = anime.meta.id + ": " + getTitle(anime);
-
-                if (bookmark.title == name)
-                    return;
-
-                chrome.bookmarks.remove(bookmark.id, () => {
-                    addBookmark(anime.meta.id + ": " + getTitle(anime), bookmark.url);
-                });
-            }
+    if (anime !== undefined) {
+        let name = anime.meta.id + ": " + getAnimeTitle(anime);
+        if (bookmark.title == name)
             return;
-        }
+        else
+            chrome.bookmarks.remove(bookmark.id, () => {
+                addBookmark(name, bookmark.url);
+            });
     }
 }

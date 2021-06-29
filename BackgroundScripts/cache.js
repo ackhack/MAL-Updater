@@ -1,14 +1,20 @@
 function setCache(req, callb = () => { }) {
-    if (animeCache[req.id] === undefined) {
+    
+    if (animeCache[req.id] === undefined || req.force) {
         getAnimeDetails(req.id, (json) => {
+
+            if (animeCache[req.id] === undefined) {
+                animeCache[req.id] = {};
+            }
 
             json["id"] = req.id;
 
-            animeCache[req.id] = {
-                meta: json,
-                [req.site]: req.name
-            };
-            console.log(animeCache);
+            animeCache[req.id].meta = json;
+            
+            if (req.site !== undefined && req.name !== undefined) {
+                animeCache[req.id][req.site] = req.name;
+            }
+            
             syncCache();
             callb(animeCache[req.id]);
         })
@@ -78,4 +84,14 @@ function deleteCache(query = {}, callb = () => { }) {
 function syncCache() {
     //Save to local Storage
     chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () { });
+}
+
+function getCacheByURL(url) {
+    for (let site in sites) {
+        let match = url.match(sites[site].urlPattern);
+        if (match != null) {
+            return getCache(site, match[sites[site].nameMatch]);
+        }
+    }
+    return undefined;
 }

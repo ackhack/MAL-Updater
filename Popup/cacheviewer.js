@@ -1,12 +1,24 @@
 var animeCache;
-var currSort;
+var currFilter = "all";
+var currSort = "name";
 var currCard;
+var mainDiv;
+var metaVisible = false;
 
 init();
 
 function init() {
 
-    Array.from(document.getElementsByClassName("dropdownOption")).forEach(option => option.onclick = (ev) => { clickedSort(ev) });
+    Array.from(document.getElementsByClassName("dropdownOptionFilter")).forEach(option => option.onclick = (ev) => { clickedFilter(ev) });
+    Array.from(document.getElementsByClassName("dropdownOptionSort")).forEach(option => option.onclick = (ev) => { clickedSort(ev) });
+
+    mainDiv = document.getElementById("mainDiv");
+    document.onkeydown = function (evt) {
+        evt = evt || window.event;
+        if (evt.key == "Escape") {
+            closedMeta();
+        }
+    };
 
     document.getElementById("btnClose").onclick = closedMeta;
     document.getElementById("btnDelete").onclick = deleteMeta;
@@ -17,22 +29,36 @@ function init() {
         else
             animeCache = {};
 
-        createCards("ID");
+        createCards();
     });
 }
 
-function createCards(sort = "ID") {
-    currSort = sort.toLowerCase();
-    document.getElementById("btnSort").innerText = "Sort: " + sort;
+function createCards() {
+    let cards = [];
 
     for (let id in animeCache) {
-        if (currSort == "id") {
-            createCard(id + ": " + getName(animeCache[id].meta), animeCache[id]);
+        if (currFilter == "all") {
+            cards.push(createCard(id + ": " + getName(animeCache[id].meta), animeCache[id]));
             continue;
         }
-        if (animeCache[id][currSort])
-            createCard(id + ": " + animeCache[id][currSort].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]);
+        if (animeCache[id][currFilter])
+            cards.push(createCard(id + ": " + animeCache[id][currFilter].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]));
     }
+
+    switch (currSort) {
+
+        case "id":
+            break;
+        case "name":
+
+            cards.sort((a, b) => a.innerText.slice(a.innerText.indexOf(" ") + 1).localeCompare(b.innerText.slice(b.innerText.indexOf(" ") + 1)));
+
+            break;
+
+        default:
+    }
+
+    cards.forEach(x => mainDiv.appendChild(x));
 }
 
 function createCard(title, metaData) {
@@ -45,16 +71,34 @@ function createCard(title, metaData) {
     info.innerText = JSON.stringify(metaData);
     div.appendChild(info);
     div.onclick = (ev) => clickedCard(ev);
-    mainDiv.appendChild(div);
+    return div;
 }
 
 function clearCards() {
     mainDiv.innerHTML = "";
 }
 
-function clickedSort(event) {
+function updateCards() {
     clearCards();
-    createCards(event.target.innerText);
+    createCards();
+}
+
+function clickedFilter(event) {
+    if (currFilter == event.target.innerText.toLowerCase())
+        return;
+
+    document.getElementById("btnFilter").innerText = "Filter: " + event.target.innerText;
+    currFilter = event.target.innerText.toLowerCase();
+    updateCards();
+}
+
+function clickedSort(event) {
+    if (currSort == event.target.innerText.toLowerCase())
+        return;
+
+    document.getElementById("btnSort").innerText = "Sort: " + event.target.innerText;
+    currSort = event.target.innerText.toLowerCase();
+    updateCards();
 }
 
 function getName(meta) {
@@ -80,7 +124,7 @@ function deleteMeta() {
     delete animeCache[currCard.meta.id];
     syncCache();
     clearCards();
-    createCards(currSort);
+    createCards(currFilter, currSort);
     closedMeta();
 }
 

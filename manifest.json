@@ -13,61 +13,28 @@
         "webRequest",
         "webRequestBlocking",
         "https://discord.com/channels/@me",
-        "contentSettings"
+        "contentSettings",
+        "http://*/",
+        "https://*/"
     ],
     "content_scripts": [
-        {
-            "matches": [
-                "https://ackhack.github.io/MAL-Updater/*"
-            ],
-            "js": [
-                "docs/grabCodeAndState.js"
-            ]
-        },
         {
             "matches": [
                 "<all_urls>"
             ],
             "js": [
-                "InjectScripts/updater-default.js"
-            ]
+                "InjectScripts/mainInject.js"
+            ],
+            "all_frames": true
         },
         {
             "matches": [
                 "https://discord.com/channels/@me"
             ],
             "js": [
-                "discordRichPresence/discordRichPresenceInject.js"
+                "InjectScripts/discordRichPresenceInject.js"
             ],
             "run_at": "document_start",
-            "all_frames": true
-        },
-        {
-            "matches": [
-                "https://kaa-play.me/dust/*"
-            ],
-            "js": [
-                "InjectScripts/kaa_pick_server.js"
-            ],
-            "run_at": "document_idle",
-            "all_frames": true
-        },
-        {
-            "matches": [
-                "https://kaa-play.me/*",
-                "https://gogo-play.tv/*",
-                "https://www.mp4upload.com/*",
-                "https://mcloud.to/embed/*",
-                "https://vidstream.pro/e/*",
-                "https://www.dailymotion.com/embed/video/*",
-                "https://betaplayer.life/api/embed/*",
-                "https://streamani.net/*",
-                "https://vidstreamz.online/embed/*"
-            ],
-            "js": [
-                "InjectScripts/playerInject.js"
-            ],
-            "run_at": "document_idle",
             "all_frames": true
         }
     ],
@@ -78,7 +45,8 @@
         "Resources/secret.json",
         "Pages/*",
         "BackgroundScripts/*",
-        "Popup/cacheviewer.html"
+        "Popup/cacheviewer.html",
+        "Popup/historyviewer.html"
     ],
     "icons": {
         "64": "Resources/icon.png"

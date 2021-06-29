@@ -31,6 +31,12 @@ chrome.runtime.onMessage.addListener(
                 return checkUpdate(onSuccess);
             case "SYNC_CACHE":
                 return initCache(onSuccess);
+            case "SYNC_HISTORY":
+                return initHistory(onSuccess);
+            case "SITE_OPENED":
+                return selectInjector(sender);
+            case "ANIME_WATCHED_INFO":
+                return handleAnimeWatchedInfo(request);
             default:
                 return false;
         }

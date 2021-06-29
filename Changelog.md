@@ -1,3 +1,11 @@
+6.0.0: 30.06.2021
+    -Added History
+    -Refractor of CodeBase
+    -Fixed Error when rating last Episode
+    -CacheViewer can now sort
+    -Now gets EpisodeNumber if Cache has 0
+    -CacheViewer now closes Info when pressing Escape
+
 5.0.0: 04.06.2021
     -Refractor of CodeBase
     -Improved Player Skips

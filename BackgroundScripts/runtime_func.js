@@ -81,3 +81,8 @@ function checkUpdate(callb) {
 
     return true;
 }
+
+
+function handleAnimeWatchedInfo(req) {
+    addHistory(req.name,req.episode);
+}

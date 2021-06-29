@@ -22,6 +22,7 @@ function initButtons() {
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
+    document.getElementById("btnHistoryViewer").onclick = showHistory;
 }
 
 function initSettings() {
@@ -257,6 +258,13 @@ function versionClicked() {
 
 function showCache() {
     fetch(chrome.runtime.getURL('Popup/cacheviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
+}
+
+function showHistory() {
+    fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
         .then((response) => {
             chrome.tabs.create({ url: response.url });
         }).catch(err => console.log(err));

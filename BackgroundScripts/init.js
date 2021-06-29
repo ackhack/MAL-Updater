@@ -31,8 +31,10 @@ function initSites(callb) {
                                     sites[name.substring(0, name.length - 5)] = json;
 
                                 curSite++;
-                                if (curSite == siteNames.length)
+                                if (curSite == siteNames.length) {
+                                    initInjector();
                                     callb();
+                                }
                             })
                         }).catch(err => console.log(err));
                 }
@@ -200,6 +202,17 @@ function initCache(callb) {
     });
 }
 
+function initHistory(callb) {
+    chrome.storage.local.get("MAL_AnimeHistory", function (result) {
+        if (result)
+            historyObj = result["MAL_AnimeHistory"] ?? [];
+        else
+            historyObj = [];
+
+        callb();
+    });
+}
+
 function initBookmarkEvent() {
     chrome.bookmarks.onCreated.addListener((_, bookmark) => {
         renameBookmark(bookmark);
@@ -213,5 +226,16 @@ function checkUpdateCycle() {
             return;
         }
         setTimeout(() => { checkUpdateCycle() }, 1_800_000);
+    });
+}
+
+function initInjector() {
+    let sitePatterns = [];
+    for (let site in sites) {
+        sitePatterns.push(sites[site].urlPattern);
+    }
+    injectObject.push({
+        matches: sitePatterns,
+        js: ["InjectScripts/animeSiteInject.js"]
     });
 }
