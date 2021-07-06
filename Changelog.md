@@ -1,3 +1,7 @@
+6.1.0: 06.07.2021
+    -Finished History Implementation
+    -Typo in Readme
+
 6.0.0: 30.06.2021
     -Added History
     -Refractor of CodeBase

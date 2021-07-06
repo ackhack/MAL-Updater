@@ -16,10 +16,59 @@
     .card:hover {
       cursor: pointer;
     }
+    
+    #metaDiv {
+      display: none;
+      border: 2px solid white;
+      color: inherit;
+      background-color: inherit;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 200px;
+    }
+
+    #metaInfo {
+      padding: 5px 5px 5px 5px;
+      font-size: x-large;
+    }
+
+    #metaButtons {
+      border-top: 2px solid white;
+      padding: 5px 5px 5px 5px;
+      text-align: right;
+    }
+
+    .metaBtn {
+      border: 1px solid white;
+      color: inherit;
+      background: inherit;
+      font-size: inherit;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      font-size: x-large;
+    }
+
+    .metaBtn:hover {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <p style="font-size: x-large">History</p>
   <div id="mainDiv"></div>
+  <div id="metaDiv">
+    <div id="metaInfo"></div>
+    <div id="metaButtons">
+      <input
+        type="button"
+        id="btnDelete"
+        class="metaBtn"
+        value="Delete from History"
+      />
+      <input type="button" id="btnClose" class="metaBtn" value="Close" />
+    </div>
+  </div>
   <script src="historyviewer.js"></script>
 </body>

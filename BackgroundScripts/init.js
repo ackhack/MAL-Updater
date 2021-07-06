@@ -3,7 +3,7 @@ init();
 function init() {
     //Init with callbacks for right order
     checkUpdateCycle();
-    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { }) }) }) });
+    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { initHistory(() => { }) }) }) }) });
 }
 
 function readDirectory(directory, callb) {
