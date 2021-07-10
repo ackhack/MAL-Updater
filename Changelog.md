@@ -1,3 +1,6 @@
+6.1.1: 10.07.2021
+    -Updated Readme
+
 6.1.0: 06.07.2021
     -Finished History Implementation
     -Typo in Readme

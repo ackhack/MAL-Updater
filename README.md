@@ -1,6 +1,17 @@
 USE AT YOUR OWN RISK
 
-Works on:
+This is a Chrome Extension. Its not on the Google Store, so add it as a Developer Extension.
+
+Features:
+- Update your MAL List
+- Show a Disord Rich Presence
+- History of Episodes watched
+- Automatically add and remove Bookmarks
+- Check if the current Episode is the next in the Series
+- Pressing S twice in the VideoPlayer will skip 1:27 forwards
+- Picks a Server on KAA
+
+Supported Sites:
 - Kickassanime
 - 9anime
 - gogoanimehub
