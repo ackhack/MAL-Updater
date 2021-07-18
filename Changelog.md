@@ -1,4 +1,7 @@
-6.2.0: 15.07.2021
+6.2.1: 18.07.2021
+    -Fixed Regex Patterns
+
+6.2.0: 18.07.2021
     -Changed how Settings init
     -History is now in right Order
     -Added Filter List to Main Page

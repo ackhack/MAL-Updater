@@ -12,7 +12,7 @@
     "buttonInsertBeforeIndex": -1,
     "ulMarginLeft": 0,
     "nextBookmark": "let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1); for (let node of document.getElementsByTagName('a')) { if (node.href == nexthref) {callb(window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1)); return;} } callb(undefined);",
-    "mainPagePattern": ".*9anime\\.[a-z]+\\/home",
+    "mainPagePattern": ".*9anime\\.[a-z]+\\/home\\/?$",
     "mainPageButtonParent": "menu",
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 1,

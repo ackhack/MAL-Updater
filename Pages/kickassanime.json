@@ -1,5 +1,5 @@
 {
-    "sitePattern": ".*kickassanime.[a-z]+\\/anime\\/.*",
+    "sitePattern": ".*kickassanime\\.[a-z]+\\/anime\\/.*",
     "siteName": "kickassanime",
     "urlPattern": "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*)-\\d+\\/episode-0*(\\d+)-\\d+",
     "nameMatch": 1,
@@ -12,7 +12,7 @@
     "buttonInsertBeforeIndex": 1,
     "ulMarginLeft": 0,
     "nextBookmark": "for (let el of document.getElementsByClassName('ka-url-wrapper')) {if (el.innerText.includes('Next Episode')) {callb(el.href); return;}} callb(undefined);",
-    "mainPagePattern": ".*kickassanime.[a-z]+",
+    "mainPagePattern": ".*kickassanime\\.[a-z]+\\/?$",
     "mainPageButtonParent": "main-nav",
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 0,
