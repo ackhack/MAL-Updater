@@ -24,21 +24,15 @@ chrome.webRequest.onHeadersReceived.addListener(
 );
 
 const updateCycleTime = 15_000;
-let isActive = false;
-let lastUpdate = Date.now();
-let updateQueue = undefined;
-let discordPort;
-let recentName = "";
-let recentEpisode = 0;
-
-chrome.storage.local.get("MAL_Settings_DiscordActive", function (res) {
-    if (res.MAL_Settings_DiscordActive == true) {
-        isActive = true;
-    }
-});
+var discordActive;
+var lastUpdate = Date.now();
+var updateQueue = undefined;
+var discordPort;
+var recentName = "";
+var recentEpisode = 0;
 
 function changeActiveDiscordState(val) {
-    isActive = val;
+    discordActive = val;
     if (!val) {
         removeDiscord();
     } else {
@@ -72,7 +66,7 @@ function removeDiscord() {
 }
 
 chrome.runtime.onConnect.addListener((port) => {
-    if (!isActive) {
+    if (!discordActive) {
         return;
     }
     if (port.name == "discord") {
@@ -99,7 +93,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case "REMOVE_DRP":
             return removeDiscord();
         case "DISCORD_PRESENCE":
-            if (isActive) {
+            if (discordActive) {
                 addDiscord();
                 waitForLoad(() => {
                     if (request.active) {

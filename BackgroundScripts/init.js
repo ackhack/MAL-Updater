@@ -1,26 +1,57 @@
+var settings = [
+    {
+        name: "MAL_Settings_Bookmarks",
+        execfunction: initBookmarkFolder
+    }, {
+        name: "MAL_Settings_Active",
+        variable: 'active',
+        default: true
+    }, {
+        name: "MAL_Settings_DiscordActive",
+        variable: 'discordActive',
+        default: false
+    }, {
+        name: "MAL_Settings_CheckLastEpisode",
+        variable: 'checkLastEpisodeBool',
+        default: true
+    }, {
+        name: "MAL_Settings_DisplayMode",
+        variable: 'displayMode',
+        default: true
+    }, {
+        name: "MAL_Settings_Bookmarks_Active",
+        variable: 'bookmarkActive',
+        execfunction: initBookmarkEvent,
+        default: true
+    }, {
+        name: "MAL_Settings_Bookmarks_Auto",
+        variable: 'bookmarkautoActive',
+        default: false
+    }
+];
+
 init();
 
 function init() {
     //Init with callbacks for right order
     checkUpdateCycle();
-    initSecret(() => { initSites(() => { initSettings(() => { initCache(() => { initHistory(() => { }) }) }) }) });
-}
-
-function readDirectory(directory, callb) {
-    //Gets all json Pages
-    let entries = [];
-    directory.createReader().readEntries(function (results) {
-        for (let page of results) {
-            entries = entries.concat(page.name);
-        }
-        callb(entries);
-    });
+    initSecret(() => { initSites(() => { initSettings(0, () => { initCache(() => { initHistory(() => { }) }) }) }) });
 }
 
 function initSites(callb) {
     //Write the Pages Folder into a useable object
     chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
         storageRootEntry.getDirectory("Pages", { create: false }, function (directory) {
+            function readDirectory(directory, callb) {
+                //Gets all json Pages
+                let entries = [];
+                directory.createReader().readEntries(function (results) {
+                    for (let page of results) {
+                        entries = entries.concat(page.name);
+                    }
+                    callb(entries);
+                });
+            }
             readDirectory(directory, function (siteNames) {
                 let curSite = 0;
                 for (let name of siteNames) {
@@ -46,6 +77,17 @@ function initSites(callb) {
 function initSecret(callb) {
     //Try to get the secret.json
     chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
+
+        function fileExists(storageRootEntry, fileName, callback) {
+            storageRootEntry.getFile(fileName, {
+                create: false
+            }, function () {
+                callback(true);
+            }, function () {
+                callback(false);
+            });
+        }
+
         fileExists(storageRootEntry, 'Resources/secret.json', function (isExist) {
             if (isExist) {
                 let url = chrome.runtime.getURL('Resources/secret.json');
@@ -68,107 +110,34 @@ function initSecret(callb) {
     });
 }
 
-function fileExists(storageRootEntry, fileName, callback) {
-    storageRootEntry.getFile(fileName, {
-        create: false
-    }, function () {
-        callback(true);
-    }, function () {
-        callback(false);
-    });
-}
+function initSettings(i, callb) {
+    if (i == settings.length) {
+        callb();
+        return;
+    }
+    let setting = settings[i];
 
-function initSettings(callb) {
-    function setting1(callb) {
-        chrome.storage.local.get("MAL_Settings_Bookmarks", function (res) {
-            if (res.MAL_Settings_Bookmarks != "" && res.MAL_Settings_Bookmarks != undefined) {
-                initBookmarkFolder(res.MAL_Settings_Bookmarks);
-            }
-            callb();
-        });
-    }
-    function setting2(callb) {
-        chrome.storage.local.get("MAL_Settings_Active", function (res) {
-            if (res.MAL_Settings_Active != "" && res.MAL_Settings_Active != undefined) {
-                active = res.MAL_Settings_Active;
-            } else {
-                active = true;
-            }
-            callb();
-        });
-    }
-    function setting3(callb) {
-        chrome.storage.local.get("MAL_Settings_DiscordActive", function (res) {
-            if (res.MAL_Settings_DiscordActive == "" && res.MAL_Settings_DiscordActive == undefined) {
-                chrome.storage.local.set({ "MAL_Settings_DiscordActive": false }, function (res) {
-                    callb();
-                });
-                return;
-            }
-            callb();
-        });
-    }
-    function setting4(callb) {
-        chrome.storage.local.get("MAL_Settings_CheckLastEpisode", function (res) {
-            if (res.MAL_Settings_CheckLastEpisode == "" && res.MAL_Settings_CheckLastEpisode == undefined) {
-                chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": true }, function (res) {
-                    callb();
-                });
-                return;
-            }
-            callb();
-        });
-    }
-    function setting5(callb) {
-        chrome.storage.local.get("MAL_Settings_DisplayMode", function (res) {
-            if (res.MAL_Settings_DisplayMode == "" && res.MAL_Settings_DisplayMode == undefined) {
-                chrome.storage.local.set({ "MAL_Settings_DisplayMode": true }, function (res) {
-                    callb();
-                });
-                return;
-            }
-            callb();
-        });
-    }
-    function setting6(callb) {
-        chrome.storage.local.get("MAL_Settings_Bookmarks_Active", function (res) {
-            if (res.MAL_Settings_Bookmarks_Active != "" && res.MAL_Settings_Bookmarks_Active != undefined) {
-                bookmarkActive = res.MAL_Settings_Bookmarks_Active;
-                initBookmarkEvent();
-            } else {
-                bookmarkActive = true;
-            }
-            callb();
-        });
-    }
-    function setting7(callb) {
-        chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", function (res) {
-            if (res.MAL_Settings_Bookmarks_Auto != "" && res.MAL_Settings_Bookmarks_Auto != undefined) {
-                bookmarkautoActive = res.MAL_Settings_Bookmarks_Auto;
-                if (bookmarkautoActive) {
-                    checkBookmarks();
-                }
-            } else {
-                bookmarkautoActive = false;
-            }
-            callb();
-        });
-    }
+    chrome.storage.local.get(setting.name, function (res) {
 
-    setting1(() => {
-        setting2(() => {
-            setting3(() => {
-                setting4(() => {
-                    setting5(() => {
-                        setting6(() => {
-                            setting7(() => {
-                                callb();
-                            })
-                        })
-                    })
-                })
-            })
-        })
+        if (res[setting.name] != "" && res[setting.name] != undefined) {
+
+            if ('variable' in setting) {
+                this[setting.variable] = res[setting.name];
+            }
+            if ('execfunction' in setting) {
+                setting.execfunction(res[setting.name]);
+            }
+
+        } else {
+            
+            if ('variable' in setting) {
+                this[setting.variable] = setting.default;
+            }
+            if ('execfunction' in setting && setting.default === true) {
+                setting.execfunction();
+            }
+        }
+        initSettings(++i, callb);
     });
 }
 
@@ -219,16 +188,6 @@ function initBookmarkEvent() {
     });
 }
 
-function checkUpdateCycle() {
-    checkUpdate(result => {
-        if (result.update) {
-            chrome.browserAction.setBadgeText({ text: "1" });
-            return;
-        }
-        setTimeout(() => { checkUpdateCycle() }, 1_800_000);
-    });
-}
-
 function initInjector() {
     let sitePatterns = [];
     for (let site in sites) {
@@ -237,5 +196,14 @@ function initInjector() {
     injectObject.push({
         matches: sitePatterns,
         js: ["InjectScripts/animeSiteInject.js"]
+    });
+    
+    sitePatterns = [];
+    for (let site in sites) {
+        sitePatterns.push(sites[site].mainPagePattern);
+    }
+    injectObject.push({
+        matches: sitePatterns,
+        js: ["InjectScripts/animeMainSiteInject.js"]
     });
 }

@@ -28,15 +28,15 @@ function init() {
 }
 
 function createCards() {
-    for (let i = 0; i< historyObj.length;i++) {
+    for (let i = historyObj.length-1; i > 0; i--) {
         mainDiv.appendChild(createCard(i, historyObj[i]));
     }
 }
 
-function createCard(index,entry) {
+function createCard(index, entry) {
     let div = document.createElement("div");
     div.className = "card";
-    div.innerText = entry?.name + " : Episode " +  entry?.episode;
+    div.innerText = entry?.name + " : Episode " + entry?.episode;
     let info = document.createElement("span");
     info.style = "display:none";
     info.innerText = index;
@@ -60,7 +60,7 @@ function closedMeta() {
 }
 
 function deleteMeta() {
-    historyObj.splice(currIndex,1);
+    historyObj.splice(currIndex, 1);
     syncHistory();
     clearCards();
     createCards();

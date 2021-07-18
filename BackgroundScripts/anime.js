@@ -3,6 +3,7 @@ var active;
 var checkLastEpisodeBool;
 var binge = new Set();
 var animeCache;
+var displayMode;
 
 function getAnime(req, callb, nTry = 0) {
     if (!active) {
@@ -49,10 +50,8 @@ function getAnime(req, callb, nTry = 0) {
                     checkLastEpisode(responseJSON.id, req.episode, (lastWatched, episode) => {
                         responseJSON.lastWatched = lastWatched;
                         responseJSON.lastEpisode = episode;
-                        getDisplayMode(displayMode => {
-                            responseJSON.displayMode = displayMode;
-                            callb(responseJSON);
-                        })
+                        responseJSON.displayMode = displayMode;
+                        callb(responseJSON);
                     });
                 }
             });
@@ -159,18 +158,6 @@ function finishedEpisode(req, callb) {
 
         return true;
     }
-}
-
-function getDisplayMode(callb) {
-    chrome.storage.local.get(["MAL_Settings_DisplayMode"], function (result) {
-
-        if (result != {} && result["MAL_Settings_DisplayMode"] != undefined) {
-            callb(result["MAL_Settings_DisplayMode"]);
-            return;
-        }
-        chrome.storage.local.set({ ["MAL_Settings_DisplayMode"]: true }, function () { });
-        callb(true);
-    });
 }
 
 function getAnimeDetails(id, callb) {

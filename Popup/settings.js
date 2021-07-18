@@ -236,7 +236,6 @@ function removeDiscord() {
 
 function changeCheckLastEpisode(event) {
     chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": event.target.checked }, function (res) {
-        console.log(event.target.checked);
         chrome.runtime.sendMessage(
             {
                 type: "CHANGED_CHECK_LAST_EPISODE",
@@ -249,6 +248,13 @@ function changeCheckLastEpisode(event) {
 
 function changeDisplayMode(event) {
     chrome.storage.local.set({ "MAL_Settings_DisplayMode": event.target.checked }, function (res) {
+        chrome.runtime.sendMessage(
+            {
+                type: "CHANGED_DISPLAY_MODE",
+                value: event.target.checked
+            },
+            () => { }
+        );
     });
 }
 

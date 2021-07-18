@@ -11,5 +11,11 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 2,
     "ulMarginLeft": 2,
-    "nextBookmark": "let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1); for (let node of document.getElementsByTagName('a')) { if (node.href == nexthref) {callb(window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1)); return;} } callb(undefined);"
+    "nextBookmark": "let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1); for (let node of document.getElementsByTagName('a')) { if (node.href == nexthref) {callb(window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1)); return;} } callb(undefined);",
+    "mainPagePattern": ".*gogoanimehub.[a-z]+",
+    "mainPageButtonParent": "anime_name recent_release",
+    "mainPageButtonParentType": "class",
+    "mainPageParentIndex": 0,
+    "mainPageButtonInsertBeforeIndex": -1,
+    "mainPageListName": "items"
 }

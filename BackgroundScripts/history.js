@@ -5,6 +5,7 @@ function addHistory(name,episode) {
     historyObj.push({
         name: name,
         episode: episode,
+        time: Date.now()
     });
 
     syncHistory();

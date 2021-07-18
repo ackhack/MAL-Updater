@@ -11,5 +11,11 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 1,
     "ulMarginLeft": 0,
-    "nextBookmark": "for (let el of document.getElementsByClassName('ka-url-wrapper')) {if (el.innerText.includes('Next Episode')) {callb(el.href); return;}} callb(undefined);"
+    "nextBookmark": "for (let el of document.getElementsByClassName('ka-url-wrapper')) {if (el.innerText.includes('Next Episode')) {callb(el.href); return;}} callb(undefined);",
+    "mainPagePattern": ".*kickassanime.[a-z]+",
+    "mainPageButtonParent": "main-nav",
+    "mainPageButtonParentType": "id",
+    "mainPageParentIndex": 0,
+    "mainPageButtonInsertBeforeIndex": 1,
+    "mainPageListName": "video-list row mx-0"
 }

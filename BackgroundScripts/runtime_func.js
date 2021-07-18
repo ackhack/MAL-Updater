@@ -14,6 +14,19 @@ function validateSite(req, callb) {
     return false;
 }
 
+function validateMainSite(req, callb) {
+    //check if we have the site saved as json
+
+    for (let site in sites) {
+        if (req.url.match(sites[site].mainPagePattern)) {
+            callb({site:sites[site],cache:animeCache});
+            return true;
+        }
+    }
+    callb(undefined);
+    return false;
+}
+
 function changeActiveState(value) {
     active = value;
     if (active && usertoken === undefined) {
@@ -24,6 +37,11 @@ function changeActiveState(value) {
 
 function changeCheckLastEpisode(value) {
     checkLastEpisodeBool = value;
+    return true;
+}
+
+function changeDisplayMode(value) {
+    displayMode = value;
     return true;
 }
 
@@ -82,7 +100,16 @@ function checkUpdate(callb) {
     return true;
 }
 
+function checkUpdateCycle() {
+    checkUpdate(result => {
+        if (result.update) {
+            chrome.browserAction.setBadgeText({ text: "1" });
+            return;
+        }
+        setTimeout(() => { checkUpdateCycle() }, 1_800_000);
+    });
+}
 
 function handleAnimeWatchedInfo(req) {
-    addHistory(req.name,req.episode);
+    addHistory(req.name, req.episode);
 }

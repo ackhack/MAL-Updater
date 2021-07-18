@@ -15,6 +15,8 @@ chrome.runtime.onMessage.addListener(
                 return setCache(request, onSuccess);
             case "VALIDATE_SITE":
                 return validateSite(request, onSuccess);
+            case "VALIDATE_MAIN_SITE":
+                return validateMainSite(request, onSuccess);
             case "CHANGED_BOOKMARK":
                 return updateBookmarkFolder(request);
             case "DELETE_CACHE":
@@ -25,6 +27,8 @@ chrome.runtime.onMessage.addListener(
                 return unauthorize();
             case "CHANGED_CHECK_LAST_EPISODE":
                 return changeCheckLastEpisode(request.value);
+            case "CHANGED_DISPLAY_MODE":
+                return changeDisplayMode(request.value);
             case "BINGE_WATCHING":
                 return addBinge(request.id);
             case "GET_NEWEST_VERSION":

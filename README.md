@@ -10,6 +10,7 @@ Features:
 - Check if the current Episode is the next in the Series
 - Pressing S twice in the VideoPlayer will skip 1:27 forwards
 - Picks a Server on KAA
+- Filter Animes in Recent Page
 
 Supported Sites:
 - Kickassanime
