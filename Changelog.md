@@ -1,3 +1,13 @@
+6.3.0: 27.07.2021
+    -Cleanup
+    -Can now import/export Cache
+    -Fixed Regex Patterns
+    -User Inputted ID Checker
+    -History now shows Timestamp
+    -Cache Clear now requires Confirmation
+    -Deleting CacheEntry now requires Confirmation
+    -Deleting HistoryEntry now requires Confirmation
+
 6.2.1: 18.07.2021
     -Fixed Regex Patterns
 
@@ -60,7 +70,7 @@
 
 4.2.0: 07.05.2021
     -Can now clear specific Cache in Debug
-    -Shows AnimeName in UpdateSuccesMessage
+    -Shows AnimeName in UpdateSuccessMessage
     -Refractored Settings Page
 
 4.1.6: 05.05.2021

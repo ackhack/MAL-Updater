@@ -68,27 +68,11 @@ function setBookmark(animeID, oldURL, nextURL) {
         });
 
     if (nextURL) {
-        //add new bookmark
-        if (name == undefined) {
-            fetch("https://api.myanimelist.net/v2/anime/" + animeID, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + usertoken.access,
-                },
-            })
-                .then(response => {
-                    response.json().then((json) => {
-                        name = json.title;
-                        addBookmark(animeID + ": " + name, nextURL);
-                    })
-                });
-        } else {
-            addBookmark(animeID + ": " + name, nextURL);
-        }
+        addBookmark(animeID + ": " + name, nextURL);
     }
 }
 
-function addBookmark(name, url) {
+function addBookmark(name, url, nTry = 0) {
     getBookmark(bookmarkID, res => {
         if (res != undefined) {
             chrome.bookmarks.create({
@@ -97,7 +81,9 @@ function addBookmark(name, url) {
                 "url": url
             }, () => { })
         } else {
-            initSettings(() => { addBookmark(name, url); })
+            nTry++;
+            if (nTry < 10)
+                initSettings(() => { addBookmark(name, url, nTry); })
         }
     });
 }
@@ -120,7 +106,6 @@ function createBookmarkFolder(name) {
             bookmarkID = bookmark.id;
             chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
         });
-        return;
     });
 }
 

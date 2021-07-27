@@ -133,10 +133,7 @@ function recieveAnime(res) {
         let id = parseInt(document.getElementById("MAL_UPDATER_INPUT_1").value);
 
         if (id !== undefined && id !== NaN) {
-            alert("Inserted UserInput, cant guarantee it works");
-            animeID = id;
-            afterAnimeID();
-            document.getElementById("MAL_UPDATER_DIV_1").remove();
+            displayUserInputtedAnime(id);
         } else {
             alert("Could not parse Number, please retry");
         }
@@ -176,6 +173,7 @@ function createMainList(res) {
     //Returns the List displaying the Animes to pick from
     if (res.displayMode === false) {
         let ul = document.createElement("ul");
+        ul.id = "MAL_UPDATER_LIST_1";
         ul.style = "margin-left:" + site.ulMarginLeft + "em;";
 
         for (let elem of res.data) {
@@ -189,6 +187,7 @@ function createMainList(res) {
         return ul;
     } else {
         let table = document.createElement("table");
+        table.id = "MAL_UPDATER_LIST_1";
         table.style = "margin-left:" + site.ulMarginLeft + "em;";
 
         let counter = 0;
@@ -208,7 +207,7 @@ function createMainList(res) {
                 para.innerText = elem.node.title;
 
             let img = document.createElement("img");
-            img.src = elem.node.main_picture.medium;
+            img.src = elem.node.main_picture?.medium;
             img.alt = elem.node.title;
             img.style = "width:100%;max-width:200px";
 
@@ -542,4 +541,21 @@ function sendWatchedInfo() {
             }
         );
     }
+}
+
+function displayUserInputtedAnime(id) {
+    let ul = document.getElementById("MAL_UPDATER_LIST_1");
+    if (!ul) {
+        return;
+    }
+    chrome.runtime.sendMessage(
+        {
+            type: "GET_ANIME_BY_ID",
+            id: id
+        },
+        res => {
+            ul.id = "";
+            ul.parentElement.replaceChild(createMainList({data: [{node: res}]}),ul);
+        }
+    );
 }

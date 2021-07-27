@@ -41,6 +41,14 @@ chrome.runtime.onMessage.addListener(
                 return selectInjector(sender);
             case "ANIME_WATCHED_INFO":
                 return handleAnimeWatchedInfo(request);
+            case "GET_ANIME_BY_ID":
+                return getAnimeDetails(request.id, onSuccess);
+            case "EXPORT_CACHE":
+                return exportCacheCallb(onSuccess);
+            case "IMPORT_CACHE":
+                return importCacheFile(request);
+            case "CONFIRM_MESSAGE":
+                return confirmMessage(request.message,onSuccess);
             default:
                 return false;
         }

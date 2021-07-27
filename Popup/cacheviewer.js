@@ -121,6 +121,9 @@ function closedMeta() {
 }
 
 function deleteMeta() {
+    if (!confirm("Do you really want to delete this Entry"))
+        return;
+
     delete animeCache[currCard.meta.id];
     syncCache();
     clearCards();

@@ -11,7 +11,7 @@ function getAnime(req, callb, nTry = 0) {
     }
     nTry++;
 
-    let cached = nTry == 1 ? getCache(req.site, req.name) : undefined;
+    let cached = nTry == 1 ? getCacheByName(req.site, req.name) : undefined;
 
     if (cached !== undefined) {
 
@@ -42,7 +42,7 @@ function getAnime(req, callb, nTry = 0) {
             .then(responseJSON => {
                 if (responseJSON.error) {
                     if (nTry > 9) {
-                        callb({ error: "Couldn`t get Result from API:" + JSON.stringify(responseJSON) });
+                        callb({ error: "Couldn`t get Result from API: " + JSON.stringify(responseJSON) });
                     } else {
                         getAnime(req, callb, nTry);
                     }
@@ -60,7 +60,7 @@ function getAnime(req, callb, nTry = 0) {
 }
 
 function checkLastEpisode(id, episode, callb) {
-    if (checkLastEpisodeBool == false) {
+    if (!checkLastEpisodeBool) {
         callb(undefined, undefined);
         return;
     }
@@ -117,10 +117,8 @@ function finishedEpisode(req, callb) {
             });
         return true;
     } else {
-        console.log(req);
-        let anime = getCacheById(req.id);
 
-        console.log(anime);
+        let anime = getCacheById(req.id);
 
         if (anime === undefined) {
             callb({ num_episodes_watched: -1 });
@@ -173,6 +171,7 @@ function getAnimeDetails(id, callb) {
                 callb(json);
             })
         });
+    return true;
 }
 
 function getAnimeSequel(related) {
@@ -190,5 +189,5 @@ function getAnimeTitle(anime) {
             return anime.meta.alternative_titles.en;
         }
     }
-    return anime.meta.title;
+    return anime.meta.title ?? "Unnamed Anime";
 }

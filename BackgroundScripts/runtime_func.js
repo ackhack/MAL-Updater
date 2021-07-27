@@ -45,13 +45,6 @@ function changeDisplayMode(value) {
     return true;
 }
 
-function unauthorize() {
-    changeActiveState(false);
-    chrome.storage.local.remove("MAL_User_Token", () => { });
-    usertoken = undefined;
-    return true;
-}
-
 function addBinge(id) {
     binge.add(id);
     return true;
@@ -112,4 +105,9 @@ function checkUpdateCycle() {
 
 function handleAnimeWatchedInfo(req) {
     addHistory(req.name, req.episode);
+}
+
+function confirmMessage(msg,callb) {
+    callb(confirm(msg));
+    return true;
 }

@@ -14,7 +14,7 @@ function initButtons() {
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
     document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
-    document.getElementById("btnCacheDeleteAll").onclick = _ => deleteCache({ all: true });
+    document.getElementById("btnCacheDeleteAll").onclick = deleteCacheAll;
     document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
     document.getElementById("btnUnauthorize").onclick = unauthorize;
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
@@ -23,6 +23,8 @@ function initButtons() {
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
     document.getElementById("btnHistoryViewer").onclick = showHistory;
+    document.getElementById("btnCacheImport").onclick = importCache;
+    document.getElementById("btnCacheExport").onclick = exportCache;
 }
 
 function initSettings() {
@@ -214,6 +216,20 @@ function deleteCache(query = {}) {
     }
 }
 
+function deleteCacheAll() {
+    chrome.runtime.sendMessage(
+        {
+            type: "CONFIRM_MESSAGE",
+            message: "Do you want to delete the whole Cache (can't be reverted)"
+        },
+        result => {
+            if (result) {
+                deleteCache({ all: true });
+            }
+        }
+    );
+}
+
 function unauthorize() {
     document.getElementById("cbActive").checked = false;
     changeActiveState({ target: { checked: false } });
@@ -274,6 +290,52 @@ function showHistory() {
         .then((response) => {
             chrome.tabs.create({ url: response.url });
         }).catch(err => console.log(err));
+}
+
+function importCache() {
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => {
+        var file = e.target.files[0];
+        if (file.type !== "application/json") {
+            alert("Please choose a json File exported from another instance");
+            return;
+        }
+        var reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+            var content = readerEvent.target.result;
+            console.log(content);
+            chrome.runtime.sendMessage(
+                {
+                    type: "IMPORT_CACHE",
+                    cacheString: content
+                }
+            );
+        }
+    }
+    input.click();
+}
+
+function exportCache() {
+    chrome.runtime.sendMessage(
+        {
+            type: "EXPORT_CACHE"
+        },
+        cacheString => {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(cacheString));
+            element.setAttribute('download', 'malCache.json');
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+    );
 }
 
 //#endregion

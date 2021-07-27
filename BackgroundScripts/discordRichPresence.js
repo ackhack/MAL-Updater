@@ -60,7 +60,6 @@ function removeDiscord() {
     if (iframe) {
         iframe.remove();
         console.log("Discord off");
-        return true;
     }
     return true;
 }
@@ -98,7 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 waitForLoad(() => {
                     if (request.active) {
                         if (recentName == request.name && recentEpisode == request.episode) {
-                            return;
+                            return true;
                         }
                         recentName = request.name;
                         recentEpisode = request.episode;

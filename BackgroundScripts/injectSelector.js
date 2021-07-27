@@ -30,7 +30,7 @@ function injectScript(sender, site) {
 
 var injectObject = [{
     "matches": [
-        "https://ackhack.github.io/MAL-Updater/*"
+        "https:\\/\\/ackhack\\.github\\.io\\/MAL-Updater\\/\\?.*"
     ],
     "js": [
         "docs/grabCodeAndState.js"
@@ -38,7 +38,7 @@ var injectObject = [{
 },
 {
     "matches": [
-        "https://kaa-play.me/dust/*"
+        "https:\\/\\/kaa-play\\.me\\/dust\\/.*"
     ],
     "js": [
         "InjectScripts/kaa-pick-server.js"
@@ -46,15 +46,15 @@ var injectObject = [{
 },
 {
     "matches": [
-        "https://kaa-play.me/*",
-        "https://gogo-play.tv/*",
-        "https://www.mp4upload.com/*",
-        "https://mcloud.to/embed/*",
-        "https://vidstream.pro/e/*",
-        "https://www.dailymotion.com/embed/video/*",
-        "https://betaplayer.life/api/embed/*",
-        "https://streamani.net/*",
-        "https://vidstreamz.online/embed/*"
+        "https:\\/\\/kaa-play\\.me\\/.*",
+        "https:\\/\\/gogo-play\\.tv\\/.*",
+        "https:\\/\\/www.mp4upload\\.com\\/.*",
+        "https:\\/\\/mcloud\\.to\\/embed\\/.*",
+        "https:\\/\\/vidstream\\.pro\\/e\\/.*",
+        "https:\\/\\/www\\.dailymotion\\.com\\/embed\\/video\\/.*",
+        "https:\\/\\/betaplayer\\.life\\/api\\/embed\\/.*",
+        "https:\\/\\/streamani\\.net\\/.*",
+        "https:\\/\\/vidstreamz\\.online\\/embed\\/.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"

@@ -94,6 +94,25 @@ function pendNewAccessToken(time) {
 
 function getNewAuthCode() {
     //Generate verifier and state
+
+    function randomString() {
+        return generateId((Math.random() * 85) + 43);
+    }
+    
+    function dec2hex(dec) {
+        return dec.toString(16).padStart(2, "0")
+    }
+    
+    function generateId(len) {
+        var arr = new Uint8Array((len || 40) / 2)
+        window.crypto.getRandomValues(arr)
+        return Array.from(arr, dec2hex).join('')
+    }
+    
+    function getStateID() {
+        return "RequestID" + parseFloat(Math.random().toString()).toFixed(10);
+    }
+
     code_verifier = randomString();
     stateID = getStateID();
     console.log(stateID);
@@ -106,24 +125,6 @@ function getNewAuthCode() {
         "&code_challenge=" + code_verifier +
         "&code_challenge_method=plain")
         .then(response => chrome.tabs.create({ url: response.url }));
-}
-
-function randomString() {
-    return generateId((Math.random() * 85) + 43);
-}
-
-function dec2hex(dec) {
-    return dec.toString(16).padStart(2, "0")
-}
-
-function generateId(len) {
-    var arr = new Uint8Array((len || 40) / 2)
-    window.crypto.getRandomValues(arr)
-    return Array.from(arr, dec2hex).join('')
-}
-
-function getStateID() {
-    return "RequestID" + parseFloat(Math.random().toString()).toFixed(10);
 }
 
 function checkState(req, callb) {
@@ -161,4 +162,11 @@ function getUserToken() {
     }
 
     xhr.send(para);
+}
+
+function unauthorize() {
+    changeActiveState(false);
+    chrome.storage.local.remove("MAL_User_Token", () => { });
+    usertoken = undefined;
+    return true;
 }
