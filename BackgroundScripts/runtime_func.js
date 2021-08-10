@@ -2,6 +2,7 @@ function closeTab(sender) {
     chrome.tabs.remove(sender.tab.id);
     return true;
 }
+
 function validateSite(req, callb) {
     //check if we have the site saved as json
     for (let site in sites) {
@@ -19,7 +20,7 @@ function validateMainSite(req, callb) {
 
     for (let site in sites) {
         if (req.url.match(sites[site].mainPagePattern)) {
-            callb({site:sites[site],cache:animeCache});
+            callb({ site: sites[site], cache: animeCache });
             return true;
         }
     }
@@ -107,7 +108,13 @@ function handleAnimeWatchedInfo(req) {
     addHistory(req.name, req.episode);
 }
 
-function confirmMessage(msg,callb) {
+function confirmMessage(msg, callb) {
     callb(confirm(msg));
     return true;
+}
+
+function tryGetStorage(name, defaultValue, callb) {
+    chrome.storage.local.get(name, function (result) {
+        callb(result ? result[name] ?? defaultValue : defaultValue);
+    });
 }

@@ -231,13 +231,23 @@ function deleteCacheAll() {
 }
 
 function unauthorize() {
-    document.getElementById("cbActive").checked = false;
-    changeActiveState({ target: { checked: false } });
     chrome.runtime.sendMessage(
         {
-            type: "UNAUTHORIZE"
+            type: "CONFIRM_MESSAGE",
+            message: "Do you want to unauthorize this Extension?"
         },
-        () => { }
+        result => {
+            if (result) {
+                document.getElementById("cbActive").checked = false;
+                changeActiveState({ target: { checked: false } });
+                chrome.runtime.sendMessage(
+                    {
+                        type: "UNAUTHORIZE"
+                    },
+                    () => { }
+                );
+            }
+        }
     );
 }
 

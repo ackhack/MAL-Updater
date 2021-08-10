@@ -1,3 +1,7 @@
+6.4.0: 10.08.2021
+    -Unauthorize now requires Confirmation
+    -Added Info Window
+
 6.3.0: 27.07.2021
     -Cleanup
     -Can now import/export Cache

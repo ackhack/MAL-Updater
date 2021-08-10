@@ -117,19 +117,16 @@ function initSettings(i, callb) {
     }
     let setting = settings[i];
 
-    chrome.storage.local.get(setting.name, function (res) {
+    tryGetStorage(setting.name,undefined,result => {
 
-        if (res[setting.name] != "" && res[setting.name] != undefined) {
-
+        if (result !== undefined) {
             if ('variable' in setting) {
-                this[setting.variable] = res[setting.name];
+                this[setting.variable] = result;
             }
             if ('execfunction' in setting) {
-                setting.execfunction(res[setting.name]);
+                setting.execfunction(result);
             }
-
         } else {
-            
             if ('variable' in setting) {
                 this[setting.variable] = setting.default;
             }
@@ -144,11 +141,11 @@ function initSettings(i, callb) {
 function initBookmarkFolder(folderName) {
 
     if (folderName !== undefined && folderName !== "") {
-        chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
-            if (result == {}) {
+        tryGetStorage("MAL_Bookmark_ID","",result => {
+            if (result === "") {
                 createBookmarkFolder(folderName);
             } else {
-                getBookmark(result.MAL_Bookmark_ID, res => {
+                getBookmark(result, res => {
                     if (res != undefined) {
                         bookmarkID = res.id;
                     } else {
@@ -161,23 +158,15 @@ function initBookmarkFolder(folderName) {
 }
 
 function initCache(callb) {
-    chrome.storage.local.get("MAL_AnimeCache", function (result) {
-        if (result)
-            animeCache = result["MAL_AnimeCache"] ?? {};
-        else
-            animeCache = {};
-
+    tryGetStorage("MAL_AnimeCache",{},result => {
+        animeCache = result;
         callb();
     });
 }
 
 function initHistory(callb) {
-    chrome.storage.local.get("MAL_AnimeHistory", function (result) {
-        if (result)
-            historyObj = result["MAL_AnimeHistory"] ?? [];
-        else
-            historyObj = [];
-
+    tryGetStorage("MAL_AnimeHistory",{},result => {
+        historyObj = result;
         callb();
     });
 }

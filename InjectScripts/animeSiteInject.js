@@ -1,6 +1,7 @@
 var animeName;
 var episodeNumber;
 var animeID;
+var lastWatched;
 var metaData;
 var site;
 var finished = false;
@@ -84,6 +85,7 @@ function recieveAnime(res) {
     }
 
     if (res.lastWatched != undefined) {
+        lastWatched = res.lastEpisode;
         if (!res.lastWatched) {
             let bingeBtn = document.createElement("button");
             bingeBtn.onclick = () => { bingeWatching(); bingeBtn.parentElement.remove() }
@@ -241,14 +243,29 @@ function afterAnimeID(cache = true) {
             },
             (res) => {
                 metaData = res.meta;
-                sendDiscordPresence(true);
-                insertButton();
+                finishedAnimeInit();
             }
         )
     } else {
-        sendDiscordPresence(true);
-        insertButton();
+        finishedAnimeInit();
     }
+}
+
+function finishedAnimeInit() {
+    sendDiscordPresence(true);
+    insertButton();
+    createInfoWindow();
+    addKeyListener();
+}
+
+function addKeyListener() {
+    function keyListener(event) {
+        if (event.code == 'KeyI' && event.ctrlKey) {
+            toggleInfoWindow();
+        }
+    }
+
+    document.addEventListener("keypress", (ev) => keyListener(ev));
 }
 
 function insertButton() {
@@ -555,7 +572,44 @@ function displayUserInputtedAnime(id) {
         },
         res => {
             ul.id = "";
-            ul.parentElement.replaceChild(createMainList({data: [{node: res}]}),ul);
+            ul.parentElement.replaceChild(createMainList({ data: [{ node: res }] }), ul);
         }
     );
+}
+
+function createInfoWindow() {
+    let div = document.createElement("div");
+    div.id = "MAL_UPDATER_DIV_4";
+    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);display:none";
+
+    let header = document.createElement("h5");
+    header.innerText = getAnimeName();
+
+    let infoDiv = document.createElement("div");
+    infoDiv.style = "display:flex;";
+
+    let img = document.createElement("img");
+    img.src = metaData.main_picture.large ?? metaData.main_picture.medium ?? "";
+    img.alt = "Image";
+    img.style = "width:100%;max-width:200px;padding-right: 5px;";
+
+    let info = document.createElement("span");
+    info.style = "margin:auto;";
+    info.innerText = "Episodes: " + metaData.num_episodes + "\nLast Watched: " + lastWatched ?? "?";
+
+    infoDiv.appendChild(img);
+    infoDiv.appendChild(info);
+
+    div.appendChild(header);
+    div.appendChild(infoDiv);
+
+    document.body.appendChild(div);
+}
+
+function toggleInfoWindow() {
+    let div = document.getElementById("MAL_UPDATER_DIV_4");
+
+    if (div !== null) {
+        div.style.display = div.style.display == "" ? "none" : "";
+    }
 }

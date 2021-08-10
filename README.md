@@ -11,6 +11,7 @@ Features:
 - Pressing S twice in the VideoPlayer will skip 1:27 forwards
 - Picks a Server on KAA
 - Filter Animes in Recent Page
+- Pressing Ctrl+I will show you the CacheInfos about the current Anime
 
 Supported Sites:
 - Kickassanime

@@ -158,7 +158,7 @@ function setDiscordPresence(obj) {
     if (time - updateCycleTime > lastUpdate) {
         //Send Update instant if lastUpdate is old
         lastUpdate = time;
-        discordPort.postMessage(obj);
+        discordPort?.postMessage(obj);
     } else {
         //Send Update when some Time has passed
         updateQueue = obj;

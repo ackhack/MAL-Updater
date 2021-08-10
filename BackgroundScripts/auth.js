@@ -14,14 +14,11 @@ var usertoken = {
 function getAuthCode() {
 
     try {
-        chrome.storage.local.get(['MAL_User_Token'], function (result) {
-
-            //Check if usertoken is in storage
-            //otherwise request new one
-            if (result.MAL_User_Token == undefined || result.MAL_User_Token == "") {
+        tryGetStorage('MAL_User_Token',"",result => {
+            if (result === "") {
                 getNewAuthCode();
             } else {
-                usertoken = JSON.parse(result.MAL_User_Token);
+                usertoken = JSON.parse(result);
                 parseUserToken();
             }
         });
