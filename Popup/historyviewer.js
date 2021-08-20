@@ -49,7 +49,7 @@ function createCard(index, entry) {
 function clickedCard(event) {
     let entry = JSON.parse(event.target.children[0].innerText);
     currIndex = entry?.index ?? -1;
-    document.getElementById("metaDiv").style = "display: block";
+    document.getElementById("metaDiv").style = "display: block;position:fixed;";
     document.getElementById("metaInfo").innerText = "Name: " + entry?.name + "\nEpisode: " + entry?.episode + "\nTime: " + (new Date(entry?.time) !== "Invalid Date" ? new Date(entry?.time).toLocaleString() : "Invalid Date");
 }
 

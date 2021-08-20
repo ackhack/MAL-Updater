@@ -358,7 +358,7 @@ function finishedLastEpisode(data) {
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     let pSequel = document.createElement("p");
-    pSequel.innerText = data.next ? "Sequel: " + data.next : "No Sequel found";
+    pSequel.innerText = data.next ? "Sequels: " + data.next : "No Sequel found";
     pSequel.style = "margin-left: 1.5em;margin-top: 1em;";
 
     div.appendChild(paragrah);

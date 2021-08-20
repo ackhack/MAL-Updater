@@ -110,7 +110,7 @@ function getName(meta) {
 
 function clickedCard(event) {
     currCard = JSON.parse(event.target.children[0].innerText);
-    document.getElementById("metaDiv").style = "display: block";
+    document.getElementById("metaDiv").style = "display: block;position:fixed;";
     document.getElementById("metaInfo").innerHTML = "";
     document.getElementById("metaInfo").appendChild(createListFromMeta(event.target.children[0].innerText));
 }

@@ -127,7 +127,7 @@ function finishedEpisode(req, callb) {
 
         function updateEpisode() {
             if (anime.meta.num_episodes == req.episode && req.force == false) {
-                callb({ last: true, next: getAnimeSequel(anime.meta.related_anime) });
+                callb({ last: true, next: getAnimeSequels(anime.meta.related_anime) });
             } else {
                 fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
                     method: "PUT",
@@ -174,13 +174,18 @@ function getAnimeDetails(id, callb) {
     return true;
 }
 
-function getAnimeSequel(related) {
+function getAnimeSequels(related) {
+    let list = [];
     for (let rel of related) {
         if (rel.relation_type == "sequel") {
-            return rel.node.title;
+            list.push(rel.node.title);
         }
     }
-    return undefined;
+    let retString = "";
+    for (let sequel of list) {
+        retString += sequel + "\n";
+    }
+    return retString.length > 0 ? retString : undefined;
 }
 
 function getAnimeTitle(anime) {

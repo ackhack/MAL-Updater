@@ -1,3 +1,8 @@
+6.4.1:20.08.2021
+    -Cache MetaDiv position fixed
+    -History MetaDiv position fixed
+    -Can now show multiple Sequels
+
 6.4.0: 10.08.2021
     -Unauthorize now requires Confirmation
     -Added Info Window
