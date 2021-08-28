@@ -1,3 +1,7 @@
+6.5.2: 28.08.2021
+    -Fixed Issues
+    -Increased Bookmark Upkeep Time to 30 Mins
+
 6.5.1: 28.08.2021
     -Fixed Error
     -Updated Readme

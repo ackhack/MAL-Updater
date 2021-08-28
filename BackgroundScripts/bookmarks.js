@@ -185,7 +185,7 @@ function bookmarkLoop() {
                 if (!chrome.runtime.lastError) {
                     chrome.tabs.remove(newTab.id);
                 }
-                setTimeout(() => bookmarkLoop(), 600000);
+                setTimeout(() => bookmarkLoop(), 30 * 60000);
             })
         }, 10_000);
     });
