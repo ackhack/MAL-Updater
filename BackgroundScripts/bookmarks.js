@@ -211,8 +211,8 @@ function checkBookmarkAuto(req) {
         if (animeCache[req.cacheName].meta.id == historyObj[i].id) {
             if (historyObj[i].episode == req.episode - 1) {
                 addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url);
-                break;
             }
+            break;
         }
     }
     return true;
