@@ -1,3 +1,7 @@
+6.5.1: 28.08.2021
+    -Fixed Error
+    -Updated Readme
+
 6.5.0: 28.08.2021
     -Added Help Menu
     -Added Auto Bookmark Upkeep

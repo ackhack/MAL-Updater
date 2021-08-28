@@ -12,6 +12,7 @@ Features:
 - Picks a Server on KAA
 - Filter Animes in Recent Page
 - Pressing Ctrl+I will show you the CacheInfos about the current Anime
+- Automatically add Bookmarks for new Releases
 
 Supported Sites:
 - Kickassanime

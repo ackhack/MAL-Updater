@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "6.5.0",
+    "version": "6.5.1",
     "description": "Updates MAL List",
     "manifest_version": 2,
     "permissions": [

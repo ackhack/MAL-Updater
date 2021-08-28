@@ -95,7 +95,7 @@ function addBookmark(name, url, nTry = 0) {
     });
 }
 
-function createBookmarkFolder(name) {
+function createBookmarkFolder(name = "Anime") {
     chrome.bookmarks.search(name, (result) => {
 
         for (let bookmark of result) {

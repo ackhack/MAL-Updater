@@ -155,22 +155,19 @@ function initSettings(i, callb) {
 }
 
 function initBookmarkFolder(folderName) {
-
-    if (folderName !== undefined && folderName !== "") {
-        tryGetStorage("MAL_Bookmark_ID", "", result => {
-            if (result === "") {
-                createBookmarkFolder(folderName);
-            } else {
-                getBookmark(result, res => {
-                    if (res != undefined) {
-                        bookmarkID = res.id;
-                    } else {
-                        createBookmarkFolder(folderName);
-                    }
-                });
-            }
-        });
-    }
+    tryGetStorage("MAL_Bookmark_ID", "", result => {
+        if (result === "") {
+            createBookmarkFolder(folderName);
+        } else {
+            getBookmark(result, res => {
+                if (res != undefined) {
+                    bookmarkID = res.id;
+                } else {
+                    createBookmarkFolder(folderName);
+                }
+            });
+        }
+    });
 }
 
 function initCache(callb) {
