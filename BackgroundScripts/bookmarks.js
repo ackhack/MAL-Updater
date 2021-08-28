@@ -1,5 +1,7 @@
 var bookmarkID;
 var bookmarkActive;
+
+var preferredSiteName;
 var bookmarkautoActive;
 var bookmarkAutoRunning = false;
 
@@ -75,6 +77,11 @@ function setBookmark(animeID, oldURL, nextURL) {
 function addBookmark(name, url, nTry = 0) {
     getBookmark(bookmarkID, res => {
         if (res != undefined) {
+            for (let child of res.children) {
+                if (child.url == url) {
+                    return;
+                }
+            }
             chrome.bookmarks.create({
                 "parentId": bookmarkID,
                 "title": name,
@@ -146,7 +153,7 @@ function renameBookmark(bookmark) {
     let anime = getCacheByURL(bookmark.url);
 
     if (anime !== undefined) {
-        let name = anime.meta.id + ": " + getAnimeTitle(anime);
+        let name = getBookmarkName(anime);
         if (bookmark.title == name)
             return;
         else
@@ -154,4 +161,63 @@ function renameBookmark(bookmark) {
                 addBookmark(name, bookmark.url);
             });
     }
+}
+
+function changePreferredSite(req) {
+    preferredSiteName = req.site;
+    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": preferredSiteName }, function () { });
+    if (!bookmarkAutoRunning && bookmarkautoActive)
+        bookmarkLoop();
+    return true;
+}
+
+function bookmarkLoop() {
+    if (!bookmarkautoActive) {
+        bookmarkAutoRunning = false;
+        return;
+    }
+
+    bookmarkAutoRunning = true;
+
+    chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
+        setTimeout(() => {
+            chrome.tabs.get(tab.id, (newTab) => {
+                if (!chrome.runtime.lastError) {
+                    chrome.tabs.remove(newTab.id);
+                }
+                setTimeout(() => bookmarkLoop(), 600000);
+            })
+        }, 10_000);
+    });
+}
+
+function stopBookmarkLoop() {
+    bookmarkautoActive = false;
+}
+
+function changeBookmarkAutoActive(req) {
+    bookmarkautoActive = req.value;
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": bookmarkautoActive }, function () { });
+    return true;
+}
+
+function getPreferredSite(callb) {
+    callb(preferredSiteName);
+    return true;
+}
+
+function checkBookmarkAuto(req) {
+    for (let i = historyObj.length - 1; i >= 0; i--) {
+        if (animeCache[req.cacheName].meta.id == historyObj[i].id) {
+            if (historyObj[i].episode == req.episode - 1) {
+                addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url);
+                break;
+            }
+        }
+    }
+    return true;
+}
+
+function getBookmarkName(anime) {
+    return anime.meta.id + ": " + getAnimeTitle(anime);
 }

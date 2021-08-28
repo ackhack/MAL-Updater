@@ -1,9 +1,3 @@
-//Add Button to filter List
-
-//Filter List
-
-//gaming
-
 var site;
 var cache;
 
@@ -17,6 +11,8 @@ chrome.runtime.sendMessage(
         if (data) {
             site = data['site'];
             cache = data['cache'];
+            if (data['addBookmarks'])
+                addBookmarks();
             insertButton();
         }
     }
@@ -69,10 +65,43 @@ function filterList() {
                 }
             }
         }
-        
+
         if (!inCache) {
             item.remove();
             i--;
+        }
+    }
+}
+
+function addBookmarks() {
+    let list = undefined;
+    while (list == undefined) {
+        list = document.getElementsByClassName(site.mainPageListName)[0];
+    }
+
+    for (let i = 0; i < list.childElementCount; i++) {
+        let tmpBreak = false;
+        for (let aTag of list.children[i].getElementsByTagName("a")) {
+            let res = aTag.href.match(site.urlPattern);
+
+            if (res) {
+                for (let elem in cache) {
+                    if (cache[elem][site.siteName] === res[site.nameMatch]) {
+                        tmpBreak = true;
+                        chrome.runtime.sendMessage(
+                            {
+                                type: "AUTO_BOOKMARK_CHECK",
+                                cacheName: elem,
+                                episode: res[site.episodeMatch],
+                                url: aTag.href
+                            }
+                        );
+                        break;
+                    }
+                }
+            }
+            if (tmpBreak)
+                break;
         }
     }
 }

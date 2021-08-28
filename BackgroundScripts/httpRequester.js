@@ -49,6 +49,16 @@ chrome.runtime.onMessage.addListener(
                 return importCacheFile(request);
             case "CONFIRM_MESSAGE":
                 return confirmMessage(request.message,onSuccess);
+            case "GET_SITES":
+                return getSitesAsync(onSuccess);
+            case "CHANGED_PREFERRED_SITE":
+                return changePreferredSite(request);
+            case "GET_PREFERRED_SITE":
+                return getPreferredSite(onSuccess);
+            case "CHANGED_BOOKMARK_AUTO_ACTIVE":
+                return changeBookmarkAutoActive(request);
+            case "AUTO_BOOKMARK_CHECK":
+                return checkBookmarkAuto(request);
             default:
                 return false;
         }

@@ -1,0 +1,86 @@
+[
+    {
+        "name":"General",
+        "info":"This Chrome Extension main Purpose is to automatically update your MAL-List"
+    },
+    {
+        "name":"Authorization",
+        "info":"The Authorization works via the MAL-Api v2 and accesses your Account directly"
+    },
+    {
+        "name":"Extension shows a 1 at the Icon",
+        "info":"This means an Update is available"
+    },
+    {
+        "name":"Generic - Active",
+        "info":"Whether the Script runs on th einjected Pages or not"
+    },
+    {
+        "name":"Generic - Show History",
+        "info":"The History saves all watched Episodes with the Date"
+    },
+    {
+        "name":"Generic - Check if concurrent Episode",
+        "info":"Checks whether the current open Anime Site corelates to the next Episode in that Series.\n e.g. Episode 2 is concurrent to Episode 1"
+    },
+    {
+        "name":"Generic - Show Pictures in Anime Pick Window",
+        "info":"Whether the Anime Pick Window shows the Anime Picture or just Text"
+    },
+    {
+        "name":"Generic - Unauthorize",
+        "info":"Removes the Access Token to your MAL-Account"
+    },
+    {
+        "name":"Cache - Show Cache",
+        "info":"Shows all cached Infos"
+    },
+    {
+        "name":"Cache - Delete full Cache",
+        "info":"Completly deletes the Cache"
+    },
+    {
+        "name":"Cache - Delete Cache (This URL)",
+        "info":"Tries to delete the Cache Entry for this URL"
+    },
+    {
+        "name":"Cache - Export Cache",
+        "info":"Exports the Cache in json Format"
+    },
+    {
+        "name":"Cache - Import Cache",
+        "info":"Imports the json File exported form Export Cache"
+    },
+    {
+        "name":"Bookmark - Active",
+        "info":"Whether the Extension should handle Bookmarks"
+    },
+    {
+        "name":"Bookmark - Bookmarks Folder",
+        "info":"Enter the Name of the Folder in which the Extension should add/remove the Bookmarks.\n Will create a new Folder if non exits with the given Name"
+    },
+    {
+        "name":"Bookmark - Auto Bookmarks Active",
+        "info":"Whether the Extension should automatically create Bookmarks"
+    },
+    {
+        "name":"Bookmark - Preferred Bookmark Site",
+        "info":"Change the Site which the Extension should choose when creating Bookmarks automatically"
+    },
+    {
+        "name":"Discord - Active",
+        "info":"Whether the Extension should show a DRP"
+    },
+    {
+        "name":"Discord - Remove DRP",
+        "info":"Instantly removes your DRP\nShould only be used if bugged"
+    },
+    {
+        "name":"Help",
+        "info":"This Menu"
+    },
+    {
+        "name":"Version",
+        "info":"Shows the current Version\nClick to get to the Source Code"
+    }
+]

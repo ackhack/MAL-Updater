@@ -20,7 +20,7 @@ function validateMainSite(req, callb) {
 
     for (let site in sites) {
         if (req.url.match(sites[site].mainPagePattern)) {
-            callb({ site: sites[site], cache: animeCache });
+            callb({ site: sites[site], cache: animeCache, addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName) });
             return true;
         }
     }
@@ -105,7 +105,7 @@ function checkUpdateCycle() {
 }
 
 function handleAnimeWatchedInfo(req) {
-    addHistory(req.name, req.episode);
+    addHistory(req.name, req.episode,req.id);
 }
 
 function confirmMessage(msg, callb) {
@@ -117,4 +117,9 @@ function tryGetStorage(name, defaultValue, callb) {
     chrome.storage.local.get(name, function (result) {
         callb(result ? result[name] ?? defaultValue : defaultValue);
     });
+}
+
+function getSitesAsync(callb) {
+    callb(sites);
+    return true;
 }

@@ -5,11 +5,11 @@ init();
 function init() {
     resetNotificationCounter();
     initMenu();
-    initButtons();
+    initFunctions();
     initSettings();
 }
 
-function initButtons() {
+function initFunctions() {
     document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
@@ -23,8 +23,11 @@ function initButtons() {
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
     document.getElementById("btnHistoryViewer").onclick = showHistory;
+    document.getElementById("btnHelp").onclick = showHelp;
     document.getElementById("btnCacheImport").onclick = importCache;
     document.getElementById("btnCacheExport").onclick = exportCache;
+    document.getElementById("cbBookmarkAutoActive").onchange = changeBookmarkAutoActive;
+    document.getElementById("selectPreferredSite").onchange = changedPreferredSite;
 }
 
 function initSettings() {
@@ -49,6 +52,10 @@ function initSettings() {
     })
     getBookmarkActive(active => {
         document.getElementById("cbBookmarksActive").checked = active;
+    })
+    initPreferredSiteSelect();
+    getBookmarkAutoActive(active => {
+        document.getElementById("cbBookmarkAutoActive").checked = active;
     })
 }
 
@@ -118,6 +125,15 @@ function getDisplayMode(callb) {
     });
 }
 
+function getBookmarkAutoActive(callb) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", res => {
+        if (res.MAL_Settings_Bookmarks_Auto !== "" && res.MAL_Settings_Bookmarks_Auto !== undefined)
+            callb(res.MAL_Settings_Bookmarks_Auto);
+        else
+            callb(false);
+    });
+}
+
 function getCurrentVersion(callb) {
 
     chrome.runtime.sendMessage(
@@ -130,6 +146,31 @@ function getCurrentVersion(callb) {
             } else {
                 callb("Version: " + result.version);
             }
+        }
+    );
+}
+
+function initPreferredSiteSelect() {
+    chrome.runtime.sendMessage(
+        {
+            type: "GET_SITES"
+        },
+        (sites) => {
+            let select = document.getElementById("selectPreferredSite");
+            for (let site in sites) {
+                let option = document.createElement("option");
+                option.innerText = sites[site].siteName;
+                option.value = sites[site].siteName;
+                select.appendChild(option);
+            }
+            chrome.runtime.sendMessage(
+                {
+                    type: "GET_PREFERRED_SITE"
+                },
+                (site) => {
+                    select.value = site;
+                }
+            );
         }
     );
 }
@@ -302,6 +343,13 @@ function showHistory() {
         }).catch(err => console.log(err));
 }
 
+function showHelp() {
+    fetch(chrome.runtime.getURL('Popup/helpPage.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
+}
+
 function importCache() {
     var input = document.createElement('input');
     input.type = 'file';
@@ -344,6 +392,24 @@ function exportCache() {
             element.click();
 
             document.body.removeChild(element);
+        }
+    );
+}
+
+function changedPreferredSite(event) {
+    chrome.runtime.sendMessage(
+        {
+            type: "CHANGED_PREFERRED_SITE",
+            site: event.target.value
+        }
+    );
+}
+
+function changeBookmarkAutoActive(event) {
+    chrome.runtime.sendMessage(
+        {
+            type: "CHANGED_BOOKMARK_AUTO_ACTIVE",
+            value: event.target.checked
         }
     );
 }

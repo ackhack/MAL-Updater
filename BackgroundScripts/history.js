@@ -1,11 +1,12 @@
 var historyObj = [];
 
-function addHistory(name,episode) {
+function addHistory(name,episode,id) {
 
     historyObj.push({
         name: name,
         episode: episode,
-        time: Date.now()
+        time: Date.now(),
+        id:id
     });
 
     syncHistory();

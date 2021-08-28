@@ -27,6 +27,11 @@ var settings = [
         name: "MAL_Settings_Bookmarks_Auto",
         variable: 'bookmarkautoActive',
         default: false
+    },
+    {
+        name: "MAL_Settings_Preferred_Site",
+        variable: 'preferredSiteName',
+        default: "kickassanime"
     }
 ];
 
@@ -35,7 +40,18 @@ init();
 function init() {
     //Init with callbacks for right order
     checkUpdateCycle();
-    initSecret(() => { initSites(() => { initSettings(0, () => { initCache(() => { initHistory(() => { }) }) }) }) });
+    initSecret(() => {
+        initSites(() => {
+            initSettings(0, () => {
+                if (bookmarkautoActive)
+                    bookmarkLoop();
+
+                initCache(() => {
+                    initHistory(() => { })
+                })
+            })
+        })
+    });
 }
 
 function initSites(callb) {
@@ -117,7 +133,7 @@ function initSettings(i, callb) {
     }
     let setting = settings[i];
 
-    tryGetStorage(setting.name,undefined,result => {
+    tryGetStorage(setting.name, undefined, result => {
 
         if (result !== undefined) {
             if ('variable' in setting) {
@@ -141,7 +157,7 @@ function initSettings(i, callb) {
 function initBookmarkFolder(folderName) {
 
     if (folderName !== undefined && folderName !== "") {
-        tryGetStorage("MAL_Bookmark_ID","",result => {
+        tryGetStorage("MAL_Bookmark_ID", "", result => {
             if (result === "") {
                 createBookmarkFolder(folderName);
             } else {
@@ -158,14 +174,14 @@ function initBookmarkFolder(folderName) {
 }
 
 function initCache(callb) {
-    tryGetStorage("MAL_AnimeCache",{},result => {
+    tryGetStorage("MAL_AnimeCache", {}, result => {
         animeCache = result;
         callb();
     });
 }
 
 function initHistory(callb) {
-    tryGetStorage("MAL_AnimeHistory",{},result => {
+    tryGetStorage("MAL_AnimeHistory", {}, result => {
         historyObj = result;
         callb();
     });
@@ -186,13 +202,14 @@ function initInjector() {
         matches: sitePatterns,
         js: ["InjectScripts/animeSiteInject.js"]
     });
-    
+
     sitePatterns = [];
     for (let site in sites) {
         sitePatterns.push(sites[site].mainPagePattern);
     }
     injectObject.push({
         matches: sitePatterns,
-        js: ["InjectScripts/animeMainSiteInject.js"]
+        js: ["InjectScripts/animeMainSiteInject.js"],
+        all_frames: true
     });
 }

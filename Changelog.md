@@ -1,4 +1,9 @@
-6.4.1:20.08.2021
+6.5.0: 28.08.2021
+    -Added Help Menu
+    -Added Auto Bookmark Upkeep
+    -Can't add Bookmark if URL already in a existing Bookmark
+
+6.4.1: 20.08.2021
     -Cache MetaDiv position fixed
     -History MetaDiv position fixed
     -Can now show multiple Sequels

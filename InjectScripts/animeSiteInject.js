@@ -554,7 +554,8 @@ function sendWatchedInfo() {
                 type: "ANIME_WATCHED_INFO",
                 name: getAnimeName(),
                 episode: episodeNumber,
-                maxEpisode: metaData.num_episodes
+                maxEpisode: metaData.num_episodes, 
+                id: metaData.id
             }
         );
     }

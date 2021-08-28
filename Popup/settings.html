@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <style>
     body {
@@ -6,13 +7,16 @@
       color: white;
       min-width: 150px;
     }
+
     .subDiv {
       padding: 10px;
       border: 1px solid white;
     }
+
     #pTitle {
       font-size: large;
     }
+
     #btnBack {
       margin-bottom: 5px;
       border: 1px solid white;
@@ -20,15 +24,19 @@
       background: inherit;
       display: none;
     }
+
     .settingDiv {
       display: none;
     }
+
     .settingDiv * {
       display: inherit;
     }
+
     #pVersion {
       margin: 0;
     }
+
     .mainBtn {
       border: none;
       color: inherit;
@@ -36,9 +44,11 @@
       text-align: center;
       width: -webkit-fill-available;
     }
+
     button:hover {
       cursor: pointer;
     }
+
     input[type="button"] {
       border: 1px solid white;
       color: inherit;
@@ -52,18 +62,22 @@
     #btnVal {
       margin-top: 10px;
     }
+
     #tbBookmarks {
       margin-top: 5px;
     }
+
     #pVersion:hover {
       cursor: pointer;
     }
+
     #pVersion {
       text-align: center;
       width: -webkit-fill-available;
     }
   </style>
 </head>
+
 <body>
   <p id="pTitle">Settings</p>
   <button id="btnBack">Back</button>
@@ -81,10 +95,14 @@
     <div id="divDiscord" class="subDiv mainDiv">
       <button id="btnDiscord" class="mainBtn">Discord</button>
     </div>
+    <div id="divHelp" class="subDiv mainDiv">
+      <button id="btnHelp" class="mainBtn">Help</button>
+    </div>
     <div id="divVersion" class="subDiv mainDiv ignored">
       <p id="pVersion">Loading...</p>
     </div>
     <!-- Settings-->
+    <!-- Generic-->
     <div id="divGenericSettings" class="settingDiv">
       <div id="divActiveToogle" class="subDiv">
         <input type="checkbox" id="cbActive" />
@@ -105,7 +123,7 @@
         <input type="button" id="btnUnauthorize" value="Unauthorize" />
       </div>
     </div>
-
+    <!-- Cache-->
     <div id="divCacheSettings" class="settingDiv">
       <div id="divCacheViewer" class="subDiv">
         <input type="button" id="btnCacheViewer" value="Show Cache" />
@@ -114,16 +132,16 @@
         <input type="button" id="btnCacheDeleteAll" value="Delete full Cache" />
       </div>
       <div id="btnCacheDeleteThis" class="subDiv">
-        <input type="button" id="btnCacheDeleteThis" value="Delete Cache (This URL)"/>
+        <input type="button" id="btnCacheDeleteThis" value="Delete Cache (This URL)" />
       </div>
       <div id="btnCacheExport" class="subDiv">
-        <input type="button" id="btnCacheExport" value="Export Cache"/>
+        <input type="button" id="btnCacheExport" value="Export Cache" />
       </div>
       <div id="btnCacheImport" class="subDiv">
-        <input type="button" id="btnCacheImport" value="Import Cache"/>
+        <input type="button" id="btnCacheImport" value="Import Cache" />
       </div>
     </div>
-
+    <!-- Bookmarks-->
     <div id="divBookmarkSettings" class="settingDiv">
       <div id="divBookmarksActive" class="subDiv">
         <input type="checkbox" id="cbBookmarksActive" />
@@ -134,8 +152,17 @@
         <input id="tbBookmarks" type="text" placeholder="Foldername" />
         <input id="btnBookmarkSave" type="button" value="Save" />
       </div>
+      <div id="divBookmarkAutoActive" class="subDiv">
+        <input type="checkbox" id="cbBookmarkAutoActive" />
+        <label for="cbBookmarkAutoActive">Auto Bookmarks Active</label>
+      </div>
+      <div id="divPreferredSite" class="subDiv">
+        <label id="lblBookmarkPreferredSite" for="selectPreferredSite">Preferred Bookmark Site</label>
+        <select id="selectPreferredSite">
+        </select>
+      </div>
     </div>
-
+    <!-- Discord-->
     <div id="divDiscordSettings" class="settingDiv">
       <div id="divActiveDiscordToogle" class="subDiv">
         <input type="checkbox" id="cbActiveDiscord" />

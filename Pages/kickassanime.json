@@ -17,5 +17,6 @@
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": 1,
-    "mainPageListName": "video-list row mx-0"
+    "mainPageListName": "video-list row mx-0",
+    "mainPageURL":"https://www.kickassanime.ro/"
 }
