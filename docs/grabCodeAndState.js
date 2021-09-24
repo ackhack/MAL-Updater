@@ -6,9 +6,9 @@ function run() {
 
     if (urlParams.has("error")) {
         document.getElementById("pInfo").innerText =
-                    "Error: " + urlParams.get("error").replace(/\+/g," ") +
-                    "\nMessage: " + urlParams.get("message").replace(/\+/g," ") +
-                    "\nHint: " + urlParams.get("hint").replace(/\+/g," ");
+            "Error: " + urlParams.get("error").replace(/\+/g, " ") +
+            "\nMessage: " + urlParams.get("message").replace(/\+/g, " ") +
+            "\nHint: " + urlParams.get("hint").replace(/\+/g, " ");
         return;
     }
 
@@ -20,13 +20,13 @@ function run() {
                 state: urlParams.get("state")
             },
             () => {
-                chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
+                chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: true });
             }
         );
         return;
     }
 
     alert("No Code/State found\nThis site is only for data transfer, nothing to see here");
-    chrome.runtime.sendMessage({ type: "CLOSE_TAB" });
+    chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: true });
     return;
 }

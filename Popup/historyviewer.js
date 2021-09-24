@@ -64,7 +64,7 @@ function closedMeta() {
 function deleteMeta() {
     if (!confirm("Do you really want to delete this Entry"))
         return;
-    if (currIndex == -1) {
+    if (currIndex < 0 || currIndex >= historyObj.length) {
         return;
     }
     historyObj.splice(currIndex, 1);

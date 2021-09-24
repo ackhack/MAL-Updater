@@ -104,4 +104,6 @@ function addBookmarks() {
                 break;
         }
     }
+
+    chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: false });
 }

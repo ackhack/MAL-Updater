@@ -12,7 +12,7 @@ function setBookmark(animeID, oldURL, nextURL) {
     }
 
     let anime = getCacheById(animeID);
-    let name = anime === undefined ? "" : getAnimeTitle(anime);
+
     //remove old bookmark
     if (bookmarkID)
         getBookmark(bookmarkID, res => {
@@ -28,7 +28,6 @@ function setBookmark(animeID, oldURL, nextURL) {
                     }
 
                     if (child.title.startsWith(animeID)) {
-                        name = child.title.substring(animeID.length + 1);
                         chrome.bookmarks.remove(child.id, () => { });
                         return;
                     }
@@ -69,8 +68,8 @@ function setBookmark(animeID, oldURL, nextURL) {
             }
         });
 
-    if (nextURL) {
-        addBookmark(animeID + ": " + name, nextURL);
+    if (nextURL && anime !== undefined) {
+        addBookmark(getBookmarkName(anime), nextURL);
     }
 }
 
@@ -189,10 +188,6 @@ function bookmarkLoop() {
             })
         }, 10_000);
     });
-}
-
-function stopBookmarkLoop() {
-    bookmarkautoActive = false;
 }
 
 function changeBookmarkAutoActive(req) {

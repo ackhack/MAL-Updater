@@ -104,13 +104,7 @@ function importCache(cacheString) {
     try {
         let imported = JSON.parse(cacheString);
         for (let entry in imported) {
-            console.log(entry);
-            console.log(!(entry in animeCache));
-            console.log('meta' in imported[entry]);
-            console.log('id' in imported[entry].meta);
-            console.log('title' in imported[entry].meta);
             if (!(entry in animeCache) && 'meta' in imported[entry] && 'id' in imported[entry].meta && 'title' in imported[entry].meta) {
-                console.log(imported[entry]);
                 animeCache[entry] = imported[entry];
                 continue;
             }

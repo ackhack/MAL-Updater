@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(
             case "SEND_ANIME_FINISHED":
                 return finishedEpisode(request, onSuccess);
             case "CLOSE_TAB":
-                return closeTab(sender);
+                return closeTab(sender,request.force);
             case "CACHE_ANIME":
                 return setCache(request, onSuccess);
             case "VALIDATE_SITE":

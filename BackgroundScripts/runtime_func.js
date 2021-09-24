@@ -1,5 +1,6 @@
-function closeTab(sender) {
-    chrome.tabs.remove(sender.tab.id);
+function closeTab(sender, force = false) {
+    if (!sender.tab.active || force)
+        chrome.tabs.remove(sender.tab.id);
     return true;
 }
 
@@ -105,7 +106,7 @@ function checkUpdateCycle() {
 }
 
 function handleAnimeWatchedInfo(req) {
-    addHistory(req.name, req.episode,req.id);
+    addHistory(req.name, req.episode, req.id);
 }
 
 function confirmMessage(msg, callb) {
