@@ -38,7 +38,8 @@ var injectObject = [{
 },
 {
     "matches": [
-        "https:\\/\\/kaa-play\\.me\\/dust\\/.*"
+        "https:\\/\\/kaa-play\\.me\\/dust\\/.*",
+        "https:\\/\\/beststremo\\.xyz\\/dust\\/player\\.php\\?.*"
     ],
     "js": [
         "InjectScripts/kaa-pick-server.js"

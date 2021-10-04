@@ -1,3 +1,7 @@
+6.5.4
+    -Removed deprecated initEvent Method
+    -Fixed KAA Server Picker
+
 6.5.3: 24.09.2021
     -Cleanup
     -Upkeep Site now closes asap

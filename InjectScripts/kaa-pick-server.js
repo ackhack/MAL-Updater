@@ -29,7 +29,6 @@ function selectServer(list) {
     }
 
     list.selectedIndex = highestprioIndex;
-    let e = document.createEvent('HTMLEvents');
-    e.initEvent("change", false, true);
+    let e = new Event("change", {"bubbles":false,"cancelable":true});
     list.dispatchEvent(e);
 }
