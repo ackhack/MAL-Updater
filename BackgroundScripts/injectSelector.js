@@ -55,7 +55,8 @@ var injectObject = [{
         "https:\\/\\/www\\.dailymotion\\.com\\/embed\\/video\\/.*",
         "https:\\/\\/betaplayer\\.life\\/api\\/embed\\/.*",
         "https:\\/\\/streamani\\.net\\/.*",
-        "https:\\/\\/vidstreamz\\.online\\/embed\\/.*"
+        "https:\\/\\/vidstreamz\\.online\\/embed\\/.*",
+        "https:\\/\\/beststremo\\.xyz\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"

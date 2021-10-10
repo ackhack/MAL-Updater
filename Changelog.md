@@ -1,4 +1,7 @@
-6.5.4
+6.5.5: 10.10.2021
+    -Fixed Regex
+
+6.5.4: 04.10.2021
     -Removed deprecated initEvent Method
     -Fixed KAA Server Picker
 
