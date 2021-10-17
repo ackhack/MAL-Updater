@@ -131,3 +131,7 @@ function importCacheFile(req) {
     importCache(req.cacheString);
     return true;
 }
+
+function getCacheByURLAsync(url, callb) {
+    callb(getCacheByURL(url));
+}

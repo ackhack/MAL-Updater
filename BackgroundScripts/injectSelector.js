@@ -39,7 +39,7 @@ var injectObject = [{
 {
     "matches": [
         "https:\\/\\/kaa-play\\.me\\/dust\\/.*",
-        "https:\\/\\/beststremo\\.xyz\\/dust\\/player\\.php\\?.*",
+        "https:\\/\\/beststremo\\.(xyz|com)\\/dust\\/player\\.php\\?.*",
         "https:\\/\\/kaaplayer\\.com\\/dust\\/player\\.php\\?.*"
     ],
     "js": [
@@ -57,7 +57,8 @@ var injectObject = [{
         "https:\\/\\/betaplayer\\.life\\/api\\/embed\\/.*",
         "https:\\/\\/streamani\\.net\\/.*",
         "https:\\/\\/vidstreamz\\.online\\/embed\\/.*",
-        "https:\\/\\/beststremo\\.xyz\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
+        "https:\\/\\/beststremo\\.(xyz|com)\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
+        "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"

@@ -1,3 +1,7 @@
+6.5.6: 17.10.2021
+    -Added Regex
+    -Added Currently watching to Settings
+
 6.5.5: 10.10.2021
     -Fixed Regex
 

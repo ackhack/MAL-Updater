@@ -7,6 +7,7 @@ function init() {
     initMenu();
     initFunctions();
     initSettings();
+    initCurrentAnime();
 }
 
 function initFunctions() {
@@ -65,6 +66,11 @@ function initMenu() {
             btn.onclick = (ev) => clickedButton(ev);
     });
     document.getElementById("btnBack").onclick = clickedBackButton;
+}
+
+function initCurrentAnime() {
+    document.getElementById("divCurrent").style.display = "none";
+    setCurrentAnime();
 }
 
 function resetNotificationCounter() {
@@ -430,6 +436,46 @@ function clickedBackButton() {
     Array.from(document.getElementById("divSettings").children).forEach(div => { div.style = "display:none" });
     Array.from(document.getElementsByClassName("mainDiv")).forEach(div => { div.style = "display:block" });
     document.getElementById("pTitle").innerText = "Settings";
+}
+
+//#endregion
+
+//#region Current Anime
+
+function setCurrentAnime() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (tabs[0]) {
+            chrome.runtime.sendMessage(
+                {
+                    type: "GET_ANIME_BY_URL",
+                    url: tabs[0].url
+                },
+                anime => setAnime(anime)
+            );
+        }
+    });
+}
+
+function setAnime(anime) {
+    if (anime) {
+        let img = document.getElementById("imgCurrent");
+        img.src = anime.meta.main_picture.large ?? anime.meta.main_picture.medium ?? "";
+        img.alt = "Image";
+        img.style = "padding-right: 5px;";
+
+        document.getElementById("pCurrent").innerText = getAnimeTitle(anime);
+
+        document.getElementById("divCurrent").style.display = "block";
+    }
+}
+
+function getAnimeTitle(anime) {
+    if (anime.meta.alternative_titles) {
+        if (anime.meta.alternative_titles.en) {
+            return anime.meta.alternative_titles.en;
+        }
+    }
+    return anime.meta.title ?? "Unnamed Anime";
 }
 
 //#endregion

@@ -43,6 +43,8 @@ chrome.runtime.onMessage.addListener(
                 return handleAnimeWatchedInfo(request);
             case "GET_ANIME_BY_ID":
                 return getAnimeDetails(request.id, onSuccess);
+            case "GET_ANIME_BY_URL":
+                return getCacheByURLAsync(request.url, onSuccess);
             case "EXPORT_CACHE":
                 return exportCacheCallb(onSuccess);
             case "IMPORT_CACHE":
