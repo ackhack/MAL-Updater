@@ -1,3 +1,8 @@
+6.5.7: 26.10.2021
+    -Fixed some Players not skipping on 9anime
+    -Fixed DRP not disappearing
+    -HistoryViewer now shows limited Amount of Entries
+
 6.5.6: 17.10.2021
     -Added Regex
     -Added Currently watching to Settings

@@ -52,13 +52,16 @@ var injectObject = [{
         "https:\\/\\/gogo-play\\.tv\\/.*",
         "https:\\/\\/www.mp4upload\\.com\\/.*",
         "https:\\/\\/mcloud\\.to\\/embed\\/.*",
-        "https:\\/\\/vidstream\\.pro\\/e\\/.*",
+        "https:\\/\\/vidstream\\.pro\\/(e|embed)\\/.*",
         "https:\\/\\/www\\.dailymotion\\.com\\/embed\\/video\\/.*",
         "https:\\/\\/betaplayer\\.life\\/api\\/embed\\/.*",
         "https:\\/\\/streamani\\.net\\/.*",
         "https:\\/\\/vidstreamz\\.online\\/embed\\/.*",
         "https:\\/\\/beststremo\\.(xyz|com)\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
-        "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
+        "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
+        "https:\\/\\/videovard\\.sx\\/e\\/.*",
+        "https:\\/\\/streamtape\\.com\\/e\\/.*",
+        "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"

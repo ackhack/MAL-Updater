@@ -111,15 +111,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             partymax: "",
                         });
                     } else {
-                        if (recentName == request.name && recentEpisode == request.episode) {
-                            setTimeout(() => {
-                                if (Date.now() - updateCycleTime > lastUpdate && updateQueue === undefined) {
-                                    recentName = undefined;
-                                    recentEpisode = undefined;
-                                    removeDiscord();
-                                }
-                            }, updateCycleTime);
-                        }
+                        if (recentName == request.name && recentEpisode == request.episode && updateQueue === undefined)
+                            removeDiscord();
                     }
                 })
 

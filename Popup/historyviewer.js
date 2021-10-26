@@ -1,6 +1,7 @@
 var historyObj;
 var mainDiv;
 var currIndex;
+const MaxCardsShown = 100;
 
 init();
 
@@ -27,9 +28,22 @@ function init() {
     });
 }
 
-function createCards() {
-    for (let i = historyObj.length-1; i > 0; i--) {
-        mainDiv.appendChild(createCard(i, historyObj[i]));
+function createCards(start = 0,iterateObject = historyObj) {
+    let end = historyObj.length - 1 - start - MaxCardsShown;
+    if (end < 0)
+        end = 0;
+
+    for (let i = historyObj.length - 1 - start; i >= end; i--) {
+        mainDiv.appendChild(createCard(i, iterateObject[i]));
+    }
+
+    if (historyObj.length - 1 - start - MaxCardsShown > 0) {
+        let div = document.createElement("div");
+        div.className = "card";
+        div.id = "divShowMore";
+        div.innerText = "Show More Entries";
+        div.onclick = showMoreCards;
+        mainDiv.appendChild(div);
     }
 }
 
@@ -80,4 +94,9 @@ function syncHistory() {
             type: "SYNC_HISTORY"
         });
     });
+}
+
+function showMoreCards() {
+    document.getElementById("divShowMore")?.remove();
+    createCards(mainDiv.childElementCount);
 }
