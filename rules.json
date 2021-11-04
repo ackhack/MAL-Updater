@@ -1,0 +1,14 @@
+[
+    {
+      "id": 10,
+      "priority": 2,
+      "action": {
+        "type": "modifyHeaders",
+        "responseHeaders": [
+          { "header": "x-frame-options", "operation": "remove" },
+          { "header": "frame-options", "operation": "remove" }
+        ]
+      },
+      "condition": { "urlFilter": "https://discord.com/channels/@me", "resourceTypes": ["sub_frame"] }
+    }
+  ]
