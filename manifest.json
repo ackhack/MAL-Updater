@@ -2,18 +2,19 @@
     "name": "MAL-Updater",
     "version": "6.5.7",
     "description": "Updates MAL List",
-    "manifest_version": 2,
+    "manifest_version": 3,
     "permissions": [
         "activeTab",
         "storage",
         "tabs",
         "bookmarks",
+        "declarativeNetRequest",
+        "contentSettings"
+    ],
+    "host_permissions": [
         "*://*.myanimelist.net/*",
         "*://*.github.com/*",
-        "webRequest",
-        "webRequestBlocking",
         "https://discord.com/channels/@me",
-        "contentSettings",
         "http://*/",
         "https://*/"
     ],
@@ -39,20 +40,22 @@
         }
     ],
     "background": {
-        "page": "BackgroundScripts/background.html"
+        "service_worker": "serviceWorker.js"
     },
-    "web_accessible_resources": [
-        "Resources/secret.json",
-        "Pages/*",
-        "BackgroundScripts/*",
-        "Popup/cacheviewer.html",
-        "Popup/historyviewer.html"
-    ],
     "icons": {
         "64": "Resources/icon.png"
     },
-    "browser_action": {
+    "action": {
         "default_title": "MAL-Updater Settings",
         "default_popup": "Popup/settings.html"
+    },
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "ruleset_1",
+                "enabled": true,
+                "path": "rules.json"
+            }
+        ]
     }
 }

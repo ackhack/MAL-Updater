@@ -1,10 +1,3 @@
-var sites = {};
-var active;
-var checkLastEpisodeBool;
-var binge = new Set();
-var animeCache;
-var displayMode;
-
 function getAnime(req, callb, nTry = 0) {
     if (!active) {
         callb({ inactive: true });

@@ -1,10 +1,3 @@
-var bookmarkID;
-var bookmarkActive;
-
-var preferredSiteName;
-var bookmarkautoActive;
-var bookmarkAutoRunning = false;
-
 function setBookmark(animeID, oldURL, nextURL) {
 
     if (!bookmarkActive) {

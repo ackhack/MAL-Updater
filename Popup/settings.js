@@ -74,7 +74,7 @@ function initCurrentAnime() {
 }
 
 function resetNotificationCounter() {
-    chrome.browserAction.setBadgeText({ text: "" });
+    chrome.action.setBadgeText({ text: "" });
 }
 
 function getActiveState(callb) {

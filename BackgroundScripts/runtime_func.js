@@ -98,7 +98,7 @@ function checkUpdate(callb) {
 function checkUpdateCycle() {
     checkUpdate(result => {
         if (result.update) {
-            chrome.browserAction.setBadgeText({ text: "1" });
+            chrome.action.setBadgeText({ text: "1" });
             return;
         }
         setTimeout(() => { checkUpdateCycle() }, 1_800_000);

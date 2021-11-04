@@ -1,35 +1,4 @@
-//Enables Discord to be loaded into iframe
-chrome.webRequest.onHeadersReceived.addListener(
-    function (info) {
-        let headers = info.responseHeaders;
-        for (let i = headers.length - 1; i >= 0; --i) {
-            let header = headers[i].name.toLowerCase();
-            if (header == "x-frame-options" || header == "frame-options") {
-                headers.splice(i, 1); // Remove header
-            }
-        }
-        return { responseHeaders: headers };
-    },
-    {
-        urls: ["https://discord.com/channels/@me"],
-        types: ["sub_frame"],
-    },
-    [
-        "blocking",
-        "responseHeaders",
-        // Modern Chrome needs 'extraHeaders' to see and change this header,
-        // so the following code evaluates to 'extraHeaders' only in modern Chrome.
-        chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
-    ].filter(Boolean)
-);
-
 const updateCycleTime = 15_000;
-var discordActive;
-var lastUpdate = Date.now();
-var updateQueue = undefined;
-var discordPort;
-var recentName = "";
-var recentEpisode = 0;
 
 function changeActiveDiscordState(val) {
     discordActive = val;

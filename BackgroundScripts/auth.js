@@ -1,16 +1,3 @@
-var client;
-var code_verifier;
-var stateID;
-var auth_token;
-var usertoken = {
-    access: undefined,
-    refresh: undefined,
-    access_time: undefined,
-    refresh_time: undefined,
-    access_req_time: undefined,
-    refresh_req_time: undefined
-};
-
 function getAuthCode() {
 
     try {
@@ -49,17 +36,21 @@ function refreshAccessToken() {
         "&grant_type=refresh_token" +
         "&refresh_token=" + usertoken.refresh;
 
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://myanimelist.net/v1/oauth2/token", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function () {
-        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            saveAccessToken(JSON.parse(this.response));
+    fetch("https://myanimelist.net/v1/oauth2/token", {
+        method: "POST",
+        body: para,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
         }
-    }
-
-    xhr.send(para);
+    }).then(response => {
+        if (response.ok) {
+            return response.json().then(json => {
+                saveAccessToken(JSON.parse(this.response));
+            });
+        } else {
+            console.log("Error: " + response.status);
+        }
+    });
 }
 
 function saveAccessToken(res) {
@@ -95,15 +86,16 @@ function getNewAuthCode() {
     function randomString() {
         return generateId((Math.random() * 85) + 43);
     }
-    
-    function dec2hex(dec) {
-        return dec.toString(16).padStart(2, "0")
-    }
-    
-    function generateId(len) {
-        var arr = new Uint8Array((len || 40) / 2)
-        window.crypto.getRandomValues(arr)
-        return Array.from(arr, dec2hex).join('')
+
+    //function that generates a random string of length n
+    function generateId(length) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for (var i = 0; i < length; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
     }
     
     function getStateID() {
@@ -148,17 +140,21 @@ function getUserToken() {
         "&code=" + auth_token +
         "&code_verifier=" + code_verifier;
 
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://myanimelist.net/v1/oauth2/token", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function () {
-        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            saveAccessToken(JSON.parse(this.response));
+    fetch("https://myanimelist.net/v1/oauth2/token", {
+        method: "POST",
+        body: para,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
         }
-    }
-
-    xhr.send(para);
+    }).then(response => {
+        if (response.ok) {
+            return response.json().then(json => {
+                saveAccessToken(JSON.parse(this.response));
+            });
+        } else {
+            console.log("Error: " + response.status);
+        }
+    });
 }
 
 function unauthorize() {

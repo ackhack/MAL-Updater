@@ -1,5 +1,3 @@
-var historyObj = [];
-
 function addHistory(name,episode,id) {
 
     historyObj.push({

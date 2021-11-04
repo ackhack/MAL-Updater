@@ -1,4 +1,4 @@
-var settings = [
+const settings = [
     {
         name: "MAL_Settings_Bookmarks",
         execfunction: initBookmarkFolder
@@ -56,74 +56,38 @@ function init() {
 
 function initSites(callb) {
     //Write the Pages Folder into a useable object
-    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
-        storageRootEntry.getDirectory("Pages", { create: false }, function (directory) {
-            function readDirectory(directory, callb) {
-                //Gets all json Pages
-                let entries = [];
-                directory.createReader().readEntries(function (results) {
-                    for (let page of results) {
-                        entries = entries.concat(page.name);
-                    }
-                    callb(entries);
-                });
-            }
-            readDirectory(directory, function (siteNames) {
-                let curSite = 0;
-                for (let name of siteNames) {
-                    fetch(chrome.runtime.getURL('Pages/' + name))
-                        .then((response) => {
-                            response.json().then((json) => {
-                                if (name != "default.json")
-                                    sites[name.substring(0, name.length - 5)] = json;
+    const siteFileNames = [
+        "9anime.json",
+        "gogoanimehub.json",
+        "kickassanime.json"
+    ];
 
-                                curSite++;
-                                if (curSite == siteNames.length) {
-                                    initInjector();
-                                    callb();
-                                }
-                            })
-                        }).catch(err => console.log(err));
-                }
-            });
-        })
-    });
+    for (let name of siteFileNames) {
+        fetch(chrome.runtime.getURL('Pages/' + name))
+            .then((response) => {
+                response.json().then((json) => {
+                    sites[name.substring(0, name.length - 5)] = json;
+                })
+            }).catch(err => console.log(err));
+    }
+    initInjector();
+    callb();
 }
 
 function initSecret(callb) {
     //Try to get the secret.json
-    chrome.runtime.getPackageDirectoryEntry(function (storageRootEntry) {
-
-        function fileExists(storageRootEntry, fileName, callback) {
-            storageRootEntry.getFile(fileName, {
-                create: false
-            }, function () {
-                callback(true);
-            }, function () {
-                callback(false);
-            });
-        }
-
-        fileExists(storageRootEntry, 'Resources/secret.json', function (isExist) {
-            if (isExist) {
-                let url = chrome.runtime.getURL('Resources/secret.json');
-                fetch(url)
-                    .then((response) => {
-                        response.json().then((json) => {
-                            client = json;
-                            if (client.id == undefined || client.secret == undefined) {
-                                alert("secret.json does not have the right attributes\ngithub.com/ackhack/mal-updater for more info");
-                            } else {
-                                getAuthCode();
-                                callb();
-                            }
-                        })
-                    });
-            } else {
-                alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present");
-            }
-        });
-    });
+    fetch(chrome.runtime.getURL('Resources/secret.json'))
+        .then((response) => {
+            response.json().then((json) => {
+                client = json;
+                if (client.id == undefined || client.secret == undefined) {
+                    alert("secret.json does not have the right attributes\ngithub.com/ackhack/mal-updater for more info");
+                } else {
+                    getAuthCode();
+                    callb();
+                }
+            })
+        }).catch(_ => alert("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present"));
 }
 
 function initSettings(i, callb) {
