@@ -1,5 +1,5 @@
 self.importScripts(
-    "BackgroundScripts/variables.js",
+    "BackgroundScripts/variableHandler.js",
     "BackgroundScripts/anime.js",
     "BackgroundScripts/auth.js",
     "BackgroundScripts/bookmarks.js",
@@ -8,7 +8,8 @@ self.importScripts(
     "BackgroundScripts/runtime_func.js",
     "BackgroundScripts/injectSelector.js",
     "BackgroundScripts/discordRichPresence.js",
-    "BackgroundScripts/init.js"
+    "BackgroundScripts/init.js",
+    "BackgroundScripts/alarmHandler.js"
 );
 
 chrome.runtime.onMessage.addListener(
@@ -61,19 +62,19 @@ chrome.runtime.onMessage.addListener(
             case "GET_ANIME_BY_URL":
                 return getCacheByURLAsync(request.url, onSuccess);
             case "EXPORT_CACHE":
-                return exportCacheCallb(onSuccess);
+                return exportCache(onSuccess);
             case "IMPORT_CACHE":
                 return importCacheFile(request);
             case "CONFIRM_MESSAGE":
                 return confirmMessage(request.message,onSuccess);
             case "GET_SITES":
-                return getSitesAsync(onSuccess);
+                return getSitesVariable(onSuccess);
             case "CHANGED_PREFERRED_SITE":
                 return changePreferredSite(request);
             case "GET_PREFERRED_SITE":
-                return getPreferredSite(onSuccess);
+                return getPreferredSiteNameVariable(onSuccess);
             case "CHANGED_BOOKMARK_AUTO_ACTIVE":
-                return changeBookmarkAutoActive(request);
+                return setBookmarkAutoActiveVariable(request.active);;
             case "AUTO_BOOKMARK_CHECK":
                 return checkBookmarkAuto(request);
             default:

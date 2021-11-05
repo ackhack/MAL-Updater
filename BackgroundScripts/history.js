@@ -1,15 +1,11 @@
-function addHistory(name,episode,id) {
-
-    historyObj.push({
-        name: name,
-        episode: episode,
-        time: Date.now(),
-        id:id
+function addHistory(name, episode, id) {
+    getHistoryVariable(function (historyObj) {
+        historyObj.push({
+            name: name,
+            episode: episode,
+            time: Date.now(),
+            id: id
+        });
+        setHistoryVariable(historyObj);
     });
-
-    syncHistory();
-}
-
-function syncHistory() {
-    chrome.storage.local.set({ "MAL_AnimeHistory": historyObj }, function () { });
 }

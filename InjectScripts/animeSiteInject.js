@@ -86,13 +86,6 @@ function recieveAnime(res) {
 
     if (res.lastWatched != undefined) {
         lastWatched = res.lastEpisode;
-        if (!res.lastWatched) {
-            let bingeBtn = document.createElement("button");
-            bingeBtn.onclick = () => { bingeWatching(); bingeBtn.parentElement.remove() }
-            bingeBtn.innerText = "Binge Watching";
-            bingeBtn.style = "margin-left: 1.5em;margin-top: 5px;";
-            showInfo("This is not the next Episode!", "Your last watched Episode is EP" + res.lastEpisode, [bingeBtn]);
-        }
     }
 
     //If id was recieved from cache, dont create Elements
@@ -172,64 +165,48 @@ function waitPageloadCache(nTry = 0) {
 }
 
 function createMainList(res) {
-    //Returns the List displaying the Animes to pick from
-    if (res.displayMode === false) {
-        let ul = document.createElement("ul");
-        ul.id = "MAL_UPDATER_LIST_1";
-        ul.style = "margin-left:" + site.ulMarginLeft + "em;";
 
-        for (let elem of res.data) {
-            let li = document.createElement("li");
-            li.style = "cursor: pointer;";
-            li.value = elem.node.id;
-            li.innerText = elem.node.title;
-            li.onclick = () => clickedAnimeOption(li);
-            ul.appendChild(li);
+    let table = document.createElement("table");
+    table.id = "MAL_UPDATER_LIST_1";
+    table.style = "margin-left:" + site.ulMarginLeft + "em;";
+
+    let counter = 0;
+    let currTr = document.createElement("tr");
+
+    for (let elem of res.data) {
+        if (counter % 5 == 0 && counter != 0) {
+            table.appendChild(currTr);
+            currTr = document.createElement("tr");
         }
-        return ul;
-    } else {
-        let table = document.createElement("table");
-        table.id = "MAL_UPDATER_LIST_1";
-        table.style = "margin-left:" + site.ulMarginLeft + "em;";
+        let td = document.createElement("td");
 
-        let counter = 0;
-        let currTr = document.createElement("tr");
+        let para = document.createElement("p");
+        if (elem.node.alternative_titles?.en)
+            para.innerText = elem.node.alternative_titles.en;
+        else
+            para.innerText = elem.node.title;
 
-        for (let elem of res.data) {
-            if (counter % 5 == 0 && counter != 0) {
-                table.appendChild(currTr);
-                currTr = document.createElement("tr");
-            }
-            let td = document.createElement("td");
+        let img = document.createElement("img");
+        img.src = elem.node.main_picture?.medium;
+        img.alt = elem.node.title;
+        img.style = "width:100%;max-width:200px";
 
-            let para = document.createElement("p");
-            if (elem.node.alternative_titles?.en)
-                para.innerText = elem.node.alternative_titles.en;
-            else
-                para.innerText = elem.node.title;
+        let li = document.createElement("li");
+        li.style = "visibility: hidden;";
+        li.value = elem.node.id;
 
-            let img = document.createElement("img");
-            img.src = elem.node.main_picture?.medium;
-            img.alt = elem.node.title;
-            img.style = "width:100%;max-width:200px";
+        td.style = "cursor: pointer;border: 3px solid " + site.pageColor + "!important;padding:7px;margin:3px";
+        td.onclick = () => clickedAnimeOption(li);
+        td.appendChild(para);
+        td.appendChild(img);
+        td.appendChild(li);
 
-            let li = document.createElement("li");
-            li.style = "visibility: hidden;";
-            li.value = elem.node.id;
-
-            td.style = "cursor: pointer;border: 3px solid " + site.pageColor + "!important;padding:7px;margin:3px";
-            td.onclick = () => clickedAnimeOption(li);
-            td.appendChild(para);
-            td.appendChild(img);
-            td.appendChild(li);
-
-            currTr.appendChild(td);
-            counter++;
-        }
-
-        table.appendChild(currTr);
-        return table;
+        currTr.appendChild(td);
+        counter++;
     }
+
+    table.appendChild(currTr);
+    return table;
 }
 
 function afterAnimeID(cache = true) {
@@ -421,13 +398,6 @@ function updateEpisodeSuccess(success, nextURL) {
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
-function bingeWatching() {
-    chrome.runtime.sendMessage({
-        type: "BINGE_WATCHING",
-        id: animeID
-    });
-}
-
 //#endregion
 
 //#region Discord
@@ -554,7 +524,7 @@ function sendWatchedInfo() {
                 type: "ANIME_WATCHED_INFO",
                 name: getAnimeName(),
                 episode: episodeNumber,
-                maxEpisode: metaData.num_episodes, 
+                maxEpisode: metaData.num_episodes,
                 id: metaData.id
             }
         );

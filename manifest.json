@@ -9,7 +9,10 @@
         "tabs",
         "bookmarks",
         "declarativeNetRequest",
-        "contentSettings"
+        "contentSettings",
+        "alarms",
+        "notifications",
+        "scripting"
     ],
     "host_permissions": [
         "*://*.myanimelist.net/*",
@@ -48,14 +51,5 @@
     "action": {
         "default_title": "MAL-Updater Settings",
         "default_popup": "Popup/settings.html"
-    },
-    "declarative_net_request": {
-        "rule_resources": [
-            {
-                "id": "ruleset_1",
-                "enabled": true,
-                "path": "rules.json"
-            }
-        ]
     }
 }

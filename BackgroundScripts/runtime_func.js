@@ -6,55 +6,44 @@ function closeTab(sender, force = false) {
 
 function validateSite(req, callb) {
     //check if we have the site saved as json
-    for (let site in sites) {
-        if (req.url.match(sites[site].sitePattern)) {
-            callb(sites[site]);
-            return true;
+    getSitesVariable(sites => {
+        for (let site in sites) {
+            if (req.url.match(sites[site].sitePattern)) {
+                callb(sites[site]);
+                return true;
+            }
         }
-    }
-    callb(undefined);
+        callb(undefined);
+    });
     return false;
 }
 
 function validateMainSite(req, callb) {
     //check if we have the site saved as json
-
-    for (let site in sites) {
-        if (req.url.match(sites[site].mainPagePattern)) {
-            callb({ site: sites[site], cache: animeCache, addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName) });
-            return true;
-        }
-    }
-    callb(undefined);
-    return false;
+    getBookmarkAutoActiveVariable(bookmarkautoActive => {
+        getAnimeCacheVariable(animeCache => {
+            getSitesVariable(sites => {
+                for (let site in sites) {
+                    if (req.url.match(sites[site].mainPagePattern)) {
+                        callb({
+                            site: sites[site],
+                            cache: animeCache,
+                            addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName)
+                        });
+                    }
+                }
+                callb(undefined);
+            });
+        });
+    });
+    return true;
 }
 
 function changeActiveState(value) {
-    active = value;
-    if (active && usertoken === undefined) {
+    setActiveVariable(value);
+    if (value && usertoken === undefined) {
         getAuthCode();
     }
-    return true;
-}
-
-function changeCheckLastEpisode(value) {
-    checkLastEpisodeBool = value;
-    return true;
-}
-
-function changeDisplayMode(value) {
-    displayMode = value;
-    return true;
-}
-
-function addBinge(id) {
-    binge.add(id);
-    return true;
-}
-
-function removeBinge(id) {
-    if (binge.has(id))
-        binge.delete(id);
     return true;
 }
 
@@ -101,7 +90,6 @@ function checkUpdateCycle() {
             chrome.action.setBadgeText({ text: "1" });
             return;
         }
-        setTimeout(() => { checkUpdateCycle() }, 1_800_000);
     });
 }
 
@@ -120,7 +108,11 @@ function tryGetStorage(name, defaultValue, callb) {
     });
 }
 
-function getSitesAsync(callb) {
-    callb(sites);
-    return true;
+function sendNotification(message) {
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "Resources/icon.png",
+        title: "MAL Updater",
+        message: message
+    });
 }

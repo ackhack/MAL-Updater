@@ -1,235 +1,162 @@
 function getSitesVariable(callback) {
-    chrome.storage.local.get("sites", function(result) {
-        callback(result.sites ?? []);
+    chrome.storage.local.get("sites", function (result) {
+        callback(result.sites ?? {});
     });
 }
 
 function setSitesVariable(sites) {
-    chrome.storage.local.set({sites: sites});
+    chrome.storage.local.set({ sites: sites });
 }
 
 function getActiveVariable(callback) {
-    chrome.storage.local.get("active", function(result) {
+    chrome.storage.local.get("active", function (result) {
         callback(result.active ?? true);
     });
 }
 
 function setActiveVariable(active) {
-    chrome.storage.local.set({active: active});
-}
-
-function getCheckLastEpisodeBoolVariable(callback) {
-    chrome.storage.local.get("checkLastEpisode", function(result) {
-        callback(result.checkLastEpisode ?? true);
-    });
-}
-
-function setCheckLastEpisodeBoolVariable(checkLastEpisode) {
-    chrome.storage.local.set({checkLastEpisode: checkLastEpisode});
-}
-
-function getBingeVariable(callback) {
-    chrome.storage.local.get("binge", function(result) {
-        callback(result.binge ?? new Set());
-    });
-}
-
-function setBingeVariable(binge) {
-    chrome.storage.local.set({binge: binge});
+    chrome.storage.local.set({ active: active });
 }
 
 function getAnimeCacheVariable(callback) {
-    chrome.storage.local.get("animeCache", function(result) {
-        callback(result.animeCache ?? {});
+    chrome.storage.local.get("MAL_AnimeCache", function (result) {
+        callback(result.MAL_AnimeCache ?? {});
     });
 }
 
 function setAnimeCacheVariable(animeCache) {
-    chrome.storage.local.set({animeCache: animeCache});
-}
-
-function getDisplayModeVariable(callback) {
-    chrome.storage.local.get("displayMode", function(result) {
-        callback(result.displayMode ?? true);
-    });
-}
-
-function setDisplayModeVariable(displayMode) {
-    chrome.storage.local.set({displayMode: displayMode});
-}
-
-function getClientVariable(callback) {
-    chrome.storage.local.get("client", function(result) {
-        callback(result.client ?? "");
-    });
-}
-
-function setClientVariable(client) {
-    chrome.storage.local.set({client: client});
+    chrome.storage.local.set({ MAL_AnimeCache: animeCache });
 }
 
 function getCodeVerifierVariable(callback) {
-    chrome.storage.local.get("codeVerifier", function(result) {
+    chrome.storage.local.get("codeVerifier", function (result) {
         callback(result.codeVerifier ?? "");
     });
 }
 
 function setCodeVerifierVariable(codeVerifier) {
-    chrome.storage.local.set({codeVerifier: codeVerifier});
+    chrome.storage.local.set({ codeVerifier: codeVerifier });
 }
 
 function getStateIDVariable(callback) {
-    chrome.storage.local.get("stateID", function(result) {
+    chrome.storage.local.get("stateID", function (result) {
         callback(result.stateID ?? "");
     });
 }
 
 function setStateIDVariable(stateID) {
-    chrome.storage.local.set({stateID: stateID});
+    chrome.storage.local.set({ stateID: stateID });
 }
 
 function getAuthTokenVariable(callback) {
-    chrome.storage.local.get("authToken", function(result) {
+    chrome.storage.local.get("authToken", function (result) {
         callback(result.authToken ?? "");
     });
 }
 
 function setAuthTokenVariable(authToken) {
-    chrome.storage.local.set({authToken: authToken});
+    chrome.storage.local.set({ authToken: authToken });
 }
 
 function getUserTokenVariable(callback) {
-    chrome.storage.local.get("userToken", function(result) {
-        callback(result.userToken ?? {
-            access: undefined,
-            refresh: undefined,
-            access_time: undefined,
-            refresh_time: undefined,
-            access_req_time: undefined,
-            refresh_req_time: undefined
-        });
+    chrome.storage.local.get("MAL_User_Token", function (result) {
+        callback(result.MAL_User_Token ?? {});
     });
 }
 
-function setUserTokenVariable(userToken) {
-    chrome.storage.local.set({userToken: userToken});
+function setUserTokenVariable(MAL_User_Token) {
+    chrome.storage.local.set({ MAL_User_Token: MAL_User_Token });
 }
 
 function getBookmarkIDVariable(callback) {
-    chrome.storage.local.get("bookmarkID", function(result) {
+    chrome.storage.local.get("bookmarkID", function (result) {
         callback(result.bookmarkID ?? -1);
     });
 }
 
 function setBookmarkIDVariable(bookmarkID) {
-    chrome.storage.local.set({bookmarkID: bookmarkID});
+    chrome.storage.local.set({ bookmarkID: bookmarkID });
 }
 
 function getBookmarkActiveVariable(callback) {
-    chrome.storage.local.get("bookmarkActive", function(result) {
+    chrome.storage.local.get("bookmarkActive", function (result) {
         callback(result.bookmarkActive ?? false);
     });
 }
 
 function setBookmarkActiveVariable(bookmarkActive) {
-    chrome.storage.local.set({bookmarkActive: bookmarkActive});
+    chrome.storage.local.set({ bookmarkActive: bookmarkActive });
 }
 
-function setPreferredSiteNameVariable(preferredSiteName) {
-    chrome.storage.local.set({preferredSiteName: preferredSiteName});
+function setPreferredSiteNameVariable(MAL_Settings_Preferred_Site) {
+    chrome.storage.local.set({ MAL_Settings_Preferred_Site: MAL_Settings_Preferred_Site });
 }
 
-function setPreferredSiteIDVariable(preferredSiteID) {
-    chrome.storage.local.set({preferredSiteID: preferredSiteID});
+function getPreferredSiteNameVariable(callback) {
+    chrome.storage.local.get("MAL_Settings_Preferred_Site", function (result) {
+        callback(result.MAL_Settings_Preferred_Site ?? "kickassanime");
+    });
 }
 
 function getBookmarkAutoActiveVariable(callback) {
-    chrome.storage.local.get("bookmarkAutoActive", function(result) {
-        callback(result.bookmarkAutoActive ?? false);
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Auto ?? false);
     });
 }
 
-function setBookmarkAutoActiveVariable(bookmarkAutoActive) {
-    chrome.storage.local.set({bookmarkAutoActive: bookmarkAutoActive});
-}
-
-function getBookmarkAutoRunningVariable(callback) {
-    chrome.storage.local.get("bookmarkAutoRunning", function(result) {
-        callback(result.bookmarkAutoRunning ?? false);
-    });
-}
-
-function setBookmarkAutoRunningVariable(bookmarkAutoRunning) {
-    chrome.storage.local.set({bookmarkAutoRunning: bookmarkAutoRunning});
+function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto: MAL_Settings_Bookmarks_Auto });
 }
 
 function getDiscordActiveVariable(callback) {
-    chrome.storage.local.get("discordActive", function(result) {
-        callback(result.discordActive ?? false);
+    chrome.storage.local.get("MAL_Settings_DiscordActive", function (result) {
+        callback(result.MAL_Settings_DiscordActive ?? false);
     });
 }
 
-function setDiscordActiveVariable(discordActive) {
-    chrome.storage.local.set({discordActive: discordActive});
-}
-
-function getDiscordLastUpdateVariable(callback) {
-    chrome.storage.local.get("discordLastUpdate", function(result) {
-        callback(result.discordLastUpdate ?? 0);
-    });
-}
-
-function setDiscordLastUpdateVariable(discordLastUpdate) {
-    chrome.storage.local.set({discordLastUpdate: discordLastUpdate});
-}
-
-function getDiscordUpdateQueueVariable(callback) {
-    chrome.storage.local.get("discordUpdateQueue", function(result) {
-        callback(result.discordUpdateQueue ?? []);
-    });
-}
-
-function setDiscordUpdateQueueVariable(discordUpdateQueue) {
-    chrome.storage.local.set({discordUpdateQueue: discordUpdateQueue});
+function setDiscordActiveVariable(MAL_Settings_DiscordActive) {
+    chrome.storage.local.set({ MAL_Settings_DiscordActive: MAL_Settings_DiscordActive });
 }
 
 function getDiscordPortVariable(callback) {
-    chrome.storage.local.get("discordPort", function(result) {
+    chrome.storage.local.get("discordPort", function (result) {
         callback(result.discordPort ?? 0);
     });
 }
 
 function setDiscordPortVariable(discordPort) {
-    chrome.storage.local.set({discordPort: discordPort});
+    chrome.storage.local.set({ discordPort: discordPort });
 }
 
-function getDiscordRecentNameVariable(callback) {
-    chrome.storage.local.get("discordRecentName", function(result) {
-        callback(result.discordRecentName ?? "");
+function getDiscordRecentInfoVariable(callback) {
+    chrome.storage.local.get("discordRecentInfo", function (result) {
+        callback(JSON.parse(result.discordRecentInfo) ?? {
+            name: "",
+            episode: ""
+        });
     });
 }
 
-function setDiscordRecentNameVariable(discordRecentName) {
-    chrome.storage.local.set({discordRecentName: discordRecentName});
-}
-
-function getDiscordRecentEpisodeVariable(callback) {
-    chrome.storage.local.get("discordRecentEpisode", function(result) {
-        callback(result.discordRecentEpisode ?? "");
-    });
-}
-
-function setDiscordRecentEpisodeVariable(discordRecentEpisode) {
-    chrome.storage.local.set({discordRecentEpisode: discordRecentEpisode});
+function setDiscordRecentInfoVariable(discordRecentInfo) {
+    chrome.storage.local.set({ discordRecentInfo: JSON.stringify(discordRecentInfo) });
 }
 
 function getHistoryVariable(callback) {
-    chrome.storage.local.get("history", function(result) {
-        callback(result.history ?? []);
+    chrome.storage.local.get("MAL_AnimeHistory", function (result) {
+        callback(result.MAL_AnimeHistory ?? []);
     });
 }
 
-function setHistoryVariable(history) {
-    chrome.storage.local.set({history: history});
+function setHistoryVariable(MAL_AnimeHistory) {
+    chrome.storage.local.set({ MAL_AnimeHistory: MAL_AnimeHistory });
 }
 
+function setDiscordTabIdVariable(discordTabId) {
+    chrome.storage.local.set({ discordTabId: discordTabId });
+}
+
+function getDiscordTabIdVariable(callback) {
+    chrome.storage.local.get("discordTabId", function (result) {
+        callback(result.discordTabId ?? -1);
+    });
+}
