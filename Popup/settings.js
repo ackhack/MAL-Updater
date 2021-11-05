@@ -200,10 +200,10 @@ function changeBookmarks() {
 }
 
 function changeBookmarkActive(event) {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked }, function () {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked }, function () {
         chrome.runtime.sendMessage(
             {
-                type: "CHANGED_BOOKMARK_AUTO",
+                type: "CHANGED_BOOKMARK_ACTIVE",
                 active: event.target.checked
             },
             () => { }
@@ -222,6 +222,7 @@ function changeActiveState(event) {
         );
     });
 }
+
 function changeActiveDiscordState(event) {
     chrome.storage.local.set({ "MAL_Settings_DiscordActive": event.target.checked }, function () {
         chrome.runtime.sendMessage(
@@ -232,6 +233,30 @@ function changeActiveDiscordState(event) {
             () => { }
         );
     });
+}
+
+function changedPreferredSite(event) {
+    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.checked }, function () {
+        chrome.runtime.sendMessage(
+            {
+                type: "CHANGED_PREFERRED_SITE",
+                site: event.target.value
+            }
+        );
+    });
+
+}
+
+function changeBookmarkAutoActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked }, function () {
+        chrome.runtime.sendMessage(
+            {
+                type: "CHANGED_BOOKMARK_AUTO_ACTIVE",
+                value: event.target.checked
+            }
+        );
+    });
+
 }
 
 function deleteCache(query = {}) {
@@ -400,24 +425,6 @@ function exportCache() {
             element.click();
 
             document.body.removeChild(element);
-        }
-    );
-}
-
-function changedPreferredSite(event) {
-    chrome.runtime.sendMessage(
-        {
-            type: "CHANGED_PREFERRED_SITE",
-            site: event.target.value
-        }
-    );
-}
-
-function changeBookmarkAutoActive(event) {
-    chrome.runtime.sendMessage(
-        {
-            type: "CHANGED_BOOKMARK_AUTO_ACTIVE",
-            value: event.target.checked
         }
     );
 }

@@ -23,16 +23,18 @@ function validateMainSite(req, callb) {
     getBookmarkAutoActiveVariable(bookmarkautoActive => {
         getAnimeCacheVariable(animeCache => {
             getSitesVariable(sites => {
-                for (let site in sites) {
-                    if (req.url.match(sites[site].mainPagePattern)) {
-                        callb({
-                            site: sites[site],
-                            cache: animeCache,
-                            addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName)
-                        });
+                getPreferredSiteNameVariable(preferredSiteName => {
+                    for (let site in sites) {
+                        if (req.url.match(sites[site].mainPagePattern)) {
+                            callb({
+                                site: sites[site],
+                                cache: animeCache,
+                                addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName)
+                            });
+                        }
                     }
-                }
-                callb(undefined);
+                    callb(undefined);
+                });
             });
         });
     });

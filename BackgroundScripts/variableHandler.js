@@ -117,6 +117,11 @@ function getBookmarkAutoActiveVariable(callback) {
 
 function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto: MAL_Settings_Bookmarks_Auto });
+    if (MAL_Settings_Bookmarks_Auto) {
+        chrome.alarms.create("bookmarkLoop", {
+            delayInMinutes: 0
+        });
+    }
 }
 
 function getDiscordActiveVariable(callback) {

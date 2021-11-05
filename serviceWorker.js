@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(
             case "GET_PREFERRED_SITE":
                 return getPreferredSiteNameVariable(onSuccess);
             case "CHANGED_BOOKMARK_AUTO_ACTIVE":
-                return setBookmarkAutoActiveVariable(request.active);;
+                return setBookmarkAutoActiveVariable(request.active);
             case "AUTO_BOOKMARK_CHECK":
                 return checkBookmarkAuto(request);
             default:

@@ -169,12 +169,12 @@ function renameBookmark(bookmark) {
 }
 
 function changePreferredSite(req) {
-    setPreferredSiteVariable(req.site);
+    setPreferredSiteNameVariable(req.site);
     return true;
 }
 
 function bookmarkLoop() {
-    getBookmarkActiveVariable(bookmarkautoActive => {
+    getBookmarkAutoActiveVariable(bookmarkautoActive => {
         if (!bookmarkautoActive) {
             return;
         }
