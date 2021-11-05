@@ -24,5 +24,5 @@ chrome.alarms.onAlarm.addListener(
     }
 )
 
-chrome.alarms.create("bookmarkLoop", { periodInMinutes: 10 });
-chrome.alarms.create("updateCheck", { periodInMinutes: 30 });
+chrome.alarms.create("bookmarkLoop", { delayInMinutes: 0, periodInMinutes: 10 });
+chrome.alarms.create("updateCheck", { delayInMinutes: 0, periodInMinutes: 30 });

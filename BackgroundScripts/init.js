@@ -13,12 +13,12 @@ init();
 
 function init() {
     //Init with callbacks for right order
-    checkUpdateCycle();
     setDiscordTabIdVariable(-1);
+    initBookmarkEvent();
+
     initSecret(() => {
         initSites(() => {
             initSettings(0, () => {
-                bookmarkLoop();
             })
         })
     });

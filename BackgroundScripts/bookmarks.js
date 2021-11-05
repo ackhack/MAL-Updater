@@ -150,20 +150,22 @@ function getBookmark(id, callb) {
 }
 
 function renameBookmark(bookmark) {
-    getBookmarkIDVariable(bookmarkID => {
-        if (!bookmarkActive || bookmark.parentId !== bookmarkID || bookmark.url == undefined)
-            return;
+    getBookmarkActiveVariable(bookmarkActive => {
+        getBookmarkIDVariable(bookmarkID => {
+            if (!bookmarkActive || bookmark.parentId !== bookmarkID || bookmark.url == undefined)
+                return;
 
-        getCacheByURLAsync(bookmark.url, anime => {
-            if (anime !== undefined) {
-                let name = getBookmarkName(anime);
-                if (bookmark.title == name)
-                    return;
-                else
-                    chrome.bookmarks.remove(bookmark.id, () => {
-                        addBookmark(name, bookmark.url);
-                    });
-            }
+            getCacheByURLAsync(bookmark.url, anime => {
+                if (anime !== undefined) {
+                    let name = getBookmarkName(anime);
+                    if (bookmark.title == name)
+                        return;
+                    else
+                        chrome.bookmarks.remove(bookmark.id, () => {
+                            addBookmark(name, bookmark.url);
+                        });
+                }
+            });
         });
     });
 }
@@ -182,7 +184,7 @@ function bookmarkLoop() {
         getSitesVariable(sites => {
             getPreferredSiteNameVariable(preferredSiteName => {
                 chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
-                    chrome.alarms.create("force_close"+tab.id, {
+                    chrome.alarms.create("force_close" + tab.id, {
                         delayInMinutes: 0.2,
                     })
                 });

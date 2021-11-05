@@ -14,12 +14,10 @@ function initFunctions() {
     document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
-    document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
     document.getElementById("btnCacheDeleteAll").onclick = deleteCacheAll;
     document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
     document.getElementById("btnUnauthorize").onclick = unauthorize;
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
-    document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
@@ -41,12 +39,6 @@ function initSettings() {
     })
     getActiveDiscordState(active => {
         document.getElementById("cbActiveDiscord").checked = active;
-    })
-    getCheckLastEpisode(active => {
-        document.getElementById("cbCheckLastEpisode").checked = active;
-    })
-    getDisplayMode(active => {
-        document.getElementById("cbDisplayMode").checked = active;
     })
     getCurrentVersion(versionText => {
         document.getElementById("pVersion").innerText = versionText;
@@ -110,24 +102,6 @@ function getActiveDiscordState(callb) {
             callb(res.MAL_Settings_DiscordActive);
         else
             callb(false);
-    });
-}
-
-function getCheckLastEpisode(callb) {
-    chrome.storage.local.get("MAL_Settings_CheckLastEpisode", res => {
-        if (res.MAL_Settings_CheckLastEpisode !== "" && res.MAL_Settings_CheckLastEpisode !== undefined)
-            callb(res.MAL_Settings_CheckLastEpisode);
-        else
-            callb(true);
-    });
-}
-
-function getDisplayMode(callb) {
-    chrome.storage.local.get("MAL_Settings_DisplayMode", res => {
-        if (res.MAL_Settings_DisplayMode !== "" && res.MAL_Settings_DisplayMode !== undefined)
-            callb(res.MAL_Settings_DisplayMode);
-        else
-            callb(true);
     });
 }
 
@@ -332,30 +306,6 @@ function removeDiscord() {
         },
         () => { }
     );
-}
-
-function changeCheckLastEpisode(event) {
-    chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": event.target.checked }, function (res) {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_CHECK_LAST_EPISODE",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
-function changeDisplayMode(event) {
-    chrome.storage.local.set({ "MAL_Settings_DisplayMode": event.target.checked }, function (res) {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_DISPLAY_MODE",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
 }
 
 function versionClicked() {

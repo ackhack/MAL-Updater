@@ -10,14 +10,14 @@ function setSitesVariable(sites) {
 }
 
 function getActiveVariable(callback) {
-    chrome.storage.local.get("active", function (result) {
-        callback(result.active ?? true);
+    chrome.storage.local.get("MAL_Settings_Active", function (result) {
+        callback(result.MAL_Settings_Active ?? true);
     });
     return true;
 }
 
-function setActiveVariable(active) {
-    chrome.storage.local.set({ active: active });
+function setActiveVariable(MAL_Settings_Active) {
+    chrome.storage.local.set({ MAL_Settings_Active: MAL_Settings_Active });
 }
 
 function getAnimeCacheVariable(callback) {
@@ -87,14 +87,14 @@ function setBookmarkIDVariable(bookmarkID) {
 }
 
 function getBookmarkActiveVariable(callback) {
-    chrome.storage.local.get("bookmarkActive", function (result) {
-        callback(result.bookmarkActive ?? false);
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Active", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Active ?? false);
     });
     return true;
 }
 
-function setBookmarkActiveVariable(bookmarkActive) {
-    chrome.storage.local.set({ bookmarkActive: bookmarkActive });
+function setBookmarkActiveVariable(MAL_Settings_Bookmarks_Active) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Active: MAL_Settings_Bookmarks_Active });
 }
 
 function setPreferredSiteNameVariable(MAL_Settings_Preferred_Site) {
