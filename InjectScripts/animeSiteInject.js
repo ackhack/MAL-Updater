@@ -280,29 +280,46 @@ function getButtonParent() {
 
 function finishedEpisode(force = false) {
     finished = true;
-
-    new Function("callb", site.nextBookmark)(nextURL => {
-        apiCallSent("SEND_ANIME_FINISHED");
-        chrome.runtime.sendMessage(
-            {
-                type: "SEND_ANIME_FINISHED",
-                id: animeID,
-                episode: episodeNumber,
-                nextURL: nextURL,
-                url: window.location.toString(),
-                force: force
-            },
-            data => {
-                apiCallRecieved("SEND_ANIME_FINISHED");
-                sendWatchedInfo();
-                if (data.last) {
-                    finishedLastEpisode(data);
-                } else {
-                    updateEpisodeSuccess(data.num_episodes_watched == episodeNumber, nextURL);
+    let nextURL = undefined;
+    switch (site.siteName) {
+        case "kickassanime":
+            for (let el of document.getElementsByClassName('ka-url-wrapper')) {
+                if (el.innerText.includes('Next Episode')) {
+                    nextURL = el.href;
+                    return;
                 }
             }
-        );
-    });
+        default:
+            let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1);
+            for (let node of document.getElementsByTagName('a')) {
+                if (node.href == nexthref) {
+                    nextURL = node.href;
+                    return;
+                }
+            }
+    }
+
+    apiCallSent("SEND_ANIME_FINISHED");
+    chrome.runtime.sendMessage(
+        {
+            type: "SEND_ANIME_FINISHED",
+            id: animeID,
+            episode: episodeNumber,
+            nextURL: nextURL,
+            url: window.location.toString(),
+            force: force
+        },
+        data => {
+            apiCallRecieved("SEND_ANIME_FINISHED");
+            sendWatchedInfo();
+            if (data.last) {
+                finishedLastEpisode(data);
+            } else {
+                updateEpisodeSuccess(data.num_episodes_watched == episodeNumber, nextURL);
+            }
+        }
+    );
+
 }
 
 function finishedLastEpisode(data) {

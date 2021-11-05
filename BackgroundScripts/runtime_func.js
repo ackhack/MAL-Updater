@@ -10,12 +10,12 @@ function validateSite(req, callb) {
         for (let site in sites) {
             if (req.url.match(sites[site].sitePattern)) {
                 callb(sites[site]);
-                return true;
+                return;
             }
         }
         callb(undefined);
     });
-    return false;
+    return true;
 }
 
 function validateMainSite(req, callb) {

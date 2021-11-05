@@ -56,6 +56,7 @@ function getCacheByURLAsync(url, callb = () => { }) {
         }
         callb(undefined);
     });
+    return true;
 }
 
 function deleteCache(query = {}, callb = () => { }) {
@@ -105,6 +106,7 @@ function exportCache(callb) {
     getAnimeCacheVariable((animeCache) => {
         callb(JSON.stringify(animeCache));
     });
+    return true;
 }
 
 function importCache(cacheString) {

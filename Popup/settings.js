@@ -162,6 +162,7 @@ function initPreferredSiteSelect() {
             type: "GET_SITES"
         },
         (sites) => {
+            console.log(sites);
             let select = document.getElementById("selectPreferredSite");
             for (let site in sites) {
                 let option = document.createElement("option");
@@ -174,6 +175,7 @@ function initPreferredSiteSelect() {
                     type: "GET_PREFERRED_SITE"
                 },
                 (site) => {
+                    console.log(site);
                     select.value = site;
                 }
             );

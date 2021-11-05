@@ -2,6 +2,7 @@ function getSitesVariable(callback) {
     chrome.storage.local.get("sites", function (result) {
         callback(result.sites ?? {});
     });
+    return true;
 }
 
 function setSitesVariable(sites) {
@@ -12,6 +13,7 @@ function getActiveVariable(callback) {
     chrome.storage.local.get("active", function (result) {
         callback(result.active ?? true);
     });
+    return true;
 }
 
 function setActiveVariable(active) {
@@ -22,6 +24,7 @@ function getAnimeCacheVariable(callback) {
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
         callback(result.MAL_AnimeCache ?? {});
     });
+    return true;
 }
 
 function setAnimeCacheVariable(animeCache) {
@@ -32,6 +35,7 @@ function getCodeVerifierVariable(callback) {
     chrome.storage.local.get("codeVerifier", function (result) {
         callback(result.codeVerifier ?? "");
     });
+    return true;
 }
 
 function setCodeVerifierVariable(codeVerifier) {
@@ -42,6 +46,7 @@ function getStateIDVariable(callback) {
     chrome.storage.local.get("stateID", function (result) {
         callback(result.stateID ?? "");
     });
+    return true;
 }
 
 function setStateIDVariable(stateID) {
@@ -52,6 +57,7 @@ function getAuthTokenVariable(callback) {
     chrome.storage.local.get("authToken", function (result) {
         callback(result.authToken ?? "");
     });
+    return true;
 }
 
 function setAuthTokenVariable(authToken) {
@@ -62,6 +68,7 @@ function getUserTokenVariable(callback) {
     chrome.storage.local.get("MAL_User_Token", function (result) {
         callback(result.MAL_User_Token ?? {});
     });
+    return true;
 }
 
 function setUserTokenVariable(MAL_User_Token) {
@@ -72,6 +79,7 @@ function getBookmarkIDVariable(callback) {
     chrome.storage.local.get("bookmarkID", function (result) {
         callback(result.bookmarkID ?? -1);
     });
+    return true;
 }
 
 function setBookmarkIDVariable(bookmarkID) {
@@ -82,6 +90,7 @@ function getBookmarkActiveVariable(callback) {
     chrome.storage.local.get("bookmarkActive", function (result) {
         callback(result.bookmarkActive ?? false);
     });
+    return true;
 }
 
 function setBookmarkActiveVariable(bookmarkActive) {
@@ -96,12 +105,14 @@ function getPreferredSiteNameVariable(callback) {
     chrome.storage.local.get("MAL_Settings_Preferred_Site", function (result) {
         callback(result.MAL_Settings_Preferred_Site ?? "kickassanime");
     });
+    return true;
 }
 
 function getBookmarkAutoActiveVariable(callback) {
     chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", function (result) {
         callback(result.MAL_Settings_Bookmarks_Auto ?? false);
     });
+    return true;
 }
 
 function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
@@ -112,6 +123,7 @@ function getDiscordActiveVariable(callback) {
     chrome.storage.local.get("MAL_Settings_DiscordActive", function (result) {
         callback(result.MAL_Settings_DiscordActive ?? false);
     });
+    return true;
 }
 
 function setDiscordActiveVariable(MAL_Settings_DiscordActive) {
@@ -122,6 +134,7 @@ function getDiscordPortVariable(callback) {
     chrome.storage.local.get("discordPort", function (result) {
         callback(result.discordPort ?? 0);
     });
+    return true;
 }
 
 function setDiscordPortVariable(discordPort) {
@@ -135,6 +148,7 @@ function getDiscordRecentInfoVariable(callback) {
             episode: ""
         });
     });
+    return true;
 }
 
 function setDiscordRecentInfoVariable(discordRecentInfo) {
@@ -145,6 +159,7 @@ function getHistoryVariable(callback) {
     chrome.storage.local.get("MAL_AnimeHistory", function (result) {
         callback(result.MAL_AnimeHistory ?? []);
     });
+    return true;
 }
 
 function setHistoryVariable(MAL_AnimeHistory) {
@@ -159,4 +174,5 @@ function getDiscordTabIdVariable(callback) {
     chrome.storage.local.get("discordTabId", function (result) {
         callback(result.discordTabId ?? -1);
     });
+    return true;
 }
