@@ -102,7 +102,7 @@ function initBookmarkFolder(folderName) {
         } else {
             getBookmark(result, res => {
                 if (res != undefined) {
-                    setBookmarkIDVariable(res.id);
+                    setBookmarkIDVariable(String(res.id));
                 } else {
                     createBookmarkFolder(folderName);
                 }

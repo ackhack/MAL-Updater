@@ -29,16 +29,6 @@
                 "InjectScripts/mainInject.js"
             ],
             "all_frames": true
-        },
-        {
-            "matches": [
-                "https://discord.com/channels/@me"
-            ],
-            "js": [
-                "InjectScripts/discordRichPresenceInject.js"
-            ],
-            "run_at": "document_start",
-            "all_frames": true
         }
     ],
     "background": {

@@ -1,3 +1,15 @@
+// ,
+// {
+// 	"matches": [
+// 		"https://discord.com/channels/@me"
+// 	],
+// 	"js": [
+// 		"InjectScripts/discordRichPresenceInject.js"
+// 	],
+// 	"run_at": "document_start",
+// 	"all_frames": true
+// }
+
 const injectionCode = () => {
 	const originalWebSocket = window.WebSocket, originalWebSocketProperties = ["binaryType", "bufferedAmount", "extensions", "onclose", "onmessage", "onopen", "protocol", "readyState", "url"]
 	let status = "online", since = 0, afk = false, timer
@@ -134,63 +146,3 @@ port.onDisconnect.addListener(() => {
 		location.reload()
 	}
 })
-
-// init();
-
-// function init(nTry = 0) {
-// 	let deafend = false;
-// 	let btns = document.getElementsByTagName("button");
-// 	for (let btn of btns) {
-// 		//Site is loaded when Deafen-button is found
-// 		if (btn.ariaLabel === "Deafen") {
-// 			deafenSound();
-// 			deafend = true;
-// 			break;
-// 		}
-// 	}
-// 	if (nTry < 10 && !deafend) {
-// 		console.log("breh");
-// 		setTimeout(() => {
-// 			init(nTry + 1);
-// 		}, 2000);
-// 	}
-// }
-
-// function deafenSound() {
-// 	injectScript("(" + deafenCode.toString() + ")()");
-// }
-
-// function deafenCode() {
-// 	for (let btn of document.getElementsByTagName("button")) {
-// 		if (btn.ariaLabel === "User Settings") {
-// 			btn.click();
-// 			console.log("Pressed Settings Button");
-// 			setTimeout(() => {
-// 				for (let div of document.getElementsByTagName("div")) {
-// 					if (div.innerHTML === "Voice &amp; Video") {
-// 						div.click();
-// 						console.log("Pressed V&V Button");
-// 						setTimeout(() => {
-// 							for (let header of document.getElementsByTagName("h5")) {
-// 								if (header.innerHTML === "Output Volume") {
-// 									let div = header.parentElement.children[1];
-// 									var reactHandlerKey = Object.keys(div).filter(function (item) {
-// 										return item.indexOf('__reactEventHandlers') >= 0
-// 									});
-// 									let startValue = div.ariaValueNow;
-// 									if (reactHandlerKey)
-// 										for (let i = 0; i < startValue; i++) {
-// 											div[reactHandlerKey[0]].onKeyDown({ key: "ArrowLeft", preventDefault: () => { }, stopPropagation: () => { } });
-// 										}
-
-// 									console.log("Set Slider to silence");
-// 									break;
-// 								}
-// 							}
-// 						}, 1000);
-// 					}
-// 				}
-// 			}, 1000);
-// 		}
-// 	}
-// }

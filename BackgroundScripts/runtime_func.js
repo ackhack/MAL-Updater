@@ -99,8 +99,26 @@ function handleAnimeWatchedInfo(req) {
     addHistory(req.name, req.episode, req.id);
 }
 
-function confirmMessage(msg, callb) {
-    callb(confirm(msg));
+function confirmMessage(msg, callb = () => { }) {
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "Resources/icon.png",
+        title: "MAL Updater",
+        requireInteraction: true,
+        buttons: [{
+            title: "Yes"
+        }, {
+            title: "No"
+        }],
+        message: msg
+    }, id => {
+        function listener(notificationId, buttonIndex) {
+            if (notificationId == id)
+                callb(buttonIndex == 0);
+            chrome.notifications.onButtonClicked.removeListener(listener);
+        }
+        chrome.notifications.onButtonClicked.addListener(listener);
+    });
     return true;
 }
 

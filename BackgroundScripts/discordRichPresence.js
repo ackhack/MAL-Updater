@@ -5,14 +5,30 @@ function changeActiveDiscordState(val) {
     if (!val) {
         removeDiscord();
     } else {
-        if (confirm("Please make to sure be logged in in DiscordWeb")) {
-            chrome.tabs.create({ url: "https://discord.com/login" }, () => { })
-        }
+        confirmMessage("Please make to sure be logged in in DiscordWeb", result => {
+            if (result) {
+                chrome.tabs.create({ url: "https://discord.com/login" }, () => { })
+            }
+        })
     }
     return true;
 }
 
 function addDiscord() {
+    getDiscordTabIdVariable(discordTabId => {
+        if (discordTabId == -1) {
+            createDiscordWindow();
+        } else {
+            chrome.tabs.get(discordTabId, tab => {
+                if (chrome.runtime.LastError) {
+                    createDiscordWindow();
+                }
+            })
+        }
+    });
+}
+
+function createDiscordWindow() {
     chrome.tabs.create({ url: "https://discord.com/channels/@me", active: false }, (tab) => {
         chrome.tabs.update(tab.id, { muted: true });
         setDiscordTabIdVariable(tab.id);
@@ -21,6 +37,9 @@ function addDiscord() {
 
 function removeDiscord() {
     getDiscordTabIdVariable(discordTabId => {
+        if (discordTabId == -1) {
+            return;
+        }
         chrome.tabs.remove(discordTabId);
         setDiscordTabIdVariable(-1);
     });
@@ -33,17 +52,15 @@ chrome.runtime.onConnect.addListener((port) => {
             return;
         }
         if (port.name == "discord") {
-            getDiscordPortVariable(discordPort => {
-                if (discordPort !== undefined) {
-                    discordPort.postMessage({ action: "close" });
-                    discordPort.disconnect();
-                }
-                setDiscordPortVariable(port);
-                console.info("Discord port opened");
-                port.onDisconnect.addListener(() => {
-                    console.info("Discord port closed");
-                    setDiscordPortVariable(undefined);
-                });
+            console.info("Discord port opened");
+            discordPort = port;
+            if (messageToSend != undefined) {
+                port?.postMessage(messageToSend);
+                messageToSend = undefined;
+            }
+            port.onDisconnect.addListener(() => {
+                discordPort = null;
+                console.info("Discord port closed");
             });
         } else {
             console.error("Denied connection with unexpected name:", port.name);
@@ -51,6 +68,9 @@ chrome.runtime.onConnect.addListener((port) => {
         }
     });
 });
+
+var discordPort = null;
+var messageToSend = undefined;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -63,23 +83,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 if (discordActive) {
                     addDiscord();
                     getDiscordRecentInfoVariable(recentInfo => {
-                        let port = undefined;
-                        let i = 0;
-                        while (port === undefined) {
-                            getDiscordPortVariable(discordPort => {
-                                port = discordPort;
-                            });
-                            if (i > 1000) {
-                                return;
-                            }
-                            i++;
-                        }
                         if (request.active) {
                             if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
-                                return true;
+                                return;
                             }
+
                             setDiscordRecentInfoVariable({ name: request.name, episode: request.episode });
-                            setDiscordPresence({
+
+                            let msg = {
                                 type: 3,
                                 name: "Anime",
                                 streamurl: "",
@@ -87,12 +98,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                                 state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
                                 partycur: "",
                                 partymax: "",
-                            });
-                        } else {
-                            if (recentInfo.name == request.name && recentInfo.episode == request.episode && updateQueue === undefined)
+                            };
+
+                            discordPort?.postMessage(msg);
+                            if (discordPort == null)
+                                messageToSend = msg;
+
+                        } else {  
+                            if (recentInfo.name == request.name && recentInfo.episode == request.episode){
+                                setDiscordRecentInfoVariable({ name: "", episode: "" });
                                 removeDiscord();
+                            }
                         }
                     });
+                } else {
+                    removeDiscord();
                 }
             });
             return true;
@@ -100,14 +120,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             return false;
     }
 });
-
-function setDiscordPresence(obj) {
-
-    getDiscordPortVariable(discordPort => {
-
-        if (discordPort !== undefined) {
-            return;
-        }
-        discordPort?.postMessage(obj);
-    });
-}

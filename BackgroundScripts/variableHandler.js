@@ -77,7 +77,7 @@ function setUserTokenVariable(MAL_User_Token) {
 
 function getBookmarkIDVariable(callback) {
     chrome.storage.local.get("bookmarkID", function (result) {
-        callback(result.bookmarkID ?? -1);
+        callback(result.bookmarkID ?? "-1");
     });
     return true;
 }
@@ -117,11 +117,6 @@ function getBookmarkAutoActiveVariable(callback) {
 
 function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto: MAL_Settings_Bookmarks_Auto });
-    if (MAL_Settings_Bookmarks_Auto) {
-        chrome.alarms.create("bookmarkLoop", {
-            delayInMinutes: 0
-        });
-    }
 }
 
 function getDiscordActiveVariable(callback) {
@@ -135,20 +130,9 @@ function setDiscordActiveVariable(MAL_Settings_DiscordActive) {
     chrome.storage.local.set({ MAL_Settings_DiscordActive: MAL_Settings_DiscordActive });
 }
 
-function getDiscordPortVariable(callback) {
-    chrome.storage.local.get("discordPort", function (result) {
-        callback(result.discordPort ?? 0);
-    });
-    return true;
-}
-
-function setDiscordPortVariable(discordPort) {
-    chrome.storage.local.set({ discordPort: discordPort });
-}
-
 function getDiscordRecentInfoVariable(callback) {
     chrome.storage.local.get("discordRecentInfo", function (result) {
-        callback(JSON.parse(result.discordRecentInfo) ?? {
+        callback(result.discordRecentInfo ?? {
             name: "",
             episode: ""
         });
@@ -157,7 +141,7 @@ function getDiscordRecentInfoVariable(callback) {
 }
 
 function setDiscordRecentInfoVariable(discordRecentInfo) {
-    chrome.storage.local.set({ discordRecentInfo: JSON.stringify(discordRecentInfo) });
+    chrome.storage.local.set({ discordRecentInfo: discordRecentInfo });
 }
 
 function getHistoryVariable(callback) {
