@@ -76,14 +76,14 @@ function setUserTokenVariable(MAL_User_Token) {
 }
 
 function getBookmarkIDVariable(callback) {
-    chrome.storage.local.get("bookmarkID", function (result) {
-        callback(result.bookmarkID ?? "-1");
+    chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
+        callback(result.MAL_Bookmark_ID ?? "-1");
     });
     return true;
 }
 
-function setBookmarkIDVariable(bookmarkID) {
-    chrome.storage.local.set({ bookmarkID: bookmarkID });
+function setBookmarkIDVariable(MAL_Bookmark_ID) {
+    chrome.storage.local.set({ MAL_Bookmark_ID: MAL_Bookmark_ID });
 }
 
 function getBookmarkActiveVariable(callback) {

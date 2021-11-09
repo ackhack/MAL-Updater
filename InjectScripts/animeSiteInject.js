@@ -86,7 +86,12 @@ function recieveAnime(res) {
 
     if (res.lastWatched != undefined) {
         lastWatched = res.lastEpisode;
+        if (!res.lastWatched) {
+            showInfo("This is not the next Episode!", "Your last watched Episode is EP" + res.lastEpisode);
+        }
     }
+
+    console.log(res);
 
     //If id was recieved from cache, dont create Elements
     if (res.cache) {

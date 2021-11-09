@@ -13,6 +13,8 @@ function getAnime(req, callb, nTry = 0) {
 
                     console.log("Cached: " + req.name);
                     checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
+                        console.log(lastWatched);
+                        console.log(episode);
                         callb({
                             meta: cached.meta,
                             cache: true,
@@ -46,6 +48,7 @@ function getAnime(req, callb, nTry = 0) {
                                 checkLastEpisode(responseJSON.id, req.episode, usertoken, (lastWatched, episode) => {
                                     responseJSON.lastWatched = lastWatched;
                                     responseJSON.lastEpisode = episode;
+                                    console.log(responseJSON);
                                     callb(responseJSON);
                                 });
                             }
