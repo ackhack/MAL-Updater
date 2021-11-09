@@ -32,6 +32,7 @@ function getCacheByName(site, name, callb) {
         for (let elem in animeCache) {
             if (animeCache[elem][site] === name) {
                 callb(animeCache[elem]);
+                return;
             }
         }
         callb(undefined);
@@ -52,6 +53,7 @@ function getCacheByURLAsync(url, callb = () => { }) {
                 getCacheByName(site, match[sites[site].nameMatch], result => {
                     callb(result)
                 })
+                return;
             }
         }
         callb(undefined);
@@ -75,26 +77,30 @@ function deleteCache(query = {}, callb = () => { }) {
             return true;
         }
 
-        if (query.url) {
-            validateSite(query, (site) => {
+        if (query.active) {
+            chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+                if (tabs.length > 0) {
+                    validateSite({url: tabs[0].url}, (site) => {
 
-                if (site === undefined)
-                    return;
-
-                let res = query.url.match(site.urlPattern);
-
-                if (res) {
-                    for (let elem in animeCache) {
-                        if (animeCache[elem][site.siteName] === res[site.nameMatch]) {
-                            delete animeCache[elem][site.siteName];
-                            setAnimeCacheVariable(animeCache);
-                            callb(true);
+                        if (site === undefined)
                             return;
+        
+                        let res = tabs[0].url.match(site.urlPattern);
+        
+                        if (res) {
+                            for (let elem in animeCache) {
+                                if (animeCache[elem][site.siteName] === res[site.nameMatch]) {
+                                    delete animeCache[elem][site.siteName];
+                                    setAnimeCacheVariable(animeCache);
+                                    callb(true);
+                                    return;
+                                }
+                            }
                         }
-                    }
+        
+                    });
                 }
-
-            });
+            })
             return true;
         }
         callb(false);
@@ -136,5 +142,10 @@ function importCache(cacheString) {
 
 function importCacheFile(req) {
     importCache(req.cacheString);
+    return true;
+}
+
+function deleteActiveCache(callb) {
+    deleteCache({active:true},callb);
     return true;
 }

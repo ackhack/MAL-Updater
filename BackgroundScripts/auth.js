@@ -154,6 +154,6 @@ function getUserToken(auth_token) {
 
 function unauthorize() {
     changeActiveState(false);
-    chrome.storage.local.remove("MAL_User_Token", () => { });
+    setUserTokenVariable({});
     return true;
 }

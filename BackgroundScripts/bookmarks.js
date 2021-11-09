@@ -61,11 +61,12 @@ function setBookmark(animeID, oldURL, nextURL) {
                                 }
                             });
                         } else {
-                            initSettings(() => { });
+                            createBookmarkFolder();
                         }
                     });
             });
 
+            //add new bookmark
             if (nextURL && anime !== undefined) {
                 addBookmark(getBookmarkName(anime), nextURL);
             }
@@ -89,20 +90,22 @@ function addBookmark(name, url, nTry = 0) {
                 }, () => { })
             } else {
                 nTry++;
-                if (nTry < 10)
-                    initSettings(() => { addBookmark(name, url, nTry); })
+                if (nTry < 10) {
+                    createBookmarkFolder(() => {
+                        addBookmark(name, url, nTry);
+                    });
+                }
             }
         });
     });
 }
 
-function createBookmarkFolder(name = "Anime") {
+function createBookmarkFolder(name = "Anime", callb = () => { }) {
     chrome.bookmarks.search(name, (result) => {
 
         for (let bookmark of result) {
             if (bookmark.title === name && bookmark.url == undefined) {
-                bookmarkID = bookmark.id;
-                chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+                setBookmarkIDVariable(bookmark.id);
                 return;
             }
         }
@@ -111,8 +114,8 @@ function createBookmarkFolder(name = "Anime") {
             'title': name,
             'parentId': "1"
         }, bookmark => {
-            bookmarkID = bookmark.id;
-            chrome.storage.local.set({ "MAL_Bookmark_ID": bookmark.id }, function () { });
+            setBookmarkIDVariable(bookmark.id);
+            callb();
         });
     });
 }
@@ -170,11 +173,6 @@ function renameBookmark(bookmark) {
     });
 }
 
-function changePreferredSite(req) {
-    setPreferredSiteNameVariable(req.site);
-    return true;
-}
-
 function bookmarkLoop() {
     getBookmarkAutoActiveVariable(bookmarkautoActive => {
         if (!bookmarkautoActive) {
@@ -211,4 +209,16 @@ function checkBookmarkAuto(req) {
 
 function getBookmarkName(anime) {
     return anime.meta.id + ": " + getAnimeTitle(anime);
+}
+
+function getBookmarkFolderName(callb = () => { }) {
+    getBookmarkIDVariable(bookmarkID => {
+        getBookmark(bookmarkID, res => {
+            if (res != undefined) {
+                callb(res.title);
+            } else {
+                callb("");
+            }
+        });
+    });
 }

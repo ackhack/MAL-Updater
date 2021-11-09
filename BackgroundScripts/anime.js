@@ -109,7 +109,6 @@ function finishedEpisode(req, callb) {
         } else {
 
             getCacheById(req.id, result => {
-                console.log("pen3: " + result);
                 let anime = result;
                 if (anime === undefined) {
                     callb({ num_episodes_watched: -1 });
@@ -151,18 +150,20 @@ function finishedEpisode(req, callb) {
 }
 
 function getAnimeDetails(id, callb) {
-    //Gets the episode number of an anime
-    fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime,alternative_titles", {
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer " + usertoken.access,
-        },
-    })
-        .then(response => {
-            response.json().then((json) => {
-                callb(json);
-            })
-        });
+    getUserTokenVariable(usertoken => {
+        //Gets the episode number of an anime
+        fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime,alternative_titles", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + usertoken.access,
+            },
+        })
+            .then(response => {
+                response.json().then((json) => {
+                    callb(json);
+                })
+            });
+    });
     return true;
 }
 
@@ -187,4 +188,13 @@ function getAnimeTitle(anime) {
         }
     }
     return anime.meta.title ?? "Unnamed Anime";
+}
+
+function getActiveAnime(callb = () => { }) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (tabs[0]) {
+            getCacheByURLAsync(tabs[0].url, callb);
+        }
+    });
+    return true;
 }

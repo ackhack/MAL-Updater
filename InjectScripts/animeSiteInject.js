@@ -286,7 +286,6 @@ function finishedEpisode(force = false) {
             for (let el of document.getElementsByClassName('ka-url-wrapper')) {
                 if (el.innerText.includes('Next Episode')) {
                     nextURL = el.href;
-                    return;
                 }
             }
         default:
@@ -294,7 +293,6 @@ function finishedEpisode(force = false) {
             for (let node of document.getElementsByTagName('a')) {
                 if (node.href == nexthref) {
                     nextURL = node.href;
-                    return;
                 }
             }
     }
@@ -553,12 +551,17 @@ function displayUserInputtedAnime(id) {
     if (!ul) {
         return;
     }
+
+    if (id == "")
+        return;
+
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME_BY_ID",
             id: id
         },
         res => {
+            console.log(res);
             ul.id = "";
             ul.parentElement.replaceChild(createMainList({ data: [{ node: res }] }), ul);
         }

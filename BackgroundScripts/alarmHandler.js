@@ -11,10 +11,8 @@ chrome.alarms.onAlarm.addListener(
         }
 
         switch (alarm.name) {
-            case "updateCheck":
+            case "cycle10min":
                 checkUpdateCycle();
-                return;
-            case "bookmarkLoop":
                 bookmarkLoop();
                 return;
             case "newAccessToken":
@@ -24,5 +22,6 @@ chrome.alarms.onAlarm.addListener(
     }
 )
 
-chrome.alarms.create("bookmarkLoop", { delayInMinutes: 0, periodInMinutes: 10 });
-chrome.alarms.create("updateCheck", { delayInMinutes: 0, periodInMinutes: 30 });
+function startAlarms() {
+chrome.alarms.create("cycle10min", { delayInMinutes: 0, periodInMinutes: 10 });
+}

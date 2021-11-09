@@ -43,9 +43,11 @@ function validateMainSite(req, callb) {
 
 function changeActiveState(value) {
     setActiveVariable(value);
-    if (value && usertoken === undefined) {
-        getAuthCode();
-    }
+    getUserTokenVariable(usertoken => {
+        if (value && usertoken.access == undefined) {
+            getAuthCode();
+        }
+    });
     return true;
 }
 
@@ -88,9 +90,10 @@ function checkUpdate(callb) {
 
 function checkUpdateCycle() {
     checkUpdate(result => {
+        console.log(result);
         if (result.update) {
+            console.log("Update available");
             chrome.action.setBadgeText({ text: "1" });
-            return;
         }
     });
 }
@@ -120,12 +123,6 @@ function confirmMessage(msg, callb = () => { }) {
         chrome.notifications.onButtonClicked.addListener(listener);
     });
     return true;
-}
-
-function tryGetStorage(name, defaultValue, callb) {
-    chrome.storage.local.get(name, function (result) {
-        callb(result ? result[name] ?? defaultValue : defaultValue);
-    });
 }
 
 function sendNotification(message) {

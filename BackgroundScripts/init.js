@@ -1,25 +1,13 @@
-const settings = [
-    {
-        name: "MAL_Settings_Bookmarks",
-        execfunction: initBookmarkFolder
-    }, {
-        name: "MAL_Settings_Active",
-        variable: 'active',
-        default: true
-    }
-];
-
 init();
 
 function init() {
     //Init with callbacks for right order
-    setDiscordTabIdVariable(-1);
-    initBookmarkEvent();
 
     initSecret(() => {
         initSites(() => {
-            initSettings(0, () => {
-            })
+            setDiscordTabIdVariable(-1);
+            initBookmarkEvent();
+            initBookmarkFolder();
         })
     });
 }
@@ -67,47 +55,22 @@ function initSecret(callb) {
         }).catch(_ => sendNotification("No secret.json found\ngithub.com/ackhack/mal-updater for more info\nExtension will not start unless secret.json is present"));
 }
 
-function initSettings(i, callb) {
-    if (i == settings.length) {
-        callb();
-        return;
-    }
-    let setting = settings[i];
-
-    tryGetStorage(setting.name, undefined, result => {
-
-        if (result !== undefined) {
-            if ('variable' in setting) {
-                this[setting.variable] = result;
-            }
-            if ('execfunction' in setting) {
-                setting.execfunction(result);
-            }
-        } else {
-            if ('variable' in setting) {
-                this[setting.variable] = setting.default;
-            }
-            if ('execfunction' in setting && setting.default === true) {
-                setting.execfunction();
-            }
-        }
-        initSettings(++i, callb);
-    });
-}
-
 function initBookmarkFolder(folderName) {
-    tryGetStorage("MAL_Bookmark_ID", "", result => {
-        if (result === "") {
-            createBookmarkFolder(folderName);
-        } else {
-            getBookmark(result, res => {
-                if (res != undefined) {
-                    setBookmarkIDVariable(String(res.id));
-                } else {
-                    createBookmarkFolder(folderName);
-                }
-            });
-        }
+    getBookmarkActiveVariable(active => {
+        if (!active)
+            return;
+        
+        getBookmarkIDVariable(id => {
+            if (id == "-1") {
+                createBookmarkFolder(folderName);
+            } else {
+                getBookmark(id, res => {
+                    if (res == undefined) {
+                        createBookmarkFolder(folderName);
+                    }
+                });
+            }
+        });
     });
 }
 

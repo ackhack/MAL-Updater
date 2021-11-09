@@ -7,7 +7,7 @@ self.importScripts(
     "BackgroundScripts/history.js",
     "BackgroundScripts/runtime_func.js",
     "BackgroundScripts/injectSelector.js",
-    "BackgroundScripts/discordRichPresence.js",
+    //"BackgroundScripts/discordRichPresence.js",
     "BackgroundScripts/init.js",
     "BackgroundScripts/alarmHandler.js"
 );
@@ -20,65 +20,90 @@ chrome.runtime.onMessage.addListener(
 
         switch (request.type) {
             case "GET_ANIME":
-                return getAnime(request, onSuccess);
+                getAnime(request, onSuccess);
+                break;
             case "SEND_USERTOKEN":
-                return checkState(request, onSuccess);
+                checkState(request, onSuccess);
+                break;
             case "SEND_ANIME_FINISHED":
-                return finishedEpisode(request, onSuccess);
+                finishedEpisode(request, onSuccess);
+                break;
             case "CLOSE_TAB":
-                return closeTab(sender,request.force);
+                closeTab(sender,request.force);
+                break;
             case "CACHE_ANIME":
-                return setCache(request, onSuccess);
+                setCache(request, onSuccess);
+                break;
             case "VALIDATE_SITE":
-                return validateSite(request, onSuccess);
+                validateSite(request, onSuccess);
+                break;
             case "VALIDATE_MAIN_SITE":
-                return validateMainSite(request, onSuccess);
+                validateMainSite(request, onSuccess);
+                break;
             case "CHANGED_BOOKMARK":
-                return updateBookmarkFolder(request);
+                updateBookmarkFolder(request);
+                break;
             case "DELETE_CACHE":
-                return deleteCache(request.query, onSuccess);
+                deleteCache(request.query, onSuccess);
+                break;
             case "CHANGED_ACTIVE":
-                return changeActiveState(request.value);
+                changeActiveState(request.value);
+                break;
             case "UNAUTHORIZE":
-                return unauthorize();
-            case "CHANGED_CHECK_LAST_EPISODE":
-                return changeCheckLastEpisode(request.value);
-            case "CHANGED_DISPLAY_MODE":
-                return changeDisplayMode(request.value);
-            case "BINGE_WATCHING":
-                return addBinge(request.id);
+                unauthorize();
+                break;
             case "GET_NEWEST_VERSION":
-                return checkUpdate(onSuccess);
-            case "SYNC_CACHE":
-                return initCache(onSuccess);
-            case "SYNC_HISTORY":
-                return initHistory(onSuccess);
+                checkUpdate(onSuccess);
+                break;
             case "SITE_OPENED":
-                return selectInjector(sender);
+                selectInjector(sender);
+                break;
             case "ANIME_WATCHED_INFO":
-                return handleAnimeWatchedInfo(request);
+                handleAnimeWatchedInfo(request);
+                break;
             case "GET_ANIME_BY_ID":
-                return getAnimeDetails(request.id, onSuccess);
+                getAnimeDetails(request.id, onSuccess);
+                break;
             case "GET_ANIME_BY_URL":
-                return getCacheByURLAsync(request.url, onSuccess);
+                getCacheByURLAsync(request.url, onSuccess);
+                break;
             case "EXPORT_CACHE":
-                return exportCache(onSuccess);
+                exportCache(onSuccess);
+                break;
             case "IMPORT_CACHE":
-                return importCacheFile(request);
+                importCacheFile(request);
+                break;
             case "CONFIRM_MESSAGE":
-                return confirmMessage(request.message,onSuccess);
+                confirmMessage(request.message,onSuccess);
+                break;
             case "GET_SITES":
-                return getSitesVariable(onSuccess);
-            case "CHANGED_PREFERRED_SITE":
-                return changePreferredSite(request);
+                getSitesVariable(onSuccess);
+                break;
             case "GET_PREFERRED_SITE":
-                return getPreferredSiteNameVariable(onSuccess);
-            case "CHANGED_BOOKMARK_AUTO_ACTIVE":
-                return setBookmarkAutoActiveVariable(request.active);
+                getPreferredSiteNameVariable(onSuccess);
+                break;
             case "AUTO_BOOKMARK_CHECK":
-                return checkBookmarkAuto(request);
+                checkBookmarkAuto(request);
+                break;
+            case "GET_ACTIVE_ANIME":
+                getActiveAnime(onSuccess);
+                break;
+            case "DELETE_ACTIVE_CACHE":
+                deleteActiveCache(onSuccess);
+                break;
+            case "GET_BOOKMARK_FOLDER_NAME":
+                getBookmarkFolderName(onSuccess);
+                break;
+            case "CHANGE_BOOKMARKS":
+                updateBookmarkFolder(request)
+                break;
             default:
                 return false;
         }
+        return true;
     }
 );
+
+chrome.runtime.onStartup.addListener(() => {
+    startAlarms();
+})
