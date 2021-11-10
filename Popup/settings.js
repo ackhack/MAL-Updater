@@ -13,11 +13,11 @@ function init() {
 function initFunctions() {
     document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbActive").onchange = changeActiveState;
-    //document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
+    document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
     document.getElementById("btnCacheDeleteAll").onclick = deleteCacheAll;
     document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
     document.getElementById("btnUnauthorize").onclick = unauthorize;
-    //document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
+    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("pVersion").onclick = versionClicked;
     document.getElementById("btnCacheViewer").onclick = showCache;
@@ -37,9 +37,9 @@ function initSettings() {
     getBookmarkFolderName(name => {
         document.getElementById("tbBookmarks").value = name;
     })
-    // getActiveDiscordState(active => {
-    //     document.getElementById("cbActiveDiscord").checked = active;
-    // })
+    getActiveDiscordState(active => {
+         document.getElementById("cbActiveDiscord").checked = active;
+     })
     getCurrentVersion(versionText => {
         document.getElementById("pVersion").innerText = versionText;
     })

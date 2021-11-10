@@ -90,7 +90,6 @@ function checkUpdate(callb) {
 
 function checkUpdateCycle() {
     checkUpdate(result => {
-        console.log(result);
         if (result.update) {
             console.log("Update available");
             chrome.action.setBadgeText({ text: "1" });

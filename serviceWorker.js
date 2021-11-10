@@ -7,7 +7,7 @@ self.importScripts(
     "BackgroundScripts/history.js",
     "BackgroundScripts/runtime_func.js",
     "BackgroundScripts/injectSelector.js",
-    //"BackgroundScripts/discordRichPresence.js",
+    "BackgroundScripts/discordRichPresence.js",
     "BackgroundScripts/init.js",
     "BackgroundScripts/alarmHandler.js"
 );

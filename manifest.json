@@ -28,6 +28,15 @@
                 "InjectScripts/mainInject.js"
             ],
             "all_frames": true
+        },
+        {
+            "matches": [
+                "https://discord.com/channels/@me"
+            ],
+            "js": [
+                "InjectScripts/discordInject.js"
+            ],
+            "run_at": "document_start"
         }
     ],
     "background": {
@@ -39,5 +48,18 @@
     "action": {
         "default_title": "MAL-Updater Settings",
         "default_popup": "Popup/settings.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "InjectScripts/discordRichPresenceInject.js"
+            ],
+            "matches": [
+                "https://discord.com/*"
+            ]
+        }
+    ],
+    "externally_connectable": {
+        "matches": ["https://discord.com/*"]
     }
 }

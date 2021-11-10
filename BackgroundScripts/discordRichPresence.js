@@ -30,6 +30,9 @@ function addDiscord() {
 
 function createDiscordWindow() {
     chrome.tabs.create({ url: "https://discord.com/channels/@me", active: false }, (tab) => {
+        if (chrome.runtime.LastError) {
+            return;
+        }
         chrome.tabs.update(tab.id, { muted: true });
         setDiscordTabIdVariable(tab.id);
     });
@@ -46,7 +49,7 @@ function removeDiscord() {
     return true;
 }
 
-chrome.runtime.onConnect.addListener((port) => {
+chrome.runtime.onConnectExternal.addListener((port) => {
     getDiscordActiveVariable(discordActive => {
         if (!discordActive) {
             return;
@@ -81,13 +84,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case "DISCORD_PRESENCE":
             getDiscordActiveVariable(discordActive => {
                 if (discordActive) {
-                    addDiscord();
                     getDiscordRecentInfoVariable(recentInfo => {
                         if (request.active) {
                             if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
                                 return;
                             }
 
+                            addDiscord();
                             setDiscordRecentInfoVariable({ name: request.name, episode: request.episode });
 
                             let msg = {
@@ -104,8 +107,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                             if (discordPort == null)
                                 messageToSend = msg;
 
-                        } else {  
-                            if (recentInfo.name == request.name && recentInfo.episode == request.episode){
+                        } else {
+                            if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
                                 setDiscordRecentInfoVariable({ name: "", episode: "" });
                                 removeDiscord();
                             }
