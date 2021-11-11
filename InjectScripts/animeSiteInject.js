@@ -91,8 +91,6 @@ function recieveAnime(res) {
         }
     }
 
-    console.log(res);
-
     //If id was recieved from cache, dont create Elements
     if (res.cache) {
         animeID = res.meta.id;
@@ -566,7 +564,6 @@ function displayUserInputtedAnime(id) {
             id: id
         },
         res => {
-            console.log(res);
             ul.id = "";
             ul.parentElement.replaceChild(createMainList({ data: [{ node: res }] }), ul);
         }

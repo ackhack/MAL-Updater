@@ -1,7 +1,7 @@
 const encodeString = str => str ? str.split("\\").join("\\\\").split("\"").join("\\\"") : str
 const originalWebSocket = window.WebSocket, originalWebSocketProperties = ["binaryType", "bufferedAmount", "extensions", "onclose", "onmessage", "onopen", "protocol", "readyState", "url"]
-let status = "online", since = 0, afk = false, timer, portOpen = false
-window.SetDiscordActivityData = {
+let status = "online", since = 0, afk = false, timer, overwriteSuccess = false
+window.setDiscordActivityData = {
 	sendUpdate: false,
 	activityType: 3,
 	activityName: "Anime",
@@ -15,7 +15,9 @@ window.WebSocket = function (u, p) {
 	this.downstreamSocket = new originalWebSocket(u, p)
 	if (u.indexOf("gateway.discord.gg") > -1) {
 		window.SetDiscordActivityActiveSocket = this.downstreamSocket
-		openPort();
+		malLog("Discord Gateway overwritten");
+		overwriteSuccess = true;
+		initFetching();
 	}
 	for (let i in originalWebSocketProperties) {
 		Object.defineProperty(this, originalWebSocketProperties[i], {
@@ -38,8 +40,8 @@ window.WebSocket.prototype.send = function (d) {
 			if (start == '{"op":2,') {
 				clearInterval(timer)
 				timer = setInterval(() => {
-					if (window.SetDiscordActivityData.sendUpdate) {
-						window.SetDiscordActivityData.sendUpdate = false
+					if (window.setDiscordActivityData.sendUpdate) {
+						window.setDiscordActivityData.sendUpdate = false
 						window.SetDiscordActivitySendStatus()
 					}
 				}, 500)
@@ -61,20 +63,20 @@ window.WebSocket.CLOSED = originalWebSocket.CLOSED
 window.SetDiscordActivitySendStatus = () => {
 	if (window.SetDiscordActivityActiveSocket && window.SetDiscordActivityActiveSocket.readyState == originalWebSocket.OPEN) {
 		let activity = {
-			type: window.SetDiscordActivityData.activityType,
-			name: window.SetDiscordActivityData.activityName
+			type: window.setDiscordActivityData.activityType,
+			name: window.setDiscordActivityData.activityName
 		}
-		if (window.SetDiscordActivityData.activityType == 1) {
+		if (window.setDiscordActivityData.activityType == 1) {
 			activity.url = window.activityUrl
 		}
-		if (window.SetDiscordActivityData.activityPartyCur != "" && window.SetDiscordActivityData.activityPartyMax != "") {
-			activity.party = { size: [window.SetDiscordActivityData.activityPartyCur, window.SetDiscordActivityData.activityPartyMax] }
+		if (window.setDiscordActivityData.activityPartyCur != "" && window.setDiscordActivityData.activityPartyMax != "") {
+			activity.party = { size: [window.setDiscordActivityData.activityPartyCur, window.setDiscordActivityData.activityPartyMax] }
 		}
-		if (window.SetDiscordActivityData.activityDetails) {
-			activity.details = window.SetDiscordActivityData.activityDetails
+		if (window.setDiscordActivityData.activityDetails) {
+			activity.details = window.setDiscordActivityData.activityDetails
 		}
-		if (window.SetDiscordActivityData.activityState) {
-			activity.state = window.SetDiscordActivityData.activityState
+		if (window.setDiscordActivityData.activityState) {
+			activity.state = window.setDiscordActivityData.activityState
 		}
 		window.SetDiscordActivityActiveSocket.send(JSON.stringify({
 			op: 3, d: {
@@ -86,54 +88,71 @@ window.SetDiscordActivitySendStatus = () => {
 		}))
 	}
 }
+let recentName = "", recentEpisode = "", id = "";
 
-setTimeout(() => {
-	if (!portOpen) {
-		location.reload()
-	}
-}, 10000);
+checkForOverride();
 
-function openPort() {
-	let pTag = document.getElementById("MAL-Updater")
-	if (pTag) {
-		let port = chrome.runtime.connect(pTag.innerText, { name: "discord" }), closeOK = false
-		portOpen = true
+function checkForOverride() {
+	setTimeout(() => {
+		malLog("Checking for override");
+		if (!overwriteSuccess) {
+			location.reload();
+		}
+	}, 5000);
+}
 
-		port.onMessage.addListener(msg => {
-			if (msg.action) {
-				switch (msg.action) {
-					case "close":
-						closeOK = true
-						break;
-
-					default:
-						console.warn("Unknown action", msg.action)
-				}
-			}
-			else if (msg.type !== undefined && msg.name !== undefined) {
-				window.SetDiscordActivityData = {
-					sendUpdate: true,
-					activityType: msg.type,
-					activityName: encodeString(msg.name),
-					activityUrl: encodeString(msg.streamurl),
-					activityDetails: encodeString(msg.details),
-					activityState: encodeString(msg.state),
-					activityPartyCur: encodeString(msg.partycur),
-					activityPartyMax: encodeString(msg.partymax)
-				}
-			}
-		})
-		port.onDisconnect.addListener(() => {
-			console.info("port closed")
-			if (closeOK) {
-				closeOK = false
-			}
-			else {
-				location.reload()
-			}
-		})
+function initFetching() {
+	let pTag = document.getElementById("MAL-Updater");
+	if (pTag != null) {
+		id = pTag.innerText;
+		fetchStatus();
 	} else {
 		close();
 	}
 }
 
+function fetchStatus() {
+	malLog("Fetching status");
+	chrome.runtime.sendMessage(id, {
+		type: "getDiscordStatus"
+	}, (response) => {
+		if (response != undefined && response.valid) {
+			if (response.close) {
+				setTimeout(() => {
+					chrome.runtime.sendMessage(id, {
+						type: "closeDiscord"
+					})
+				}, 10000);
+				return;
+			}
+			if (!response.empty && response.msg.name != recentName && response.msg.episode != recentEpisode) {
+				recentName = response.msg.name;
+				recentEpisode = response.msg.episode;
+				setDiscordActivity(response.msg);
+			}
+			setTimeout(() => {
+				fetchStatus();
+			}, 5000);
+		} else {
+			fetchStatus();
+		}
+	});
+}
+
+function setDiscordActivity(msg) {
+	malLog("Setting discord activity to " + msg.name);
+	window.setDiscordActivityData = {
+		sendUpdate: true,
+		activityType: msg.type,
+		activityName: encodeString(msg.name),
+		activityUrl: encodeString(msg.streamurl),
+		activityDetails: encodeString(msg.details),
+		activityState: encodeString(msg.state),
+		activityPartyCur: encodeString(msg.partycur),
+		activityPartyMax: encodeString(msg.partymax)
+	}
+}
+
+function malLog(msg) {
+	console.log("[MAL-Updater] " + msg);
+}

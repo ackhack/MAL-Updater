@@ -11,7 +11,7 @@ function getAnime(req, callb, nTry = 0) {
 
                 if (cached !== undefined) {
 
-                    console.log("Cached: " + req.name);
+                    console.log("Cache: Loaded from Cache " + req.name);
                     checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
                         callb({
                             meta: cached.meta,
@@ -46,6 +46,7 @@ function getAnime(req, callb, nTry = 0) {
                                 checkLastEpisode(responseJSON.id, req.episode, usertoken, (lastWatched, episode) => {
                                     responseJSON.lastWatched = lastWatched;
                                     responseJSON.lastEpisode = episode;
+                                    console.log("Cache: Loaded from API " + req.name);
                                     callb(responseJSON);
                                 });
                             }
@@ -87,33 +88,34 @@ function checkLastEpisode(id, episode, usertoken, callb) {
 function finishedEpisode(req, callb) {
 
     getUserTokenVariable(usertoken => {
+        getCacheById(req.id, result => {
+            let anime = result;
+            if (anime === undefined) {
+                callb({ num_episodes_watched: -1 });
+                return;
+            }
 
-        //rating only exists if anime was finished
-        if (req.rating) {
-            fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + usertoken.access,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: 'status=completed&num_watched_episodes=' + req.episode + '&score=' + req.rating
-            })
-                .then(response => {
-                    response.json().then(responseJSON => {
-                        if (req.episode == responseJSON.num_episodes_watched) {
-                            setBookmark(req.id, req.url, undefined);
-                        }
-                        callb(responseJSON);
+            console.log("Anime: Finished " + getAnimeTitle(anime) + " : " + req.episode);
+
+            //rating only exists if anime was finished
+            if (req.rating) {
+                fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": "Bearer " + usertoken.access,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: 'status=completed&num_watched_episodes=' + req.episode + '&score=' + req.rating
+                })
+                    .then(response => {
+                        response.json().then(responseJSON => {
+                            if (req.episode == responseJSON.num_episodes_watched) {
+                                setBookmark(req.id, req.url, undefined);
+                            }
+                            callb(responseJSON);
+                        });
                     });
-                });
-        } else {
-
-            getCacheById(req.id, result => {
-                let anime = result;
-                if (anime === undefined) {
-                    callb({ num_episodes_watched: -1 });
-                    return;
-                }
+            } else {
 
                 function updateEpisode() {
                     if (anime.meta.num_episodes == req.episode && req.force == false) {
@@ -143,8 +145,8 @@ function finishedEpisode(req, callb) {
                 } else {
                     updateEpisode();
                 }
-            });
-        }
+            }
+        });
     });
     return true;
 }

@@ -5,7 +5,6 @@ function init() {
 
     initSecret(() => {
         initSites(() => {
-            setDiscordTabIdVariable(-1);
             initBookmarkEvent();
             initBookmarkFolder();
         })

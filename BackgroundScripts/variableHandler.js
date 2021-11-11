@@ -1,3 +1,5 @@
+//#region Generic
+
 function getSitesVariable(callback) {
     chrome.storage.local.get("sites", function (result) {
         callback(result.sites ?? {});
@@ -20,6 +22,10 @@ function setActiveVariable(MAL_Settings_Active) {
     chrome.storage.local.set({ MAL_Settings_Active: MAL_Settings_Active });
 }
 
+//#endregion
+
+//#region Cache
+
 function getAnimeCacheVariable(callback) {
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
         callback(result.MAL_AnimeCache ?? {});
@@ -30,6 +36,10 @@ function getAnimeCacheVariable(callback) {
 function setAnimeCacheVariable(animeCache) {
     chrome.storage.local.set({ MAL_AnimeCache: animeCache });
 }
+
+//#endregion
+
+//#region Auth
 
 function getCodeVerifierVariable(callback) {
     chrome.storage.local.get("codeVerifier", function (result) {
@@ -75,6 +85,10 @@ function setUserTokenVariable(MAL_User_Token) {
     chrome.storage.local.set({ MAL_User_Token: MAL_User_Token });
 }
 
+//#endregion
+
+//#region Bookmark
+
 function getBookmarkIDVariable(callback) {
     chrome.storage.local.get("MAL_Bookmark_ID", function (result) {
         callback(result.MAL_Bookmark_ID ?? "-1");
@@ -119,6 +133,25 @@ function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto: MAL_Settings_Bookmarks_Auto });
 }
 
+//#endregion
+
+//#region History
+
+function getHistoryVariable(callback) {
+    chrome.storage.local.get("MAL_AnimeHistory", function (result) {
+        callback(result.MAL_AnimeHistory ?? []);
+    });
+    return true;
+}
+
+function setHistoryVariable(MAL_AnimeHistory) {
+    chrome.storage.local.set({ MAL_AnimeHistory: MAL_AnimeHistory });
+}
+
+//#endregion
+
+//#region Discord
+
 function getDiscordActiveVariable(callback) {
     chrome.storage.local.get("MAL_Settings_DiscordActive", function (result) {
         callback(result.MAL_Settings_DiscordActive ?? false);
@@ -144,18 +177,8 @@ function setDiscordRecentInfoVariable(discordRecentInfo) {
     chrome.storage.local.set({ discordRecentInfo: discordRecentInfo });
 }
 
-function getHistoryVariable(callback) {
-    chrome.storage.local.get("MAL_AnimeHistory", function (result) {
-        callback(result.MAL_AnimeHistory ?? []);
-    });
-    return true;
-}
-
-function setHistoryVariable(MAL_AnimeHistory) {
-    chrome.storage.local.set({ MAL_AnimeHistory: MAL_AnimeHistory });
-}
-
 function setDiscordTabIdVariable(discordTabId) {
+    console.log("Setting discordTabId to " + discordTabId);
     chrome.storage.local.set({ discordTabId: discordTabId });
 }
 
@@ -165,3 +188,5 @@ function getDiscordTabIdVariable(callback) {
     });
     return true;
 }
+
+//#endregion

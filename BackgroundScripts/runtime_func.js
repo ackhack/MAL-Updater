@@ -91,7 +91,7 @@ function checkUpdate(callb) {
 function checkUpdateCycle() {
     checkUpdate(result => {
         if (result.update) {
-            console.log("Update available");
+            console.log("Updater: Update available");
             chrome.action.setBadgeText({ text: "1" });
         }
     });

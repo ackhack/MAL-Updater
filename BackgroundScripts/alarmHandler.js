@@ -12,10 +12,12 @@ chrome.alarms.onAlarm.addListener(
 
         switch (alarm.name) {
             case "cycle10min":
+                console.log("Alarm: 10Min Cycle");
                 checkUpdateCycle();
                 bookmarkLoop();
                 return;
             case "newAccessToken":
+                console.log("Alarm: New Access Token");
                 refreshAccessToken();
                 return;
         }

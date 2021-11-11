@@ -16,12 +16,19 @@ function getAuthCode() {
 function parseUserToken(usertoken) {
     //If accessToken is valid, refresh it, just in Case and use it
     if (usertoken.access_req_time + usertoken.access_time > Date.now()) {
-        return refreshAccessToken(usertoken);
+        let delay = ((usertoken.access_req_time + usertoken.access_time - Date.now()) / 1000) / 60;
+        console.log("Auth: Token reused, next one will be in " + delay + " Minutes");
+        chrome.alarms.create("newAccessToken", {
+            delayInMinutes: delay
+        });
+        return;
     }
 
     //If refreshToken is valid, use it
     if (usertoken.refresh_req_time + usertoken.refresh_time > Date.now()) {
-        return refreshAccessToken(usertoken);
+        console.log("Auth: Refreshing Token");
+        refreshAccessToken(usertoken)
+        return;
     }
 
     //Otherwise get new Tokens
@@ -66,7 +73,7 @@ function saveAccessToken(res) {
 
     //Set update for AccessToken
     let delay = 0.9 * res.expires_in / 60;
-    console.log("New Token acquired, next one will be in " + delay + " Minutes");
+    console.log("Auth: New Token acquired, next one will be in " + delay + " Minutes");
     chrome.alarms.create("newAccessToken", {
         delayInMinutes: delay
     });
@@ -74,6 +81,8 @@ function saveAccessToken(res) {
 
 function getNewAuthCode() {
     //Generate verifier and state
+
+    console.log("Auth: Generating new Authentification Window");
 
     function randomString() {
         function generateId(length) {
@@ -153,6 +162,7 @@ function getUserToken(auth_token) {
 }
 
 function unauthorize() {
+    console.log("Auth: Unauthorizing");
     changeActiveState(false);
     setUserTokenVariable({});
     return true;
