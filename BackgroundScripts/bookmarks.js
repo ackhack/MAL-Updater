@@ -183,7 +183,7 @@ function bookmarkLoop() {
             getPreferredSiteNameVariable(preferredSiteName => {
                 chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
                     chrome.alarms.create("force_close" + tab.id, {
-                        delayInMinutes: 0.2,
+                        delayInMinutes: 1,
                     })
                 });
             });
@@ -198,6 +198,11 @@ function checkBookmarkAuto(req) {
                 if (animeCache[req.cacheName].meta.id == historyObj[i].id) {
                     if (historyObj[i].episode == req.episode - 1) {
                         addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url);
+                        getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                            if (bookmarkAutoNotification) {
+                                sendNotification("Added\n" + getAnimeTitle(animeCache[req.cacheName]) + "\nEpisode " + req.episode + "\nto Bookmarks");
+                            }
+                        });
                     }
                     break;
                 }

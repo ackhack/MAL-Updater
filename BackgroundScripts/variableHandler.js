@@ -133,6 +133,17 @@ function setBookmarkAutoActiveVariable(MAL_Settings_Bookmarks_Auto) {
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto: MAL_Settings_Bookmarks_Auto });
 }
 
+function getBookmarkAutoNotificationVariable(callback) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Notification", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Notification ?? false);
+    });
+    return true;
+}
+
+function setBookmarkAutoNotificationVariable(MAL_Settings_Bookmarks_Notification) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Notification: MAL_Settings_Bookmarks_Notification });
+}
+
 //#endregion
 
 //#region History

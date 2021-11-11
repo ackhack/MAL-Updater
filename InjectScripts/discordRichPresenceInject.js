@@ -1,3 +1,4 @@
+//#region WebSocket Overrides
 const encodeString = str => str ? str.split("\\").join("\\\\").split("\"").join("\\\"") : str
 const originalWebSocket = window.WebSocket, originalWebSocketProperties = ["binaryType", "bufferedAmount", "extensions", "onclose", "onmessage", "onopen", "protocol", "readyState", "url"]
 let status = "online", since = 0, afk = false, timer, overwriteSuccess = false
@@ -88,6 +89,9 @@ window.SetDiscordActivitySendStatus = () => {
 		}))
 	}
 }
+
+//#endregion
+
 let recentName = "", recentEpisode = "", id = "";
 
 checkForOverride();

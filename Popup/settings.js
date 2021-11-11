@@ -11,22 +11,29 @@ function init() {
 }
 
 function initFunctions() {
-    document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
+
+
     document.getElementById("cbActive").onchange = changeActiveState;
-    document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
+    document.getElementById("btnHistoryViewer").onclick = showHistory;
+    document.getElementById("btnUnauthorize").onclick = unauthorize;
+
+    document.getElementById("btnCacheViewer").onclick = showCache;
     document.getElementById("btnCacheDeleteAll").onclick = deleteCacheAll;
     document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
-    document.getElementById("btnUnauthorize").onclick = unauthorize;
-    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
-    document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
-    document.getElementById("pVersion").onclick = versionClicked;
-    document.getElementById("btnCacheViewer").onclick = showCache;
-    document.getElementById("btnHistoryViewer").onclick = showHistory;
-    document.getElementById("btnHelp").onclick = showHelp;
     document.getElementById("btnCacheImport").onclick = importCache;
     document.getElementById("btnCacheExport").onclick = exportCache;
+
+    document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
+    document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbBookmarkAutoActive").onchange = changeBookmarkAutoActive;
+    document.getElementById("cbBookmarkAutoNotification").onchange = changeBookmarkAutoNotification;
     document.getElementById("selectPreferredSite").onchange = changedPreferredSite;
+
+    document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
+    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
+
+    document.getElementById("pVersion").onclick = versionClicked;
+    document.getElementById("btnHelp").onclick = showHelp;
 }
 
 function initSettings() {
@@ -34,21 +41,27 @@ function initSettings() {
     getActiveState(active => {
         document.getElementById("cbActive").checked = active;
     })
+
     getBookmarkFolderName(name => {
         document.getElementById("tbBookmarks").value = name;
-    })
-    getActiveDiscordState(active => {
-         document.getElementById("cbActiveDiscord").checked = active;
-     })
-    getCurrentVersion(versionText => {
-        document.getElementById("pVersion").innerText = versionText;
     })
     getBookmarkActive(active => {
         document.getElementById("cbBookmarksActive").checked = active;
     })
-    initPreferredSiteSelect();
     getBookmarkAutoActive(active => {
         document.getElementById("cbBookmarkAutoActive").checked = active;
+    })
+    getBookmarkAutoNotification(active => {
+        document.getElementById("cbBookmarkAutoNotification").checked = active;
+    })
+    getPreferredSiteSelect();
+
+    getActiveDiscordState(active => {
+        document.getElementById("cbActiveDiscord").checked = active;
+    })
+
+    getCurrentVersion(versionText => {
+        document.getElementById("pVersion").innerText = versionText;
     })
 }
 
@@ -111,6 +124,15 @@ function getBookmarkAutoActive(callb) {
     });
 }
 
+function getBookmarkAutoNotification(callb) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Notification", res => {
+        if (res.MAL_Settings_Bookmarks_Notification !== "" && res.MAL_Settings_Bookmarks_Notification !== undefined)
+            callb(res.MAL_Settings_Bookmarks_Notification);
+        else
+            callb(false);
+    });
+}
+
 function getCurrentVersion(callb) {
 
     chrome.runtime.sendMessage(
@@ -127,7 +149,7 @@ function getCurrentVersion(callb) {
     );
 }
 
-function initPreferredSiteSelect() {
+function getPreferredSiteSelect() {
     chrome.runtime.sendMessage(
         {
             type: "GET_SITES"
@@ -156,17 +178,6 @@ function initPreferredSiteSelect() {
 
 //#region Setting Functions
 
-function changeBookmarks() {
-    chrome.runtime.sendMessage({
-        type: "CHANGE_BOOKMARKS",
-        folderName: document.getElementById("tbBookmarks").value
-    });
-}
-
-function changeBookmarkActive(event) {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked });
-}
-
 function changeActiveState(event) {
     chrome.runtime.sendMessage(
         {
@@ -177,59 +188,11 @@ function changeActiveState(event) {
     );
 }
 
-function changeActiveDiscordState(event) {
-    chrome.runtime.sendMessage(
-        {
-            type: "CHANGED_ACTIVE_DISCORD",
-            value: event.target.checked
-        },
-        () => { }
-    );
-}
-
-function changedPreferredSite(event) {
-    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.checked });
-}
-
-function changeBookmarkAutoActive(event) {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked });
-
-}
-
-function deleteCache(query = {}) {
-    if (query.all) {
-        chrome.runtime.sendMessage(
-            {
-                type: "DELETE_CACHE",
-                query: query
-            },
-            () => { }
-        );
-    }
-    if (query.current) {
-        chrome.runtime.sendMessage(
-            {
-                type: "DELETE_ACTIVE_CACHE"
-            },
-            (result) => {
-                alert(result ? "Cache has been cleared" : "An Error has occured");
-            }
-        );
-    }
-}
-
-function deleteCacheAll() {
-    chrome.runtime.sendMessage(
-        {
-            type: "CONFIRM_MESSAGE",
-            message: "Do you want to delete the whole Cache (can't be reverted)"
-        },
-        result => {
-            if (result) {
-                deleteCache({ all: true });
-            }
-        }
-    );
+function showHistory() {
+    fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
 }
 
 function unauthorize() {
@@ -253,19 +216,6 @@ function unauthorize() {
     );
 }
 
-function removeDiscord() {
-    chrome.runtime.sendMessage(
-        {
-            type: "REMOVE_DRP"
-        },
-        () => { }
-    );
-}
-
-function versionClicked() {
-    window.open("https://github.com/ackhack/MAL-Updater");
-}
-
 function showCache() {
     fetch(chrome.runtime.getURL('Popup/cacheviewer.html'))
         .then((response) => {
@@ -273,18 +223,40 @@ function showCache() {
         }).catch(err => console.log(err));
 }
 
-function showHistory() {
-    fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
-        .then((response) => {
-            chrome.tabs.create({ url: response.url });
-        }).catch(err => console.log(err));
+function deleteCacheAll() {
+    chrome.runtime.sendMessage(
+        {
+            type: "CONFIRM_MESSAGE",
+            message: "Do you want to delete the whole Cache (can't be reverted)"
+        },
+        result => {
+            if (result) {
+                deleteCache({ all: true });
+            }
+        }
+    );
 }
 
-function showHelp() {
-    fetch(chrome.runtime.getURL('Popup/helpPage.html'))
-        .then((response) => {
-            chrome.tabs.create({ url: response.url });
-        }).catch(err => console.log(err));
+function deleteCache(query = {}) {
+    if (query.all) {
+        chrome.runtime.sendMessage(
+            {
+                type: "DELETE_CACHE",
+                query: query
+            },
+            () => { }
+        );
+    }
+    if (query.current) {
+        chrome.runtime.sendMessage(
+            {
+                type: "DELETE_ACTIVE_CACHE"
+            },
+            (result) => {
+                alert(result ? "Cache has been cleared" : "An Error has occured");
+            }
+        );
+    }
 }
 
 function importCache() {
@@ -330,6 +302,59 @@ function exportCache() {
             document.body.removeChild(element);
         }
     );
+}
+
+function changeBookmarkActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked });
+}
+
+function changeBookmarks() {
+    chrome.runtime.sendMessage({
+        type: "CHANGE_BOOKMARKS",
+        folderName: document.getElementById("tbBookmarks").value
+    });
+}
+
+function changeBookmarkAutoActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked });
+}
+
+function changeBookmarkAutoNotification(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Notification": event.target.checked });
+}
+
+function changedPreferredSite(event) {
+    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.checked });
+}
+
+function changeActiveDiscordState(event) {
+    chrome.runtime.sendMessage(
+        {
+            type: "CHANGED_ACTIVE_DISCORD",
+            value: event.target.checked
+        },
+        () => { }
+    );
+}
+
+function removeDiscord() {
+    chrome.runtime.sendMessage(
+        {
+            type: "REMOVE_DRP"
+        },
+        () => { }
+    );
+}
+
+function versionClicked() {
+    window.open("https://github.com/ackhack/MAL-Updater");
+}
+
+function showHelp() {
+    fetch(chrome.runtime.getURL('Popup/helpPage.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
 }
 
 //#endregion
