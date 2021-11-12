@@ -2,6 +2,7 @@ init();
 
 function init() {
     //Init with callbacks for right order
+    console.log("Init: Starting");
 
     initSecret(() => {
         initSites(() => {

@@ -125,9 +125,14 @@ function deleteMeta() {
         return;
 
     delete animeCache[currCard.meta.id];
+    syncCache();
     clearCards();
     createCards(currFilter, currSort);
     closedMeta();
+}
+
+function syncCache() {
+    chrome.storage.local.set({ "MAL_AnimeCache": animeCache });
 }
 
 function createListFromMeta(cardString) {

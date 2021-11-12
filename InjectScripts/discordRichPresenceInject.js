@@ -92,7 +92,7 @@ window.SetDiscordActivitySendStatus = () => {
 
 //#endregion
 
-let recentName = "", recentEpisode = "", id = "";
+let recentName = "", recentEpisode = "", id = "", running = false;
 
 checkForOverride();
 
@@ -106,9 +106,13 @@ function checkForOverride() {
 }
 
 function initFetching() {
+	if (running) {
+		return;
+	}
 	let pTag = document.getElementById("MAL-Updater");
 	if (pTag != null) {
 		id = pTag.innerText;
+		running = true;
 		fetchStatus();
 	} else {
 		close();
@@ -127,16 +131,13 @@ function fetchStatus() {
 						type: "closeDiscord"
 					})
 				}, 10000);
-				return;
 			}
-			if (!response.empty && response.msg.name != recentName && response.msg.episode != recentEpisode) {
-				recentName = response.msg.name;
+			else if (!response.empty && (response.msg.details != recentName || response.msg.episode != recentEpisode)) {
+				recentName = response.msg.details;
 				recentEpisode = response.msg.episode;
 				setDiscordActivity(response.msg);
 			}
-			setTimeout(() => {
-				fetchStatus();
-			}, 5000);
+			setTimeout(fetchStatus, 5000);
 		} else {
 			fetchStatus();
 		}

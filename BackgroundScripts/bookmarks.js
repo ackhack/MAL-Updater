@@ -182,6 +182,9 @@ function bookmarkLoop() {
         getSitesVariable(sites => {
             getPreferredSiteNameVariable(preferredSiteName => {
                 chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
+                    if (chrome.runtime.lastError) {
+                        return;
+                    }
                     chrome.alarms.create("force_close" + tab.id, {
                         delayInMinutes: 1,
                     })

@@ -82,9 +82,14 @@ function deleteMeta() {
         return;
     }
     historyObj.splice(currIndex, 1);
+    syncHistory();
     clearCards();
     createCards();
     closedMeta();
+}
+
+function syncHistory() {
+    chrome.storage.local.set({ "MAL_AnimeHistory": historyObj });
 }
 
 function showMoreCards() {

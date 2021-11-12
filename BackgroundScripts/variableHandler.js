@@ -189,7 +189,6 @@ function setDiscordRecentInfoVariable(discordRecentInfo) {
 }
 
 function setDiscordTabIdVariable(discordTabId) {
-    console.log("Setting discordTabId to " + discordTabId);
     chrome.storage.local.set({ discordTabId: discordTabId });
 }
 

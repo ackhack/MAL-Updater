@@ -6,12 +6,18 @@ function init() {
     if (window.location.toString().includes("https://kaa-play.me/dust/")) {
         return;
     }
-
     addKeyListener();
 }
 
 function addKeyListener(nTry = 0) {
+    if (document.getElementById("MAL-Updater Player Inject") != null) {
+        return;
+    }
     if (document.getElementsByTagName("video").length > 0) {
+        let div = document.createElement("div");
+        div.style.display = "none";
+        div.id = "MAL-Updater Player Inject";
+        document.body.appendChild(div);
         document.addEventListener("keypress", (ev) => keyListener(ev));
     }
     else {

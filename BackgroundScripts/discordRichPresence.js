@@ -66,13 +66,13 @@ function setDiscordStatus(message) {
 
 chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
     if (request.type == "getDiscordStatus") {
-        console.log("Discord: Sending " + (latestMessage.msg ? latestMessage.msg.details : "No Status"));
+        console.log("Discord: Sending " + (latestMessage.msg ? latestMessage.msg.details : latestMessage.close ? "Closing" : "No Status"));
         sendResponse(latestMessage);
     }
-    if (request.type = "closeDiscord") {
-        if (latestMessage.close)
-            removeDiscord();
+    if (request.type == "closeDiscord" && latestMessage.close) {
+        removeDiscord();
     }
+    return true;
 });
 
 var latestMessage = {
