@@ -74,12 +74,13 @@ function setBookmark(animeID, oldURL, nextURL) {
     });
 }
 
-function addBookmark(name, url, nTry = 0) {
+function addBookmark(name, url, callb = () => { }, nTry = 0) {
     getBookmarkIDVariable(bookmarkID => {
         getBookmark(bookmarkID, res => {
             if (res != undefined) {
                 for (let child of res.children) {
                     if (child.url == url) {
+                        callb(false);
                         return;
                     }
                 }
@@ -87,13 +88,17 @@ function addBookmark(name, url, nTry = 0) {
                     "parentId": bookmarkID,
                     "title": name,
                     "url": url
-                }, () => { })
+                }, () => { 
+                    callb(true);
+                })
             } else {
                 nTry++;
                 if (nTry < 10) {
                     createBookmarkFolder(() => {
-                        addBookmark(name, url, nTry);
+                        addBookmark(name, url, callb, nTry);
                     });
+                } else {
+                    callb(false);
                 }
             }
         });
@@ -200,10 +205,13 @@ function checkBookmarkAuto(req) {
             for (let i = historyObj.length - 1; i >= 0; i--) {
                 if (animeCache[req.cacheName].meta.id == historyObj[i].id) {
                     if (historyObj[i].episode == req.episode - 1) {
-                        addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url);
-                        getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
-                            if (bookmarkAutoNotification) {
-                                sendNotification("Added\n" + getAnimeTitle(animeCache[req.cacheName]) + "\nEpisode " + req.episode + "\nto Bookmarks");
+                        addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url, (added) => {
+                            if (added) {
+                                getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                                    if (bookmarkAutoNotification) {
+                                        sendNotification("Bookmarks: Added\n" + getAnimeTitle(animeCache[req.cacheName]) + "\nEpisode " + req.episode);
+                                    }
+                                });
                             }
                         });
                     }

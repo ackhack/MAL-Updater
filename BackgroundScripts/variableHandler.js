@@ -199,4 +199,15 @@ function getDiscordTabIdVariable(callback) {
     return true;
 }
 
+function setDiscordLatestMessageVariable(LatestMessage) {
+    chrome.storage.local.set({ LatestMessage: LatestMessage });
+}
+
+function getDiscordLatestMessageVariable(callback) {
+    chrome.storage.local.get("LatestMessage", function (result) {
+        callback(result.LatestMessage ?? {valid: true, empty: true});
+    });
+    return true;
+}
+
 //#endregion

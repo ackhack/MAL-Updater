@@ -31,13 +31,14 @@ function addDiscord(callb = () => { }) {
 }
 
 function createDiscordWindow(callb = () => { }) {
-    console.log("Discord: Creating Window");
+    console.log("[Discord] Creating Window");
     chrome.tabs.create({ url: "https://discord.com/channels/@me", active: false }, (tab) => {
         if (chrome.runtime.lastError) {
             return;
         }
         chrome.tabs.update(tab.id, { autoDiscardable: false, muted: true });
         setDiscordTabIdVariable(tab.id);
+        setDiscordLatestMessageVariable({ valid: true, empty: true });
         callb(tab.id);
     });
 }
@@ -47,7 +48,7 @@ function removeDiscord() {
         if (discordTabId == -1) {
             return;
         }
-        console.log("Discord: Removing Window");
+        console.log("[Discord] Removing Window");
         chrome.tabs.remove(discordTabId);
         setDiscordTabIdVariable(-1);
     });
@@ -56,30 +57,26 @@ function removeDiscord() {
 
 function setDiscordStatus(message) {
     addDiscord(() => {
-        latestMessage = {
+        setDiscordLatestMessageVariable({
             valid: true,
             empty: false,
             msg: message
-        }
+        });
     });
 }
 
 chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
-    if (request.type == "getDiscordStatus") {
-        console.log("Discord: Sending " + (latestMessage.msg ? latestMessage.msg.details : latestMessage.close ? "Closing" : "No Status"));
-        sendResponse(latestMessage);
-    }
-    if (request.type == "closeDiscord" && latestMessage.close) {
-        removeDiscord();
-    }
-    return true;
+    getDiscordLatestMessageVariable(latestMessage => {
+        if (request.type == "getDiscordStatus") {
+            console.log("[Discord] Sending " + (latestMessage.msg ? latestMessage.msg.details : latestMessage.close ? "Closing" : "No Status"));
+            sendResponse(latestMessage);
+        }
+        if (request.type == "closeDiscord" && latestMessage.close) {
+            removeDiscord();
+        }
+        return true;
+    });
 });
-
-var latestMessage = {
-    valid: true,
-    empty: true,
-    msg: null
-};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
@@ -107,10 +104,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                         } else {
                             if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
                                 setDiscordRecentInfoVariable({ name: "", episode: "" });
-                                latestMessage = {
+                                setDiscordLatestMessageVariable({
                                     valid: true,
                                     close: true
-                                }
+                                });
                             }
                         }
                     });

@@ -91,7 +91,7 @@ function checkUpdate(callb) {
 function checkUpdateCycle() {
     checkUpdate(result => {
         if (result.update) {
-            console.log("Updater: Update available");
+            console.log("[Updater] Update available");
             chrome.action.setBadgeText({ text: "1" });
         }
     });
@@ -102,6 +102,7 @@ function handleAnimeWatchedInfo(req) {
 }
 
 function confirmMessage(msg, callb = () => { }) {
+    console.log("[General] Sending Confirm Message")
     chrome.notifications.create({
         type: "basic",
         iconUrl: "Resources/icon.png",
@@ -125,6 +126,7 @@ function confirmMessage(msg, callb = () => { }) {
 }
 
 function sendNotification(message) {
+    console.log("[General] Sending Notification")
     chrome.notifications.create({
         type: "basic",
         iconUrl: "Resources/icon.png",

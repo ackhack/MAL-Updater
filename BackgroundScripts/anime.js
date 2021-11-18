@@ -11,7 +11,7 @@ function getAnime(req, callb, nTry = 0) {
 
                 if (cached !== undefined) {
 
-                    console.log("Cache: Loaded from Cache " + req.name);
+                    console.log("[Cache] Loaded from Cache: " + getAnimeTitle(cached));
                     checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
                         callb({
                             meta: cached.meta,
@@ -46,7 +46,7 @@ function getAnime(req, callb, nTry = 0) {
                                 checkLastEpisode(responseJSON.id, req.episode, usertoken, (lastWatched, episode) => {
                                     responseJSON.lastWatched = lastWatched;
                                     responseJSON.lastEpisode = episode;
-                                    console.log("Cache: Loaded from API " + req.name);
+                                    console.log("[Cache] Loaded from API " + req.name);
                                     callb(responseJSON);
                                 });
                             }
@@ -95,7 +95,7 @@ function finishedEpisode(req, callb) {
                 return;
             }
 
-            console.log("Anime: Finished " + getAnimeTitle(anime) + " : " + req.episode);
+            console.log("[Anime] Finished " + getAnimeTitle(anime) + " : " + req.episode);
 
             //rating only exists if anime was finished
             if (req.rating) {
