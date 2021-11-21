@@ -324,7 +324,7 @@ function changeBookmarkAutoNotification(event) {
 }
 
 function changedPreferredSite(event) {
-    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.checked });
+    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.value });
 }
 
 function changeActiveDiscordState(event) {

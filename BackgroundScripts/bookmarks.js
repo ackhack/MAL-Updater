@@ -88,7 +88,7 @@ function addBookmark(name, url, callb = () => { }, nTry = 0) {
                     "parentId": bookmarkID,
                     "title": name,
                     "url": url
-                }, () => { 
+                }, () => {
                     callb(true);
                 })
             } else {
@@ -199,23 +199,36 @@ function bookmarkLoop() {
     });
 }
 
-function checkBookmarkAuto(req) {
+function checkBookmarkAuto(req, callb = () => { }) {
+    let addedAnimes = [];
     getAnimeCacheVariable(animeCache => {
         getHistoryVariable(historyObj => {
-            for (let i = historyObj.length - 1; i >= 0; i--) {
-                if (animeCache[req.cacheName].meta.id == historyObj[i].id) {
-                    if (historyObj[i].episode == req.episode - 1) {
-                        addBookmark(getBookmarkName(animeCache[req.cacheName]), req.url, (added) => {
-                            if (added) {
-                                getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
-                                    if (bookmarkAutoNotification) {
-                                        sendNotification("Bookmarks: Added\n" + getAnimeTitle(animeCache[req.cacheName]) + "\nEpisode " + req.episode);
+            for (let index in req.animes) {
+                for (let i = historyObj.length - 1; i >= 0; i--) {
+                    if (animeCache[req.animes[index].cacheName].meta.id == historyObj[i].id) {
+                        if (historyObj[i].episode == req.animes[index].episode - 1) {
+                            addBookmark(getBookmarkName(animeCache[req.animes[index].cacheName]), req.animes[index].url, (added) => {
+                                if (added) {
+                                    addedAnimes.push({
+                                        "name": getAnimeTitle(animeCache[req.animes[index].cacheName]),
+                                        "episode": req.animes[index].episode
+                                    });
+                                    if (index == req.animes.length - 1) {
+                                        getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                                            if (bookmarkAutoNotification) {
+                                                let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
+                                                for (let anime of addedAnimes) {
+                                                    notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
+                                                }
+                                                sendNotification(notification);
+                                            }
+                                        });
                                     }
-                                });
-                            }
-                        });
+                                }
+                            });
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         });

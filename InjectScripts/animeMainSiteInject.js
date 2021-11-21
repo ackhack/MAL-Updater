@@ -79,23 +79,20 @@ function addBookmarks() {
         list = document.getElementsByClassName(site.mainPageListName)[0];
     }
 
+    let validAnimes = []
     for (let i = 0; i < list.childElementCount; i++) {
         let tmpBreak = false;
         for (let aTag of list.children[i].getElementsByTagName("a")) {
             let res = aTag.href.match(site.urlPattern);
-
             if (res) {
                 for (let elem in cache) {
                     if (cache[elem][site.siteName] === res[site.nameMatch]) {
                         tmpBreak = true;
-                        chrome.runtime.sendMessage(
-                            {
-                                type: "AUTO_BOOKMARK_CHECK",
-                                cacheName: elem,
-                                episode: res[site.episodeMatch],
-                                url: aTag.href
-                            }
-                        );
+                        validAnimes.push({
+                            cacheName: elem,
+                            episode: res[site.episodeMatch],
+                            url: aTag.href
+                        });
                         break;
                     }
                 }
@@ -104,6 +101,13 @@ function addBookmarks() {
                 break;
         }
     }
+
+    chrome.runtime.sendMessage(
+        {
+            type: "AUTO_BOOKMARK_CHECK",
+            animes: validAnimes
+        }
+    );
 
     chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: false });
 }
