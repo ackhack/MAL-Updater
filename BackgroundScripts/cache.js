@@ -78,15 +78,15 @@ function deleteCache(query = {}, callb = () => { }) {
         }
 
         if (query.active) {
-            chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+            chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
                 if (tabs.length > 0) {
-                    validateSite({url: tabs[0].url}, (site) => {
+                    validateSite({ url: tabs[0].url }, (site) => {
 
                         if (site === undefined)
                             return;
-        
+
                         let res = tabs[0].url.match(site.urlPattern);
-        
+
                         if (res) {
                             for (let elem in animeCache) {
                                 if (animeCache[elem][site.siteName] === res[site.nameMatch]) {
@@ -97,7 +97,7 @@ function deleteCache(query = {}, callb = () => { }) {
                                 }
                             }
                         }
-        
+
                     });
                 }
             })
@@ -146,6 +146,27 @@ function importCacheFile(req) {
 }
 
 function deleteActiveCache(callb) {
-    deleteCache({active:true},callb);
+    deleteCache({ active: true }, callb);
+    return true;
+}
+
+function dev_redownloadCache(minID = -1) {
+    getAnimeCacheVariable((animeCache) => {
+        let finished = 0;
+        for (let elem in animeCache) {
+            let anime = animeCache[elem];
+            if (anime.meta.id > minID) {
+                getAnimeDetails(anime.meta.id, (json) => {
+                    anime.meta = json;
+                    finished++;
+                    if (finished === Object.keys(animeCache).length) {
+                        setAnimeCacheVariable(animeCache);
+                    }
+                })
+            } else {
+                finished++;
+            }
+        }
+    });
     return true;
 }

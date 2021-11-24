@@ -24,10 +24,7 @@ function init() {
     document.getElementById("btnDelete").onclick = deleteMeta;
 
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
-        if (result)
-            animeCache = result["MAL_AnimeCache"] ?? {};
-        else
-            animeCache = {};
+        animeCache = result ? result["MAL_AnimeCache"] ?? {} : {};
 
         createCards();
     });

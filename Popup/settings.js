@@ -15,6 +15,7 @@ function initFunctions() {
 
     document.getElementById("cbActive").onchange = changeActiveState;
     document.getElementById("btnHistoryViewer").onclick = showHistory;
+    document.getElementById("btnTimelineViewer").onclick = showTimeline;
     document.getElementById("btnUnauthorize").onclick = unauthorize;
 
     document.getElementById("btnCacheViewer").onclick = showCache;
@@ -190,6 +191,13 @@ function changeActiveState(event) {
 
 function showHistory() {
     fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
+}
+
+function showTimeline() {
+    fetch(chrome.runtime.getURL('Popup/timelineviewer.html'))
         .then((response) => {
             chrome.tabs.create({ url: response.url });
         }).catch(err => console.log(err));

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<head>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: rgb(33, 33, 33);
+            color: white;
+            height: 100%;
+            font-size: inherit;
+        }
+
+        .weekDiv {
+            border: 2px solid white;
+            color: inherit;
+            background-color: inherit;
+            font-size: inherit;
+            padding: 5px 5px 5px 5px;
+            margin: 5px 0 5px 0;
+            width: -webkit-fill-available;
+        }
+
+        .weekDiv > p {
+            font-size: x-large;
+        }
+
+        .timeline-element {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <p style="font-size: x-large">Timeline for current Anime Releases</p>
+    <div id="mainDiv">
+        <div id="divMonday" name="monday" class="weekDiv">
+            <p>Monday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divTuesday" name="tuesday" class="weekDiv">
+            <p>Tuesday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divWednesday" name="wednesday" class="weekDiv">
+            <p>Wednesday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divThursday" name="thursday" class="weekDiv">
+            <p>Thursday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divFriday" name="friday" class="weekDiv">
+            <p>Friday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divSaturday" name="saturday" class="weekDiv">
+            <p>Saturday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divSunday" name="sunday" class="weekDiv">
+            <p>Sunday</p>
+            <div class="divElements"></div>
+        </div>
+        <div id="divUnknown" name="unknown" class="weekDiv">
+            <p>Unknown</p>
+            <div class="divElements"></div>
+        </div>
+    </div>
+    </div>
+    <script src="timelineviewer.js"></script>
+</body>

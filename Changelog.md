@@ -9,6 +9,7 @@
     -DRP now in a Tab not iframe
     -Removed Binge Watching
     -Now using Service Worker instead of Background Page
+    -Added a Timeline for current Anime Releases
 
 6.5.7: 26.10.2021
     -Fixed some Players not skipping on 9anime

@@ -154,7 +154,7 @@ function finishedEpisode(req, callb) {
 function getAnimeDetails(id, callb) {
     getUserTokenVariable(usertoken => {
         //Gets the episode number of an anime
-        fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime,alternative_titles", {
+        fetch("https://api.myanimelist.net/v2/anime/" + id + "?fields=num_episodes,related_anime,alternative_titles,start_date,end_date,broadcast", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + usertoken.access,

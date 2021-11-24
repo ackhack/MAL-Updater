@@ -19,11 +19,7 @@ function init() {
     document.getElementById("btnDelete").onclick = deleteMeta;
 
     chrome.storage.local.get("MAL_AnimeHistory", function (result) {
-        if (result)
-            historyObj = result["MAL_AnimeHistory"] ?? [];
-        else
-            historyObj = [];
-
+        historyObj = result ? result["MAL_AnimeHistory"] ?? {} : {};
         createCards();
     });
 }
