@@ -63,7 +63,8 @@ var injectObject = [{
         "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
         "https:\\/\\/videovard\\.sx\\/e\\/.*",
         "https:\\/\\/streamtape\\.com\\/e\\/.*",
-        "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*"
+        "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*",
+        "https:\\/\\/gogoplay1\\.com\\/streaming\\.php.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"

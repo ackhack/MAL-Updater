@@ -199,37 +199,47 @@ function bookmarkLoop() {
     });
 }
 
-function checkBookmarkAuto(req, callb = () => { }) {
+function checkBookmarkAuto(req) {
+    let processed = 0;
     let addedAnimes = [];
     getAnimeCacheVariable(animeCache => {
         getHistoryVariable(historyObj => {
-            for (let index in req.animes) {
+            function addBookmarkTmp(anime, callb) {
                 for (let i = historyObj.length - 1; i >= 0; i--) {
-                    if (animeCache[req.animes[index].cacheName].meta.id == historyObj[i].id) {
-                        if (historyObj[i].episode == req.animes[index].episode - 1) {
-                            addBookmark(getBookmarkName(animeCache[req.animes[index].cacheName]), req.animes[index].url, (added) => {
+                    if (animeCache[anime.cacheName].meta.id == historyObj[i].id) {
+                        if (historyObj[i].episode == anime.episode - 1) {
+                            addBookmark(getBookmarkName(animeCache[anime.cacheName]), anime.url, (added) => {
                                 if (added) {
                                     addedAnimes.push({
-                                        "name": getAnimeTitle(animeCache[req.animes[index].cacheName]),
-                                        "episode": req.animes[index].episode
+                                        "name": getAnimeTitle(animeCache[anime.cacheName]),
+                                        "episode": anime.episode
                                     });
-                                    if (index == req.animes.length - 1) {
-                                        getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
-                                            if (bookmarkAutoNotification) {
-                                                let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
-                                                for (let anime of addedAnimes) {
-                                                    notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
-                                                }
-                                                sendNotification(notification);
-                                            }
-                                        });
-                                    }
                                 }
+                                callb();
                             });
+                            return;
                         }
                         break;
                     }
                 }
+                callb();
+            }
+            for (let anime of req.animes) {
+                addBookmarkTmp(anime, () => {
+                        processed++;
+                        if (processed == req.animes.length && addedAnimes.length > 0) {
+                            getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                                if (bookmarkAutoNotification) {
+                                    let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
+                                    for (let anime of addedAnimes) {
+                                        notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
+                                    }
+                                    sendNotification(notification);
+                                }
+                            });
+                        }
+                    }
+                );
             }
         });
     });
