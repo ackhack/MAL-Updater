@@ -13,6 +13,7 @@ Features:
 - Filter Animes in Recent Page
 - Pressing Ctrl+I will show you the CacheInfos about the current Anime
 - Automatically add Bookmarks for new Releases
+- Timeline for current running Shows
 
 Supported Sites:
 - Kickassanime

@@ -182,6 +182,7 @@ function createMainList(res) {
             currTr = document.createElement("tr");
         }
         let td = document.createElement("td");
+        td.title = elem.node.id;
 
         let para = document.createElement("p");
         if (elem.node.alternative_titles?.en)
