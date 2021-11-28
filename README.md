@@ -14,6 +14,7 @@ Features:
 - Pressing Ctrl+I will show you the CacheInfos about the current Anime
 - Automatically add Bookmarks for new Releases
 - Timeline for current running Shows
+- Visually remove Not Yet Aired from Plan to Watch List for easier Usage
 
 Supported Sites:
 - Kickassanime

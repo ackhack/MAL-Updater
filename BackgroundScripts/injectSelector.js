@@ -70,5 +70,13 @@ var injectObject = [{
         "InjectScripts/playerInject.js"
     ],
     "all_frames": true
+},
+{
+    "matches": [
+        "https:\\/\\/myanimelist\\.net\\/animelist\\/.*\\?status=6",
+    ],
+    "js": [
+        "InjectScripts/malInject.js"
+    ]
 }
 ]
