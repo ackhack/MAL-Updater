@@ -195,7 +195,7 @@ function getAnimeTitle(anime) {
 function getActiveAnime(callb = () => { }) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         if (tabs[0]) {
-            getCacheByURLAsync(tabs[0].url, callb);
+            getCacheByURL(tabs[0].url, callb);
         }
     });
     return true;

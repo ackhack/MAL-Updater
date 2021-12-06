@@ -292,8 +292,9 @@ function finishedEpisode(force = false) {
                     nextURL = el.href;
                 }
             }
+            break;
         default:
-            let nexthref = window.location.toString().replace(/(.*)\\d+/, '$1') + (parseInt(episodeNumber) + 1);
+            let nexthref = window.location.toString().replace(/\d+$/, '') + (parseInt(episodeNumber) + 1);
             for (let node of document.getElementsByTagName('a')) {
                 if (node.href == nexthref) {
                     nextURL = node.href;
@@ -457,7 +458,9 @@ window.onload = function () {
         mutations.forEach(function (_) {
             if (oldHref != document.location.href) {
                 oldHref = document.location.href;
-                parseURL(window.location.toString());
+                if (parseURL(window.location.toString())) {
+                    sendDiscordPresence(true);
+                }
             }
         });
     });

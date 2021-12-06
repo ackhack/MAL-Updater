@@ -76,7 +76,7 @@ function initBookmarkFolder(folderName) {
 
 function initBookmarkEvent() {
     chrome.bookmarks.onCreated.addListener((_, bookmark) => {
-        renameBookmark(bookmark);
+         renameBookmark(bookmark);
     });
 }
 

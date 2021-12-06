@@ -4,77 +4,65 @@ function setBookmark(animeID, oldURL, nextURL) {
             return;
         }
 
-        getCacheById(animeID, result => {
-            let anime = result;
-
-            //remove old bookmark
+        function removeOldBookmark(callb = () => { }) {
             getBookmarkIDVariable(bookmarkID => {
                 if (bookmarkID)
                     getBookmark(bookmarkID, res => {
-                        if (res != undefined && res.children.length > 0) {
+                        if (res != undefined && res.children.length >= 0) {
+                            let parsedUrls = [];
+                            //animeID
                             for (let child of res.children) {
-
-                                if (child.url === undefined)
-                                    continue;
-
-                                if (child.url == oldURL) {
-                                    chrome.bookmarks.remove(child.id, () => { });
-                                    return;
-                                }
-
-                                if (child.title.startsWith(animeID)) {
-                                    chrome.bookmarks.remove(child.id, () => { });
-                                    return;
-                                }
+                                parsedUrls.push(child.url);
                             }
-                            getSitesVariable(sites => {
-                                for (let site in anime) {
-                                    if (site == "meta")
+
+                            getCacheByURLs(parsedUrls, result => {
+                                for (let i = 0; i < result.length; i++) {
+                                    if (result[i] == undefined)
                                         continue;
 
-                                    let pattern = sites[site].urlPattern;
-                                    let indexOpen = 0;
-
-                                    for (let i = 0; i < sites[site].nameMatch; i++) {
-                                        indexOpen = pattern.indexOf("(", indexOpen);
-                                    }
-
-                                    if (indexOpen == -1)
-                                        continue;
-
-                                    let indexClosed = pattern.indexOf(")", indexOpen);
-
-                                    if (indexClosed == -1)
-                                        continue;
-
-                                    let actPattern = pattern.slice(0, indexOpen) + anime[site] + pattern.slice(indexClosed + 1);
-
-                                    for (let child of res.children) {
-                                        if (child.url === undefined)
-                                            continue;
-
-                                        if (child.url.match(actPattern)) {
-                                            chrome.bookmarks.remove(child.id, () => { });
-                                            return;
-                                        }
+                                    if (result[i].meta.id == animeID) {
+                                        chrome.bookmarks.remove(res.children[i].id, () => { });
                                     }
                                 }
+                                callb();
                             });
                         } else {
                             createBookmarkFolder();
+                            callb();
                         }
                     });
             });
+        }
 
-            //add new bookmark
-            if (nextURL && anime !== undefined) {
-                addBookmark(getBookmarkName(anime), nextURL);
-            }
+        removeOldBookmark(() => {
+            addBookmarkByURL(nextURL);
         });
     });
 }
 
+function addBookmarkByURL(url, callb = () => { }) {
+    if (url) {
+        getSitesVariable((sites) => {
+            for (let index in sites) {
+                let site = sites[index];
+                let match = url.match(site.urlPattern);
+                if (match != null) {
+                    getCacheByName(site.siteName, match[site.nameMatch], res => {
+                        if (res != undefined) {
+                            addBookmark(getBookmarkName(res, match[site.episodeMatch]), url);
+                            callb();
+                        }
+                    });
+                    return;
+                }
+            }
+            callb();
+        });
+    }
+}
+
 function addBookmark(name, url, callb = () => { }, nTry = 0) {
+
     getBookmarkIDVariable(bookmarkID => {
         getBookmark(bookmarkID, res => {
             if (res != undefined) {
@@ -163,15 +151,17 @@ function renameBookmark(bookmark) {
             if (!bookmarkActive || bookmark.parentId !== bookmarkID || bookmark.url == undefined)
                 return;
 
-            getCacheByURLAsync(bookmark.url, anime => {
-                if (anime !== undefined) {
-                    let name = getBookmarkName(anime);
-                    if (bookmark.title == name)
-                        return;
-                    else
-                        chrome.bookmarks.remove(bookmark.id, () => {
-                            addBookmark(name, bookmark.url);
-                        });
+            getSitesVariable((sites) => {
+                for (let index in sites) {
+                    let site = sites[index];
+                    let match = bookmark.url.match(site.urlPattern);
+                    if (match != null) {
+                        getCacheByName(site.siteName, match[site.nameMatch], res => {
+                            let name = getBookmarkName(res, match[site.episodeMatch]);
+                            if (bookmark.title !== name)
+                                chrome.bookmarks.update(bookmark.id, { title: name }, () => { });
+                        })
+                    }
                 }
             });
         });
@@ -208,7 +198,7 @@ function checkBookmarkAuto(req) {
                 for (let i = historyObj.length - 1; i >= 0; i--) {
                     if (animeCache[anime.cacheName].meta.id == historyObj[i].id) {
                         if (historyObj[i].episode == anime.episode - 1) {
-                            addBookmark(getBookmarkName(animeCache[anime.cacheName]), anime.url, (added) => {
+                            addBookmark(getBookmarkName(animeCache[anime.cacheName], anime.episode), anime.url, (added) => {
                                 if (added) {
                                     addedAnimes.push({
                                         "name": getAnimeTitle(animeCache[anime.cacheName]),
@@ -226,19 +216,19 @@ function checkBookmarkAuto(req) {
             }
             for (let anime of req.animes) {
                 addBookmarkTmp(anime, () => {
-                        processed++;
-                        if (processed == req.animes.length && addedAnimes.length > 0) {
-                            getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
-                                if (bookmarkAutoNotification) {
-                                    let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
-                                    for (let anime of addedAnimes) {
-                                        notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
-                                    }
-                                    sendNotification(notification);
+                    processed++;
+                    if (processed == req.animes.length && addedAnimes.length > 0) {
+                        getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                            if (bookmarkAutoNotification) {
+                                let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
+                                for (let anime of addedAnimes) {
+                                    notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
                                 }
-                            });
-                        }
+                                sendNotification(notification);
+                            }
+                        });
                     }
+                }
                 );
             }
         });
@@ -246,8 +236,8 @@ function checkBookmarkAuto(req) {
     return true;
 }
 
-function getBookmarkName(anime) {
-    return anime.meta.id + ": " + getAnimeTitle(anime);
+function getBookmarkName(anime, episode = undefined) {
+    return getAnimeTitle(anime).slice(0,20) + (episode !== undefined ? " : Ep " + episode : "");
 }
 
 function getBookmarkFolderName(callb = () => { }) {

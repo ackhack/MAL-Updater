@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener(
                 getAnimeDetails(request.id, onSuccess);
                 break;
             case "GET_ANIME_BY_URL":
-                getCacheByURLAsync(request.url, onSuccess);
+                getCacheByURL(request.url, onSuccess);
                 break;
             case "EXPORT_CACHE":
                 exportCache(onSuccess);

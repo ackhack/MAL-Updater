@@ -45,7 +45,7 @@ function getCacheById(id, callb) {
     });
 }
 
-function getCacheByURLAsync(url, callb = () => { }) {
+function getCacheByURL(url, callb = () => { }) {
     getSitesVariable((sites) => {
         for (let site in sites) {
             let match = url.match(sites[site].urlPattern);
@@ -58,6 +58,30 @@ function getCacheByURLAsync(url, callb = () => { }) {
         }
         callb(undefined);
     });
+    return true;
+}
+
+function getCacheByURLs(urls = [], callb = () => { }) {
+    let cache = [];
+    let finished = 0;
+    for (let url in urls) {
+        if (url === undefined || url === "") {
+            cache.push(undefined);
+            finished++;
+            continue;
+        }
+        getCacheByURL(url, (res) => {
+            if (res) {
+                cache.push(res);
+            } else {
+                cache.push(undefined);
+            }
+            finished++;
+            if (finished === urls.length) {
+                callb(cache);
+            }
+        });
+    }
     return true;
 }
 
