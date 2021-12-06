@@ -64,10 +64,13 @@ function getCacheByURL(url, callb = () => { }) {
 function getCacheByURLs(urls = [], callb = () => { }) {
     let cache = [];
     let finished = 0;
-    for (let url in urls) {
+    for (let url of urls) {
         if (url === undefined || url === "") {
             cache.push(undefined);
             finished++;
+            if (finished === urls.length) {
+                callb(cache);
+            }
             continue;
         }
         getCacheByURL(url, (res) => {
