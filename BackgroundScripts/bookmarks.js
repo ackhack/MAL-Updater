@@ -237,7 +237,7 @@ function checkBookmarkAuto(req) {
 }
 
 function getBookmarkName(anime, episode = undefined) {
-    return getAnimeTitle(anime).slice(0,20) + (episode !== undefined ? " : Ep " + episode : "");
+    return getAnimeTitle(anime).slice(0,40) + (episode !== undefined ? " : Ep " + episode : "");
 }
 
 function getBookmarkFolderName(callb = () => { }) {
