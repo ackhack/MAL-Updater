@@ -35,7 +35,7 @@ function createCards() {
 
     for (let id in animeCache) {
         if (currFilter == "all") {
-            cards.push(createCard(id + ": " + getName(animeCache[id].meta), animeCache[id]));
+            cards.push(createCard(id + ": " + getAnimeTitle(animeCache[id]), animeCache[id]));
             continue;
         }
         if (animeCache[id][currFilter])
@@ -98,12 +98,15 @@ function clickedSort(event) {
     updateCards();
 }
 
-function getName(meta) {
-    if (meta.alternative_titles?.en) {
-        return meta.alternative_titles.en;
+function getAnimeTitle(anime) {
+    if (anime.meta.alternative_titles) {
+        if (anime.meta.alternative_titles.en) {
+            return anime.meta.alternative_titles.en;
+        }
     }
-    return meta.title;
+    return anime.meta.title ?? "Unnamed Anime";
 }
+
 
 function clickedCard(event) {
     currCard = JSON.parse(event.target.children[0].innerText);
