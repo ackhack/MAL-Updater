@@ -103,7 +103,7 @@ function getBookmarkActive(callb) {
         if (res.MAL_Settings_Bookmarks_Active !== "" && res.MAL_Settings_Bookmarks_Active !== undefined)
             callb(res.MAL_Settings_Bookmarks_Active);
         else
-            callb(true);
+            callb(false);
     });
 }
 
