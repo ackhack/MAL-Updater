@@ -92,9 +92,17 @@ function recieveAnime(res) {
     }
 
     //If id was recieved from cache, dont create Elements
-    if (res.cache) {
+    if (res.cache == "local") {
         animeID = res.meta.id;
         metaData = res.meta;
+        waitPageloadCache();
+        return;
+    }
+
+    if (res.cache == "global") {
+        animeID = res.meta.id;
+        metaData = res.meta;
+        showInfo("Global Cache", "This Anime is safed in the Global Cache");
         waitPageloadCache();
         return;
     }
@@ -488,6 +496,13 @@ function showInfo(header, text, buttons = []) {
     abortBtn.onclick = () => { div.remove(); };
     abortBtn.innerText = "OK";
     abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+
+    document.onkeydown = function (evt) {
+        evt = evt || window.event;
+        if (evt.key == "Escape" || evt.key == "Enter") {
+            abortBtn?.click();
+        }
+    };
 
     div.appendChild(pHeader);
     div.appendChild(pText);

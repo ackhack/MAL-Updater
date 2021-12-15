@@ -10,26 +10,23 @@ function getAnime(req, callb, nTry = 0) {
                 let cached = nTry == 1 ? result : undefined;
 
                 if (cached !== undefined) {
-
                     console.log("[Cache] Loaded from Cache: " + getAnimeTitle(cached));
                     checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
                         callb({
                             meta: cached.meta,
-                            cache: true,
+                            cache: 'local',
                             lastWatched: lastWatched,
                             lastEpisode: episode
                         });
                     })
-
                     return true;
+                }
 
-                } else {
-
+                function getAnimesFromAPI() {
                     //API max charNumber is 64
-                    if (req.name.length > 64)
-                        req.name = req.name.substring(0, 64);
+                    let name = req.name.length > 64 ? req.name.substring(0, 64) : req.name;
 
-                    fetch("https://api.myanimelist.net/v2/anime?fields=alternative_titles?limit=10&q=" + req.name, {
+                    fetch("https://api.myanimelist.net/v2/anime?fields=alternative_titles?limit=10&q=" + name, {
                         headers: {
                             Authorization: "Bearer " + usertoken.access
                         }
@@ -46,13 +43,36 @@ function getAnime(req, callb, nTry = 0) {
                                 checkLastEpisode(responseJSON.id, req.episode, usertoken, (lastWatched, episode) => {
                                     responseJSON.lastWatched = lastWatched;
                                     responseJSON.lastEpisode = episode;
-                                    console.log("[Cache] Loaded from API " + req.name);
+                                    console.log("[Cache] Loaded from API: " + name);
                                     callb(responseJSON);
                                 });
                             }
                         });
-
                 }
+
+                fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/storage.json")
+                    .then((response) => {
+                        response.json().then((json) => {
+                            for (let id in json) {
+                                if (json[id][req.site] == req.name) {
+                                    req.id = id;
+                                    setCache(req,cached => {
+                                        checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
+                                            console.log("[Cache] Loaded from Global Storage: " + req.name);
+                                            callb({
+                                                meta: cached.meta,
+                                                cache: 'global',
+                                                lastWatched: lastWatched,
+                                                lastEpisode: episode
+                                            });
+                                        })
+                                    });
+                                    return;
+                                }
+                            }
+                            getAnimesFromAPI();
+                        })
+                    }).catch(getAnimesFromAPI);
             });
         });
     });
