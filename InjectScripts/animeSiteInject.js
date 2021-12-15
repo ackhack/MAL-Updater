@@ -501,6 +501,7 @@ function showInfo(header, text, buttons = []) {
         evt = evt || window.event;
         if (evt.key == "Escape" || evt.key == "Enter") {
             abortBtn?.click();
+            document.removeEventListener("keydown", this);
         }
     };
 
