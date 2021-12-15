@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(
                 finishedEpisode(request, onSuccess);
                 break;
             case "CLOSE_TAB":
-                closeTab(sender,request.force);
+                closeTab(sender, request.force);
                 break;
             case "CACHE_ANIME":
                 setCache(request, onSuccess);
@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(
                 importCacheFile(request);
                 break;
             case "CONFIRM_MESSAGE":
-                confirmMessage(request.message,onSuccess);
+                confirmMessage(request.message, onSuccess);
                 break;
             case "GET_SITES":
                 getSitesVariable(onSuccess);
@@ -97,6 +97,15 @@ chrome.runtime.onMessage.addListener(
             case "CHANGE_BOOKMARKS":
                 updateBookmarkFolder(request)
                 break;
+            case "CHANGED_ACTIVE_DISCORD":
+                changeActiveDiscordState(request.value);
+                break;
+            case "REMOVE_DRP":
+                removeDiscord();
+                break;
+            case "DISCORD_PRESENCE":
+                handleDiscordPresence(request);
+                break;
             default:
                 return false;
         }
@@ -107,3 +116,12 @@ chrome.runtime.onMessage.addListener(
 chrome.runtime.onStartup.addListener(() => {
     startAlarms();
 })
+
+chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+    switch (sender.url) {
+        case "https://discord.com/channels/@me":
+            handleDiscordExternal(request, sender, sendResponse);
+            break;
+    }
+    return true;
+});

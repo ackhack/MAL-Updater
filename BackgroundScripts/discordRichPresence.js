@@ -65,7 +65,40 @@ function setDiscordStatus(message) {
     });
 }
 
-chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+function handleDiscordPresence(request) {
+    getDiscordActiveVariable(discordActive => {
+        if (discordActive) {
+            getDiscordRecentInfoVariable(recentInfo => {
+                if (request.active) {
+                    setDiscordRecentInfoVariable({ name: request.name, episode: request.episode });
+                    setDiscordStatus({
+                        type: 3,
+                        name: "Anime",
+                        episode: request.episode,
+                        streamurl: "",
+                        details: request.name,
+                        state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
+                        partycur: "",
+                        partymax: "",
+                    });
+
+                } else {
+                    if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
+                        setDiscordRecentInfoVariable({ name: "", episode: "" });
+                        setDiscordLatestMessageVariable({
+                            valid: true,
+                            close: true
+                        });
+                    }
+                }
+            });
+        } else {
+            removeDiscord();
+        }
+    });
+}
+
+function handleDiscordExternal(request,sender,sendResponse) {
     getDiscordLatestMessageVariable(latestMessage => {
         if (request.type == "getDiscordStatus") {
             console.log("[Discord] Sending " + (latestMessage.msg ? latestMessage.msg.details : latestMessage.close ? "Closing" : "No Status"));
@@ -76,47 +109,4 @@ chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => 
         }
         return true;
     });
-});
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch (request.type) {
-        case "CHANGED_ACTIVE_DISCORD":
-            return changeActiveDiscordState(request.value);
-        case "REMOVE_DRP":
-            return removeDiscord();
-        case "DISCORD_PRESENCE":
-            getDiscordActiveVariable(discordActive => {
-                if (discordActive) {
-                    getDiscordRecentInfoVariable(recentInfo => {
-                        if (request.active) {
-                            setDiscordRecentInfoVariable({ name: request.name, episode: request.episode });
-                            setDiscordStatus({
-                                type: 3,
-                                name: "Anime",
-                                episode: request.episode,
-                                streamurl: "",
-                                details: request.name,
-                                state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
-                                partycur: "",
-                                partymax: "",
-                            });
-
-                        } else {
-                            if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
-                                setDiscordRecentInfoVariable({ name: "", episode: "" });
-                                setDiscordLatestMessageVariable({
-                                    valid: true,
-                                    close: true
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    removeDiscord();
-                }
-            });
-            return true;
-        default:
-            return false;
-    }
-});
+}
