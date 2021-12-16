@@ -22,14 +22,22 @@ function importCache(file) {
         if (storage[id]) {
             for (let site in imported[id]) {
                 if (!(site in storage[id])) {
-                    console.log("Importing ID:" + id + " || " + site + ": " + imported[id][site]);
+                    console.log("Importing New Site     ID:" + id + " || " + site + ": " + imported[id][site]);
                     storage[id][site] = imported[id][site];
+                } else {
+                    for (let name of imported[id][site]) {
+                        if (!storage[id][site].includes(name)) {
+                            console.log("Importing Existing     ID:" + id + " || " + site + ": " + name);
+                            storage[id][site].push(name);
+                        }
+                    }
                 }
             }
         } else {
-            for (let site in imported[id])
-                console.log("Importing ID:" + id + " || " + site + ": " + imported[id][site]);
-            storage[id] = imported[id];
+            for (let site in imported[id]) {
+                console.log("Importing New Entry    ID:" + id + " || " + site + ": " + imported[id][site]);
+                storage[id] = imported[id];
+            }
         }
     }
 
