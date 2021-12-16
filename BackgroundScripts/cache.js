@@ -2,21 +2,25 @@ function setCache(req, callb = () => { }) {
     getAnimeCacheVariable((animeCache) => {
         if (animeCache[req.id] === undefined || req.force) {
             getAnimeDetails(req.id, (json) => {
+                getSitesVariable((sites) => {
 
-                if (animeCache[req.id] === undefined) {
-                    animeCache[req.id] = {};
-                }
+                    if (animeCache[req.id] === undefined) {
+                        animeCache[req.id] = {};
+                    }
 
-                json["id"] = req.id;
+                    json["id"] = req.id;
 
-                animeCache[req.id].meta = json;
+                    animeCache[req.id].meta = json;
+                    for (let siteName in sites)
+                        animeCache[req.id][sites[siteName].siteName] = [];
 
-                if (req.site !== undefined && req.name !== undefined) {
-                    animeCache[req.id][req.site].push(req.name);
-                }
+                    if (req.site !== undefined && req.name !== undefined) {
+                        animeCache[req.id][req.site].push(req.name);
+                    }
 
-                setAnimeCacheVariable(animeCache);
-                callb(animeCache[req.id]);
+                    setAnimeCacheVariable(animeCache);
+                    callb(animeCache[req.id]);
+                })
             })
         } else {
             if (req.site !== undefined && req.name !== undefined) {
