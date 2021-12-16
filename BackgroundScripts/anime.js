@@ -54,7 +54,7 @@ function getAnime(req, callb, nTry = 0) {
                     .then((response) => {
                         response.json().then((json) => {
                             for (let id in json) {
-                                if (json[id][req.site] == req.name) {
+                                if (json[id][req.site].includes(req.name)) {
                                     req.id = id;
                                     setCache(req,cached => {
                                         checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
