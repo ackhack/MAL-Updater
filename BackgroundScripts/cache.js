@@ -109,7 +109,7 @@ function deleteCache(query = {}, callb = () => { }) {
                 if (tabs.length > 0) {
                     validateSite({ url: tabs[0].url }, (site) => {
 
-                        if (site === undefined)
+                        if (site === undefined || site.valid === false)
                             return;
 
                         let res = tabs[0].url.match(site.urlPattern);

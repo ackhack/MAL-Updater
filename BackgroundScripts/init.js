@@ -83,7 +83,7 @@ function initBookmarkEvent() {
 function initInjector(sites) {
     let sitePatterns = [];
     for (let site in sites) {
-        sitePatterns.push(sites[site].urlPattern);
+        sitePatterns.push(sites[site].sitePattern);
     }
     injectObject.push({
         matches: sitePatterns,

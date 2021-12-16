@@ -8,7 +8,13 @@ function validateSite(req, callb) {
     //check if we have the site saved as json
     getSitesVariable(sites => {
         for (let site in sites) {
+            if (req.url.match(sites[site].urlPattern)) {
+                sites[site].valid = true;
+                callb(sites[site]);
+                return;
+            }
             if (req.url.match(sites[site].sitePattern)) {
+                sites[site].valid = false;
                 callb(sites[site]);
                 return;
             }
