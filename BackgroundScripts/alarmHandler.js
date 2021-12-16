@@ -25,5 +25,5 @@ chrome.alarms.onAlarm.addListener(
 )
 
 function startAlarms() {
-chrome.alarms.create("cycle10min", { delayInMinutes: 0, periodInMinutes: 10 });
+    chrome.alarms.create("cycle10min", { delayInMinutes: 0, periodInMinutes: 10 });
 }
