@@ -12,14 +12,17 @@ function setCache(req, callb = () => { }) {
                 animeCache[req.id].meta = json;
 
                 if (req.site !== undefined && req.name !== undefined) {
-                    animeCache[req.id][req.site] = req.name;
+                    animeCache[req.id][req.site].push(req.name);
                 }
 
                 setAnimeCacheVariable(animeCache);
                 callb(animeCache[req.id]);
             })
         } else {
-            animeCache[req.id][req.site] = req.name;
+            if (req.site !== undefined && req.name !== undefined) {
+                if (!animeCache[req.id][req.site].includes(req.name))
+                    animeCache[req.id][req.site].push(req.name);
+            }
             setAnimeCacheVariable(animeCache);
             callb(animeCache[req.id]);
         }
@@ -30,7 +33,7 @@ function setCache(req, callb = () => { }) {
 function getCacheByName(site, name, callb) {
     getAnimeCacheVariable((animeCache) => {
         for (let elem in animeCache) {
-            if (animeCache[elem][site] === name) {
+            if (animeCache[elem][site].includes(name)) {
                 callb(animeCache[elem]);
                 return;
             }
@@ -117,7 +120,7 @@ function deleteCache(query = {}, callb = () => { }) {
                         if (res) {
                             for (let elem in animeCache) {
                                 if (animeCache[elem][site.siteName].includes(res[site.nameMatch])) {
-                                    animeCache[elem][site.siteName].splice(animeCache[elem][site.siteName].indexOf(res[site.nameMatch]),1)
+                                    animeCache[elem][site.siteName].splice(animeCache[elem][site.siteName].indexOf(res[site.nameMatch]), 1)
                                     setAnimeCacheVariable(animeCache);
                                     callb(true);
                                     return;
@@ -152,7 +155,7 @@ function importCache(cacheString) {
                         animeCache[entry] = imported[entry];
                         continue;
                     }
-                    if (entry in animeCache) {   
+                    if (entry in animeCache) {
                         for (let site in sites) {
                             //Support older Caches
                             if (typeof imported[entry][sites[site].siteName] === 'string') {
