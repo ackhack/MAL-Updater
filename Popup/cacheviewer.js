@@ -155,6 +155,10 @@ function createListFromMeta(cardString) {
                 }
 
                 li.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
+                if (li.innerText.length > 500) {
+                    li.innerText = li.innerText.slice(0, 500) + "...";
+                    li.style = "font-size: small;";
+                }
                 ul.appendChild(li);
             }
             continue;
