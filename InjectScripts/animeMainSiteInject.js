@@ -58,7 +58,7 @@ function filterList() {
 
             if (res) {
                 for (let elem in cache) {
-                    if (cache[elem][site.siteName] === res[site.nameMatch]) {
+                    if (cache[elem][site.siteName].includes(res[site.nameMatch])) {
                         inCache = true;
                         break;
                     }
@@ -86,7 +86,7 @@ function addBookmarks() {
             let res = aTag.href.match(site.urlPattern);
             if (res) {
                 for (let elem in cache) {
-                    if (cache[elem][site.siteName] === res[site.nameMatch]) {
+                    if (cache[elem][site.siteName].includes(res[site.nameMatch])) {
                         tmpBreak = true;
                         validAnimes.push({
                             cacheName: elem,

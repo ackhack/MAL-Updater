@@ -116,8 +116,8 @@ function deleteCache(query = {}, callb = () => { }) {
 
                         if (res) {
                             for (let elem in animeCache) {
-                                if (animeCache[elem][site.siteName] === res[site.nameMatch]) {
-                                    delete animeCache[elem][site.siteName];
+                                if (animeCache[elem][site.siteName].includes(res[site.nameMatch])) {
+                                    animeCache[elem][site.siteName].splice(animeCache[elem][site.siteName].indexOf(res[site.nameMatch]),1)
                                     setAnimeCacheVariable(animeCache);
                                     callb(true);
                                     return;
@@ -152,10 +152,16 @@ function importCache(cacheString) {
                         animeCache[entry] = imported[entry];
                         continue;
                     }
-                    if (entry in animeCache) {
+                    if (entry in animeCache) {   
                         for (let site in sites) {
-                            if (!(sites[site].siteName in animeCache[entry]) && sites[site].siteName in imported[entry]) {
-                                animeCache[entry][sites[site].siteName] = imported[entry][sites[site].siteName];
+                            //Support older Caches
+                            if (typeof imported[entry][sites[site].siteName] === 'string') {
+                                imported[entry][sites[site].siteName] = [imported[entry][sites[site].siteName]];
+                            }
+                            for (let name of imported[entry][sites[site].siteName]) {
+                                if (!animeCache[entry][sites[site].siteName].includes(name)) {
+                                    animeCache[entry][sites[site].siteName].push(name);
+                                }
                             }
                         }
                     }

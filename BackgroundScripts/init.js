@@ -5,9 +5,11 @@ function init() {
     console.log("[Init] Starting");
 
     initSecret(() => {
-        initSites(() => {
-            initBookmarkEvent();
-            initBookmarkFolder();
+        initSites((sites) => {
+            initCache(sites, () => {
+                initBookmarkEvent();
+                initBookmarkFolder();
+            });
         })
     });
 }
@@ -19,7 +21,6 @@ function initSites(callb) {
         "gogoanimehub.json",
         "kickassanime.json"
     ];
-
     var sites = {};
     let i = 0;
 
@@ -32,7 +33,7 @@ function initSites(callb) {
                     if (i == siteFileNames.length) {
                         setSitesVariable(sites);
                         initInjector(sites);
-                        callb();
+                        callb(sites);
                     }
                 })
             }).catch(err => console.log(err));
@@ -59,7 +60,7 @@ function initBookmarkFolder(folderName) {
     getBookmarkActiveVariable(active => {
         if (!active)
             return;
-        
+
         getBookmarkIDVariable(id => {
             if (id == "-1") {
                 createBookmarkFolder(folderName);
@@ -76,7 +77,7 @@ function initBookmarkFolder(folderName) {
 
 function initBookmarkEvent() {
     chrome.bookmarks.onCreated.addListener((_, bookmark) => {
-         renameBookmark(bookmark);
+        renameBookmark(bookmark);
     });
 }
 
@@ -98,5 +99,24 @@ function initInjector(sites) {
         matches: sitePatterns,
         js: ["InjectScripts/animeMainSiteInject.js"],
         all_frames: true
+    });
+}
+
+function initCache(sites,callb = () => {}) {
+    getAnimeCacheVariable(cache => {
+        for (let entry in cache) {
+            for (let siteName in sites) {
+                if (!(sites[siteName].siteName in cache[entry])) {
+                    cache[entry][sites[siteName].siteName] = [];
+                    continue;
+                }
+                //Update old Cache Entries
+                if (typeof cache[entry][sites[siteName].siteName] === "string") {
+                    cache[entry][sites[siteName].siteName] = [cache[entry][sites[siteName].siteName]];
+                }
+            }
+        }
+        setAnimeCacheVariable(cache);
+        callb();
     });
 }
