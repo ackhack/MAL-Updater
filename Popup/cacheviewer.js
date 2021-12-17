@@ -38,8 +38,8 @@ function createCards() {
             cards.push(createCard(id + ": " + getAnimeTitle(animeCache[id]), animeCache[id]));
             continue;
         }
-        if (animeCache[id][currFilter])
-            cards.push(createCard(id + ": " + animeCache[id][currFilter].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]));
+        if (animeCache[id][currFilter].length > 0)
+            cards.push(createCard(id + ": " + animeCache[id][currFilter][0].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]));
     }
 
     switch (currSort) {
