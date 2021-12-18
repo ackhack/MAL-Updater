@@ -2,6 +2,7 @@ const fs = require("fs");
 const FILEURL = process.env.USERPROFILE + "/Downloads/malCache.json";
 
 importCache(FILEURL);
+//getMissingEntries();
 
 function importCache(file) {
     let content = require(file);
@@ -42,4 +43,16 @@ function importCache(file) {
     }
 
     fs.writeFileSync("./storage.json", JSON.stringify(storage));
+}
+
+function getMissingEntries() {
+    let storage = require("./storage.json");
+
+    for (let id in storage) {
+        for (let siteName in storage[id]) {
+            if (storage[id][siteName].length == 0) {
+                console.log("Missing Entry ID:" + id + " || " + siteName + ": ");
+            }
+        }
+    }
 }
