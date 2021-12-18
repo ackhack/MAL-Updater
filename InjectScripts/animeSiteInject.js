@@ -6,6 +6,7 @@ var site;
 var finished = false;
 var activeAPICalls = new Set();
 var hasKeyListener = false;
+var aborted = false;
 
 //#region Init
 
@@ -144,7 +145,7 @@ function recieveAnime(res) {
     divButton.style = "padding-left: 1.5em;padding-top: 5px;";
 
     let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1")?.remove() };
+    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1")?.remove(); aborted = true };
     abortBtn.innerText = "Abort";
 
     let tbBtn = document.createElement("button");
@@ -627,6 +628,9 @@ function toggleInfoWindow() {
 }
 
 function reloadPage(url) {
+    if (aborted)
+        return;
+
     if (site == undefined) {
         chrome.runtime.sendMessage(
             {
