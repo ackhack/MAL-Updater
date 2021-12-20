@@ -39,25 +39,25 @@ function initFunctions() {
 
 function initSettings() {
 
-    getActiveState(active => {
+    getActiveVariable(active => {
         document.getElementById("cbActive").checked = active;
     })
 
     getBookmarkFolderName(name => {
         document.getElementById("tbBookmarks").value = name;
     })
-    getBookmarkActive(active => {
+    getBookmarkActiveVariable(active => {
         document.getElementById("cbBookmarksActive").checked = active;
     })
-    getBookmarkAutoActive(active => {
+    getBookmarkAutoActiveVariable(active => {
         document.getElementById("cbBookmarkAutoActive").checked = active;
     })
-    getBookmarkAutoNotification(active => {
+    getBookmarkAutoNotificationVariable(active => {
         document.getElementById("cbBookmarkAutoNotification").checked = active;
     })
     getPreferredSiteSelect();
 
-    getActiveDiscordState(active => {
+    getDiscordActiveVariable(active => {
         document.getElementById("cbActiveDiscord").checked = active;
     })
 
@@ -83,55 +83,10 @@ function resetNotificationCounter() {
     chrome.action.setBadgeText({ text: "" });
 }
 
-function getActiveState(callb) {
-    chrome.storage.local.get("MAL_Settings_Active", res => {
-        if (res.MAL_Settings_Active !== "" && res.MAL_Settings_Active !== undefined)
-            callb(res.MAL_Settings_Active);
-        else
-            callb(true);
-    });
-}
-
 function getBookmarkFolderName(callb = () => { }) {
     chrome.runtime.sendMessage({
         type: "GET_BOOKMARK_FOLDER_NAME"
     }, callb);
-}
-
-function getBookmarkActive(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Active", res => {
-        if (res.MAL_Settings_Bookmarks_Active !== "" && res.MAL_Settings_Bookmarks_Active !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Active);
-        else
-            callb(false);
-    });
-}
-
-function getActiveDiscordState(callb) {
-    chrome.storage.local.get("MAL_Settings_DiscordActive", res => {
-        if (res.MAL_Settings_DiscordActive !== "" && res.MAL_Settings_DiscordActive !== undefined)
-            callb(res.MAL_Settings_DiscordActive);
-        else
-            callb(false);
-    });
-}
-
-function getBookmarkAutoActive(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", res => {
-        if (res.MAL_Settings_Bookmarks_Auto !== "" && res.MAL_Settings_Bookmarks_Auto !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Auto);
-        else
-            callb(false);
-    });
-}
-
-function getBookmarkAutoNotification(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Notification", res => {
-        if (res.MAL_Settings_Bookmarks_Notification !== "" && res.MAL_Settings_Bookmarks_Notification !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Notification);
-        else
-            callb(false);
-    });
 }
 
 function getCurrentVersion(callb) {
@@ -408,14 +363,4 @@ function setAnime(anime) {
         document.getElementById("divCurrent").style.display = "block";
     }
 }
-
-function getAnimeTitle(anime) {
-    if (anime.meta.alternative_titles) {
-        if (anime.meta.alternative_titles.en) {
-            return anime.meta.alternative_titles.en;
-        }
-    }
-    return anime.meta.title ?? "Unnamed Anime";
-}
-
 //#endregion

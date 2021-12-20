@@ -1,5 +1,6 @@
 self.importScripts(
-    "BackgroundScripts/variableHandler.js",
+    "GenericScripts/variableHandler.js",
+    "GenericScripts/genericFuntions.js",
     "BackgroundScripts/anime.js",
     "BackgroundScripts/auth.js",
     "BackgroundScripts/bookmarks.js",

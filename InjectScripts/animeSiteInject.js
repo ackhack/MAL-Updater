@@ -334,13 +334,12 @@ function finishedEpisode(force = false) {
             type: "SEND_ANIME_FINISHED",
             id: metaData.id,
             episode: episodeNumber,
-            nextURL: nextURL,
             url: window.location.toString(),
             force: force
         },
         data => {
             apiCallRecieved("SEND_ANIME_FINISHED");
-            sendWatchedInfo();
+            sendWatchedInfo(nextURL);
             lastWatched = episodeNumber;
             if (data.last) {
                 finishedLastEpisode(data);
@@ -413,7 +412,7 @@ function clickedLastEp(value) {
     );
 }
 
-function updateEpisodeSuccess(success, nextURL) {
+function updateEpisodeSuccess(success, nextURL = undefined) {
 
     if (success)
         document.getElementById("MAL_UPDATER_BUTTON_1")?.remove();
@@ -556,7 +555,7 @@ function getAnimeName() {
     return metaData.title ?? animeName.replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1);
 }
 
-function sendWatchedInfo() {
+function sendWatchedInfo(nextURL = undefined) {
     if (animeName != undefined && episodeNumber != undefined && metaData != undefined) {
         sendDiscordPresence(false);
         chrome.runtime.sendMessage(
@@ -564,8 +563,9 @@ function sendWatchedInfo() {
                 type: "ANIME_WATCHED_INFO",
                 name: getAnimeName(),
                 episode: episodeNumber,
-                maxEpisode: metaData.num_episodes,
-                id: metaData.id
+                lastEpisode: metaData.num_episodes,
+                id: metaData.id,
+                nextURL: nextURL
             }
         );
     }

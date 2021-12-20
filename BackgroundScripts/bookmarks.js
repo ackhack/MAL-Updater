@@ -1,4 +1,4 @@
-function setBookmark(animeID, oldURL, nextURL) {
+function setBookmark(animeID, nextURL) {
     getBookmarkActiveVariable(active => {
         if (!active) {
             return;

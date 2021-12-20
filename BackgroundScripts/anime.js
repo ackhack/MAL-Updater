@@ -56,7 +56,7 @@ function getAnime(req, callb, nTry = 0) {
                             for (let id in json) {
                                 if (json[id][req.site].includes(req.name)) {
                                     req.id = id;
-                                    setCache(req,cached => {
+                                    setCache(req, cached => {
                                         checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
                                             console.log("[Cache] Loaded from Global Storage: " + req.name);
                                             callb({
@@ -117,6 +117,9 @@ function finishedEpisode(req, callb) {
 
             console.log("[Anime] Finished " + getAnimeTitle(anime) + " : " + req.episode);
 
+            // callb({last:false,num_episodes_watched:req.episode});
+            // return;
+
             //rating only exists if anime was finished
             if (req.rating) {
                 fetch("https://api.myanimelist.net/v2/anime/" + req.id + "/my_list_status", {
@@ -129,9 +132,6 @@ function finishedEpisode(req, callb) {
                 })
                     .then(response => {
                         response.json().then(responseJSON => {
-                            if (req.episode == responseJSON.num_episodes_watched) {
-                                setBookmark(req.id, req.url, undefined);
-                            }
                             callb(responseJSON);
                         });
                     });
@@ -151,9 +151,6 @@ function finishedEpisode(req, callb) {
                         })
                             .then(response => {
                                 response.json().then(responseJSON => {
-                                    if (req.episode == responseJSON.num_episodes_watched) {
-                                        setBookmark(req.id, req.url, req.nextURL);
-                                    }
                                     callb(responseJSON)
                                 });
                             });
@@ -201,15 +198,6 @@ function getAnimeSequels(related) {
         retString += sequel + "\n";
     }
     return retString.length > 0 ? retString : undefined;
-}
-
-function getAnimeTitle(anime) {
-    if (anime.meta.alternative_titles) {
-        if (anime.meta.alternative_titles.en) {
-            return anime.meta.alternative_titles.en;
-        }
-    }
-    return anime.meta.title ?? "Unnamed Anime";
 }
 
 function getActiveAnime(callb = () => { }) {

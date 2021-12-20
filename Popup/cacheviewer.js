@@ -98,16 +98,6 @@ function clickedSort(event) {
     updateCards();
 }
 
-function getAnimeTitle(anime) {
-    if (anime.meta.alternative_titles) {
-        if (anime.meta.alternative_titles.en) {
-            return anime.meta.alternative_titles.en;
-        }
-    }
-    return anime.meta.title ?? "Unnamed Anime";
-}
-
-
 function clickedCard(event) {
     currCard = JSON.parse(event.target.children[0].innerText);
     document.getElementById("metaDiv").style = "display: block;position:fixed;";

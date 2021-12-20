@@ -100,12 +100,3 @@ function addHourOffset(weekday, hour, offset) {
 function hourOffsetFromJST() {
     return -9 - (new Date().getTimezoneOffset() / 60);
 }
-
-function getAnimeTitle(anime) {
-    if (anime.meta.alternative_titles) {
-        if (anime.meta.alternative_titles.en) {
-            return anime.meta.alternative_titles.en;
-        }
-    }
-    return anime.meta.title ?? "Unnamed Anime";
-}

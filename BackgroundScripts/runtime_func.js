@@ -104,6 +104,7 @@ function checkUpdateCycle() {
 }
 
 function handleAnimeWatchedInfo(req) {
+    setBookmark(req.id, req.nextURL);
     addHistory(req.name, req.episode, req.id);
 }
 
