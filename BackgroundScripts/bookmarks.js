@@ -1,4 +1,4 @@
-function setBookmark(animeID, nextURL) {
+function setBookmark(animeID, nextURL, nTry = 0) {
     getBookmarkActiveVariable(active => {
         if (!active) {
             return;
@@ -9,13 +9,12 @@ function setBookmark(animeID, nextURL) {
                 if (bookmarkID)
                     getBookmark(bookmarkID, res => {
                         if (res != undefined && res.children.length >= 0) {
-                            let parsedUrls = [];
-                            //animeID
+                            let urls = [];
                             for (let child of res.children) {
-                                parsedUrls.push(child.url);
+                                urls.push(child.url);
                             }
 
-                            getCacheByURLs(parsedUrls, result => {
+                            getCacheByURLs(urls, result => {
                                 for (let i = 0; i < result.length; i++) {
                                     if (result[i] == undefined)
                                         continue;
@@ -27,8 +26,12 @@ function setBookmark(animeID, nextURL) {
                                 callb();
                             });
                         } else {
-                            createBookmarkFolder();
-                            callb();
+                            nTry++;
+                            if (nTry > 10) {
+                                callb();
+                                return;
+                            }
+                            createBookmarkFolder(setBookmark(animeID, nextURL, nTry));
                         }
                     });
             });
