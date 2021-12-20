@@ -3,6 +3,14 @@ const FILEURL = process.env.USERPROFILE + "/Downloads/malCache.json";
 
 importCache(FILEURL);
 //getMissingEntries();
+//Missing Entry ID:6862 || kickassanime: OK
+//Missing Entry ID:9734 || gogoanimehub: OK
+//Missing Entry ID:9734 || kickassanime: OK
+//Missing Entry ID:31711 || kickassanime:OK
+//Missing Entry ID:38963 || kickassanime:OK
+//Missing Entry ID:48614 || kickassanime:OK
+//Missing Entry ID:40176 || kickassanime:OK
+//Missing Entry ID:44931 || kickassanime:OK
 
 function importCache(file) {
     let content = require(file);
