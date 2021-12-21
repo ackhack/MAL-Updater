@@ -1,4 +1,3 @@
-const prios = ["PINK-BIRD", "SAPPHIRE-DUCK", "DAILYMOTION", "BETAPLAYER", "THETA-ORIGINAL", "A-KICKASSANIME", "BETASERVER3"];
 initServerPick();
 
 function initServerPick(nTry = 0) {
@@ -17,6 +16,7 @@ function initServerPick(nTry = 0) {
 }
 
 function selectServer(list) {
+    let prios = ["PINK-BIRD", "SAPPHIRE-DUCK", "DAILYMOTION", "BETAPLAYER", "THETA-ORIGINAL", "A-KICKASSANIME", "BETASERVER3"];
     let highestprio = prios.length;
     let highestprioIndex = 0;
 
