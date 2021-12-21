@@ -1,1 +1,0 @@
-callb('https://github.com/ackhack/MAL-Updater/tree/global-storage/storage/' + name[0].toLowerCase() +'/'+ site + '.json')
