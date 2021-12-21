@@ -458,9 +458,8 @@ function sendDiscordPresence(active) {
             {
                 type: "DISCORD_PRESENCE",
                 active: active,
-                name: getAnimeName(),
-                episode: episodeNumber,
-                maxEpisode: metaData.num_episodes
+                id: metaData.id,
+                episode: episodeNumber
             }
         );
     }

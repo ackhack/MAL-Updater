@@ -68,30 +68,33 @@ function setDiscordStatus(message) {
 function handleDiscordPresence(request) {
     getDiscordActiveVariable(discordActive => {
         if (discordActive) {
-            getDiscordRecentInfoVariable(recentInfo => {
-                if (request.active) {
-                    setDiscordRecentInfoVariable({ name: request.name, episode: request.episode });
-                    setDiscordStatus({
-                        type: 3,
-                        name: "Anime",
-                        episode: request.episode,
-                        streamurl: "",
-                        details: request.name,
-                        state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
-                        partycur: "",
-                        partymax: "",
-                    });
-
-                } else {
-                    if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
-                        setDiscordRecentInfoVariable({ name: "", episode: "" });
-                        setDiscordLatestMessageVariable({
-                            valid: true,
-                            close: true
+            getCacheById(request.id, anime => { 
+                getDiscordRecentInfoVariable(recentInfo => {
+                    if (request.active) {
+                        let name = getAnimeTitle(anime);
+                        setDiscordRecentInfoVariable({ name: name, episode: request.episode });
+                        setDiscordStatus({
+                            type: 3,
+                            name: "Anime",
+                            episode: request.episode,
+                            streamurl: "",
+                            details: name,
+                            state: "Episode " + request.episode + (anime.meta.num_episodes ? "/" + anime.meta.num_episodes : ""),
+                            partycur: "",
+                            partymax: "",
                         });
+    
+                    } else {
+                        if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
+                            setDiscordRecentInfoVariable({ name: "", episode: "" });
+                            setDiscordLatestMessageVariable({
+                                valid: true,
+                                close: true
+                            });
+                        }
                     }
-                }
-            });
+                });    
+            })
         } else {
             removeDiscord();
         }
