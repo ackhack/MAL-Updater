@@ -1,6 +1,5 @@
 const fs = require("fs");
-const FILEURL = process.env.USERPROFILE + "/Downloads/malCache.json";
-const missingPairs = [
+const nonExistent = [
     { "id": 6862, "site": "kickassanime" },
     { "id": 9734, "site": "gogoanimehub" },
     { "id": 9734, "site": "kickassanime" },
@@ -14,10 +13,37 @@ const missingPairs = [
     { "id": 48614, "site": "kickassanime" }
 ]
 
-importCache(FILEURL);
-getMissingEntries();
+run();
 
-function getMissingEntries() {
+function run() {
+    getStorageAsObject((storage) => {
+        let imported = importCache(process.env.USERPROFILE + "/Downloads/malCache.json");
+        let missing = getMissingEntries(storage);
+        getStorageInfo(storage);
+        console.log("Imported Cache: " + imported);
+        console.log("Missing Entries: " + missing);
+        console.log("Non Existent Entries : " + nonExistent.length);
+    });
+}
+
+function getMissingEntries(storage) {
+
+    console.log("Missing Entries:\n");
+    let count = 0;
+    for (let id in storage) {
+        if (id == "meta")
+            continue;
+        for (let siteName of storage["meta"]) {
+            if (storage[id][siteName] === undefined && !nonExistent.find(pair => pair.id == id && pair.site == siteName)) {
+                console.log("Missing Entry ID:" + id + " || " + siteName + ": ");
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+function getStorageAsObject(callb) {
     let storage = {};
     let sites = [];
 
@@ -27,7 +53,7 @@ function getMissingEntries() {
         while (direntLetter !== null) {
             let directorySites = fs.opendirSync("./storage/" + direntLetter.name);
             let direntSite = directorySites.readSync();
-            while (direntSite !== null) { 
+            while (direntSite !== null) {
                 let file = require("./storage/" + direntLetter.name + "/" + direntSite.name);
                 for (let name in file) {
                     if (!storage[file[name]]) {
@@ -45,21 +71,20 @@ function getMissingEntries() {
             direntLetter = dir.readSync();
         }
         dir.closeSync();
-        console.log("Missing Entrys:\n");
-        let count = 0;
-        for (let id in storage) {
-            for (let siteName of sites) {
-                if (storage[id][siteName] === undefined && !missingPairs.find(pair => pair.id == id && pair.site == siteName)) {
-                    console.log("Missing Entry ID:" + id + " || " + siteName + ": ");
-                    count++;
-                }
-            }
-        }
-        console.log("\nMissing Entrys: " + count);
+        storage["meta"] = sites;
+        callb(storage);
     });
 }
 
+function getStorageInfo(storage) {
+    console.log("Storage Info:\nNumber of IDs: " + Object.keys(storage).length + "\nNumber of Sites: " + storage["meta"].length);
+}
+
 function importCache(file) {
+    if (!fs.existsSync(file)) {
+        console.log("File not found: " + file);
+        return 0;
+    }
     let content = require(file);
     console.log("Importing Cache:\n");
     let count = 0;
@@ -89,5 +114,5 @@ function importCache(file) {
             }
         }
     }
-    console.log("\nImported Cache: " + count);
+    return count;
 }
