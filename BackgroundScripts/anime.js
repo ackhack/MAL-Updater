@@ -127,7 +127,8 @@ function finishedEpisode(req, callb) {
                 })
                     .then(response => {
                         response.json().then(responseJSON => {
-                            callb(responseJSON);
+                            req.force = true;
+                            loadIntoCache(req,callb(responseJSON));
                         });
                     });
             } else {
