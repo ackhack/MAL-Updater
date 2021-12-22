@@ -115,7 +115,7 @@ function recieveAnime(res) {
 
     if (res.cache == "global") {
         metaData = res.meta;
-        showInfo("Global Cache", "This Anime is safed in the Global Cache");
+        showInfo("Global Cache", "This Anime was loaded from the Global Cache");
         waitPageloadCache();
         return;
     }

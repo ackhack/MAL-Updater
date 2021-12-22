@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(
                 closeTab(sender, request.force);
                 break;
             case "CACHE_ANIME":
-                setCache(request, onSuccess);
+                loadIntoCache(request, onSuccess);
                 break;
             case "VALIDATE_SITE":
                 validateSite(request, onSuccess);

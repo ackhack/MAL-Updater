@@ -1,4 +1,6 @@
-function setCache(req, callb = () => { }) {
+//#region Load from API by Request
+
+function loadIntoCache(req, callb = () => { }) {
     getAnimeCacheVariable((animeCache) => {
         if (animeCache[req.id] === undefined || req.force) {
             getAnimeDetails(req.id, (json) => {
@@ -33,6 +35,10 @@ function setCache(req, callb = () => { }) {
     });
     return true;
 }
+
+//#endregion
+
+//#region Get Cache Variants
 
 function getCacheByName(site, name, callb) {
     getAnimeCacheVariable((animeCache) => {
@@ -95,6 +101,10 @@ function getCacheByURLs(urls = [], callb = () => { }) {
     return true;
 }
 
+//#endregion
+
+//#region Delete From Cache by Settings
+
 function deleteCache(query = {}, callb = () => { }) {
     getAnimeCacheVariable((animeCache) => {
         if (query.all) {
@@ -141,6 +151,10 @@ function deleteCache(query = {}, callb = () => { }) {
     });
     return false;
 }
+
+//#endregion
+
+//#region Import/Export with Filesystem
 
 function exportCache(callb) {
     getAnimeCacheVariable((animeCache) => {
@@ -190,6 +204,27 @@ function deleteActiveCache(callb) {
     return true;
 }
 
+//#endregion
+
+//#region Global
+
+function getIdFromGlobalCache(site, name, callb) {
+    fetch('https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/storage/' + name[0].toLowerCase() + '/' + site + '.json')
+        .then((response) => {
+            if (response.status !== 200) {
+                callb(undefined);
+                return;
+            }
+            response.json().then((json) => {
+                callb(json[name]);
+            });
+        });
+}
+
+//#endregion
+
+//#region Dev
+
 function dev_redownloadCache(minID = -1) {
     getAnimeCacheVariable((animeCache) => {
         let finished = 0;
@@ -210,3 +245,5 @@ function dev_redownloadCache(minID = -1) {
     });
     return true;
 }
+
+//#endregion

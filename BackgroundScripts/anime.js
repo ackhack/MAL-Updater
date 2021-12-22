@@ -43,36 +43,31 @@ function getAnime(req, callb, nTry = 0) {
                                 checkLastEpisode(responseJSON.id, req.episode, usertoken, (lastWatched, episode) => {
                                     responseJSON.lastWatched = lastWatched;
                                     responseJSON.lastEpisode = episode;
-                                    console.log("[Cache] Loaded from API: " + name);
+                                    console.log("[Cache] Loaded Animes from API: " + name);
                                     callb(responseJSON);
                                 });
                             }
                         });
                 }
 
-                fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/storage.json")
-                    .then((response) => {
-                        response.json().then((json) => {
-                            for (let id in json) {
-                                if (json[id][req.site].includes(req.name)) {
-                                    req.id = id;
-                                    setCache(req, cached => {
-                                        checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
-                                            console.log("[Cache] Loaded from Global Storage: " + req.name);
-                                            callb({
-                                                meta: cached.meta,
-                                                cache: 'global',
-                                                lastWatched: lastWatched,
-                                                lastEpisode: episode
-                                            });
-                                        })
-                                    });
-                                    return;
-                                }
-                            }
-                            getAnimesFromAPI();
-                        })
-                    }).catch(getAnimesFromAPI);
+                getIdFromGlobalCache(req.site, req.name, id => {
+                    if (id === undefined) {
+                        getAnimesFromAPI();
+                    } else {
+                        req.id = id;
+                        loadIntoCache(req, cached => {
+                            checkLastEpisode(cached.meta.id, req.episode, usertoken, (lastWatched, episode) => {
+                                console.log("[Cache] Loaded from Global Storage: " + req.name);
+                                callb({
+                                    meta: cached.meta,
+                                    cache: 'global',
+                                    lastWatched: lastWatched,
+                                    lastEpisode: episode
+                                });
+                            })
+                        });
+                    }
+                });
             });
         });
     });
@@ -158,7 +153,7 @@ function finishedEpisode(req, callb) {
                 }
 
                 if (anime.meta.num_episodes == undefined || anime.meta.num_episodes == 0) {
-                    setCache({ id: req.id, force: true }, () => { updateEpisode() });
+                    loadIntoCache({ id: req.id, force: true }, () => { updateEpisode() });
                 } else {
                     updateEpisode();
                 }
