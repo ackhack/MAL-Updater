@@ -3,6 +3,7 @@ const nonExistent = [
     { "id": 6862, "site": "kickassanime" },
     { "id": 9734, "site": "gogoanimehub" },
     { "id": 9734, "site": "kickassanime" },
+    { "id": 13469, "site": "kickassanime" },
     { "id": 31711, "site": "kickassanime" },
     { "id": 35000, "site": "gogoanimehub" },
     { "id": 35000, "site": "kickassanime" },
@@ -16,14 +17,13 @@ const nonExistent = [
 run();
 
 function run() {
-    getStorageAsObject((storage) => {
-        let imported = importCache(process.env.USERPROFILE + "/Downloads/malCache.json");
-        let missing = getMissingEntries(storage);
-        getStorageInfo(storage);
-        console.log("Imported Cache: " + imported);
-        console.log("Missing Entries: " + missing);
-        console.log("Non Existent Entries : " + nonExistent.length);
-    });
+    let imported = importCache(process.env.USERPROFILE + "/Downloads/malCache.json");
+    let storage = getStorageAsObject();
+    let missing = getMissingEntries(storage);
+    getStorageInfo(storage);
+    console.log("Imported Cache: " + imported);
+    console.log("Missing Entries: " + missing);
+    console.log("Non Existent Entries : " + nonExistent.length);
 }
 
 function getMissingEntries(storage) {
@@ -43,37 +43,35 @@ function getMissingEntries(storage) {
     return count;
 }
 
-function getStorageAsObject(callb) {
+function getStorageAsObject() {
     let storage = {};
     let sites = [];
 
-    fs.opendir("./storage", (err, dir) => {
-        if (err) throw err;
-        let direntLetter = dir.readSync();
-        while (direntLetter !== null) {
-            let directorySites = fs.opendirSync("./storage/" + direntLetter.name);
-            let direntSite = directorySites.readSync();
-            while (direntSite !== null) {
-                let file = require("./storage/" + direntLetter.name + "/" + direntSite.name);
-                for (let name in file) {
-                    if (!storage[file[name]]) {
-                        storage[file[name]] = {};
-                    }
-                    let site = direntSite.name.split(".")[0];
-                    storage[file[name]][site] = name;
-                    if (!sites.includes(site)) {
-                        sites.push(site);
-                    }
+    let dir = fs.opendirSync("./storage");
+    let direntLetter = dir.readSync();
+    while (direntLetter !== null) {
+        let directorySites = fs.opendirSync("./storage/" + direntLetter.name);
+        let direntSite = directorySites.readSync();
+        while (direntSite !== null) {
+            let file = require("./storage/" + direntLetter.name + "/" + direntSite.name);
+            for (let name in file) {
+                if (!storage[file[name]]) {
+                    storage[file[name]] = {};
                 }
-                direntSite = directorySites.readSync();
+                let site = direntSite.name.split(".")[0];
+                storage[file[name]][site] = name;
+                if (!sites.includes(site)) {
+                    sites.push(site);
+                }
             }
-            directorySites.closeSync();
-            direntLetter = dir.readSync();
+            direntSite = directorySites.readSync();
         }
-        dir.closeSync();
-        storage["meta"] = sites;
-        callb(storage);
-    });
+        directorySites.closeSync();
+        direntLetter = dir.readSync();
+    }
+    dir.closeSync();
+    storage["meta"] = sites;
+    return storage;
 }
 
 function getStorageInfo(storage) {
