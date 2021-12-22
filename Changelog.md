@@ -1,3 +1,5 @@
+6.5.8: 22.12.2021
+    -Newer gogoanimehub urls
 6.5.7: 26.10.2021
     -Fixed some Players not skipping on 9anime
     -Fixed DRP not disappearing

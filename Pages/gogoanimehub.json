@@ -1,7 +1,7 @@
 {
-    "sitePattern": ".*gogoanimehub.*",
+    "sitePattern": ".*gogoanimeapp.*",
     "siteName": "gogoanimehub",
-    "urlPattern": "https?:\\/\\/.*gogoanimehub.*\\/(.*)-episode-(\\d+)",
+    "urlPattern": "https?:\\/\\/.*gogoanimeapp.*\\/(.*)-episode-(\\d+)",
     "nameMatch": 1,
     "episodeMatch": 2,
     "pageColor": "#ffc119",
@@ -18,5 +18,5 @@
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "items",
-    "mainPageURL":"https://www.gogoanimehub.tv/"
+    "mainPageURL":"https://gogoanimeapp.com/"
 }
