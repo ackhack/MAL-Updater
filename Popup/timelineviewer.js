@@ -56,6 +56,8 @@ function clearTimeline() {
 
 function sortTimeline() {
     for (let weekDiv of document.getElementsByClassName("weekDiv")) {
+        if (weekDiv.name == "unknown")
+            continue;
         let children = weekDiv.children[1].children;
         let sortedChildren = Array.from(children).sort((a, b) => {
             return a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]);
