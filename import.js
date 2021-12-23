@@ -115,6 +115,7 @@ function importCache(file) {
                     file[name] = id;
                     count++;
                 }
+                console.log("");
                 fs.writeFileSync(fileName, JSON.stringify(file));
             }
         }
