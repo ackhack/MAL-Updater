@@ -109,13 +109,17 @@ function importCache(file) {
                 }
 
                 let file = fs.existsSync(fileName) ? require(fileName) : {};
+                let imported =false;
 
                 if (!file[name]) {
+                    imported = true;
                     console.log("Importing New Entry ID:" + id + " || " + site + ": " + name);
                     file[name] = id;
                     count++;
                 }
-                console.log("");
+                if (imported)
+                    console.log("");
+
                 fs.writeFileSync(fileName, JSON.stringify(file));
             }
         }
