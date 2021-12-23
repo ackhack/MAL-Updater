@@ -99,6 +99,8 @@ function importCache(file) {
             if (site == "meta")
                 continue;
 
+            let imported =false;
+
             for (let name of content[id][site]) {
 
                 let firstLetter = name[0].toLowerCase();
@@ -109,7 +111,7 @@ function importCache(file) {
                 }
 
                 let file = fs.existsSync(fileName) ? require(fileName) : {};
-                let imported =false;
+                
 
                 if (!file[name]) {
                     imported = true;
@@ -117,11 +119,11 @@ function importCache(file) {
                     file[name] = id;
                     count++;
                 }
-                if (imported)
-                    console.log("");
 
                 fs.writeFileSync(fileName, JSON.stringify(file));
             }
+            if (imported)
+                console.log("");
         }
     }
     return count;
