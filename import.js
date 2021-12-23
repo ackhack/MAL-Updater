@@ -94,12 +94,12 @@ function importCache(file) {
     console.log("Importing Cache:\n");
     let count = 0;
     for (let id in content) {
+        let imported = false;
         for (let site in content[id]) {
 
             if (site == "meta")
                 continue;
 
-            let imported =false;
 
             for (let name of content[id][site]) {
 
@@ -111,7 +111,7 @@ function importCache(file) {
                 }
 
                 let file = fs.existsSync(fileName) ? require(fileName) : {};
-                
+
 
                 if (!file[name]) {
                     imported = true;
@@ -122,9 +122,9 @@ function importCache(file) {
 
                 fs.writeFileSync(fileName, JSON.stringify(file));
             }
-            if (imported)
-                console.log("");
         }
+        if (imported)
+            console.log("");
     }
     return count;
 }
