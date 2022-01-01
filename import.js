@@ -24,7 +24,13 @@ const nonExistent = [
     { "id": 35823, "site": "gogoanimehub" },
     { "id": 35823, "site": "kickassanime" },
     { "id": 37996, "site": "kickassanime" },
-    { "id": 38733, "site": "kickassanime" }
+    { "id": 38733, "site": "kickassanime" },
+    { "id": 39605, "site": "kickassanime" },
+    { "id": 39689, "site": "kickassanime" },
+    { "id": 39972, "site": "kickassanime" },
+    { "id": 40102, "site": "kickassanime" },
+    { "id": 40298, "site": "gogoanimehub" },
+    { "id": 40298, "site": "kickassanime" }
 ]
 
 run();
