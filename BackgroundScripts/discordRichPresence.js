@@ -51,6 +51,10 @@ function removeDiscord() {
         console.log("[Discord] Removing Window");
         chrome.tabs.remove(discordTabId);
         setDiscordTabIdVariable(-1);
+        setDiscordLatestMessageVariable({
+            valid: true,
+            empty: true
+        });
     });
     return true;
 }
@@ -72,7 +76,7 @@ function handleDiscordPresence(request) {
                 getDiscordRecentInfoVariable(recentInfo => {
                     if (request.active) {
                         let name = getAnimeTitle(anime);
-                        setDiscordRecentInfoVariable({ name: name, episode: request.episode });
+                        setDiscordRecentInfoVariable({ id: request.id, episode: request.episode });
                         setDiscordStatus({
                             type: 3,
                             name: "Anime",
@@ -85,8 +89,8 @@ function handleDiscordPresence(request) {
                         });
     
                     } else {
-                        if (recentInfo.name == request.name && recentInfo.episode == request.episode) {
-                            setDiscordRecentInfoVariable({ name: "", episode: "" });
+                        if (recentInfo.id == request.id && recentInfo.episode == request.episode) {
+                            setDiscordRecentInfoVariable({ id: "", episode: "" });
                             setDiscordLatestMessageVariable({
                                 valid: true,
                                 close: true
