@@ -160,6 +160,9 @@ function renameBookmark(bookmark) {
                     let match = bookmark.url.match(site.urlPattern);
                     if (match != null) {
                         getCacheByName(site.siteName, match[site.nameMatch], res => {
+                            if (res === undefined)
+                                return;
+
                             let name = getBookmarkName(res, match[site.episodeMatch]);
                             if (bookmark.title !== name)
                                 chrome.bookmarks.update(bookmark.id, { title: name }, () => { });
@@ -240,7 +243,7 @@ function checkBookmarkAuto(req) {
 }
 
 function getBookmarkName(anime, episode = undefined) {
-    return getAnimeTitle(anime).slice(0,40) + (episode !== undefined ? " : Ep " + episode : "");
+    return getAnimeTitle(anime).slice(0, 40) + (episode !== undefined ? " : Ep " + episode : "");
 }
 
 function getBookmarkFolderName(callb = () => { }) {
