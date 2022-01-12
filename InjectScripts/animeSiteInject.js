@@ -649,7 +649,7 @@ function reloadPage(url) {
                     } else {
                         if (parseURL(url)) {
                             finished = false;
-                            if (lastWatched != episodeNumber - 1) {
+                            if (lastWatched != episodeNumber - 1 && lastWatched != undefined) {
                                 showInfo("This is not the next Episode!", "Your last watched Episode is EP " + lastWatched);
                             }
                             finishedAnimeInit();
@@ -666,7 +666,7 @@ function reloadPage(url) {
         } else {
             if (parseURL(url)) {
                 finished = false;
-                if (lastWatched != episodeNumber - 1) {
+                if (lastWatched != episodeNumber - 1 && lastWatched != undefined) {
                     showInfo("This is not the next Episode!", "Your last watched Episode is EP " + lastWatched);
                 }
                 finishedAnimeInit();
