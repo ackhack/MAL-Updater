@@ -13,8 +13,10 @@ function loadIntoCache(req, callb = () => { }) {
                     json["id"] = req.id;
 
                     animeCache[req.id].meta = json;
-                    for (let siteName in sites)
-                        animeCache[req.id][sites[siteName].siteName] = [];
+                    for (let siteName in sites) {
+                        if (!(sites[siteName].siteName in animeCache[req.id]))
+                            animeCache[req.id][sites[siteName].siteName] = [];
+                    }
 
                     if (req.site !== undefined && req.name !== undefined) {
                         animeCache[req.id][req.site].push(req.name);

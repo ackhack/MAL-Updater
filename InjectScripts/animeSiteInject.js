@@ -377,10 +377,10 @@ function finishedLastEpisode(data) {
     commitBtn.innerText = "Rate";
     commitBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
-    let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2")?.remove(); finishedEpisode(true); };
-    abortBtn.innerText = "Not Last Episode";
-    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    let notLastBtn = document.createElement("button");
+    notLastBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2")?.remove(); finishedEpisode(true); };
+    notLastBtn.innerText = "Not Last Episode";
+    notLastBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     let pSequel = document.createElement("p");
     pSequel.innerText = data.next ? "Sequels: " + data.next : "No Sequel found";
@@ -390,7 +390,7 @@ function finishedLastEpisode(data) {
     div.appendChild(select);
     div.appendChild(commitBtn);
     div.appendChild(pSequel);
-    div.appendChild(abortBtn);
+    div.appendChild(notLastBtn);
     document.getElementsByTagName("body")[0].appendChild(div);
 }
 
@@ -429,13 +429,13 @@ function updateEpisodeSuccess(success, nextURL = undefined) {
     p.style = "margin-left:1.5em;margin-bottom:5px;";
     p.innerText = (success ? "✅Successfully updated EpisodeNumber✅" : "❌An Error occured while updating the EpisodeNumber❌") + "\n" + getAnimeName() + ": Episode " + episodeNumber;
 
-    let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3")?.remove() };
-    abortBtn.innerText = "OK";
-    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    let okBtn = document.createElement("button");
+    okBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3")?.remove() };
+    okBtn.innerText = "OK";
+    okBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     div.appendChild(p);
-    div.appendChild(abortBtn);
+    div.appendChild(okBtn);
 
     if (nextURL && success) {
         let nextBtn = document.createElement("button");
@@ -492,22 +492,22 @@ function showInfo(header, text, buttons = []) {
     pText.style = "padding-left: 2em;";
     pText.innerText = text;
 
-    let abortBtn = document.createElement("button");
-    abortBtn.onclick = () => { div?.remove(); };
-    abortBtn.innerText = "OK";
-    abortBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    let okBtn = document.createElement("button");
+    okBtn.onclick = () => { div?.remove(); };
+    okBtn.innerText = "OK";
+    okBtn.style = "margin-left: 1.5em;margin-top: 5px;";
 
     document.onkeydown = function (evt) {
         evt = evt || window.event;
         if (evt.key == "Escape" || evt.key == "Enter") {
-            abortBtn?.click();
+            okBtn?.click();
             document.removeEventListener("keydown", this);
         }
     };
 
     div.appendChild(pHeader);
     div.appendChild(pText);
-    div.appendChild(abortBtn);
+    div.appendChild(okBtn);
     for (let btn of buttons) {
         div.appendChild(btn);
     }
