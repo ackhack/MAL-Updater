@@ -30,7 +30,23 @@ const nonExistent = [
     { "id": 39972, "site": "kickassanime" },
     { "id": 40102, "site": "kickassanime" },
     { "id": 40298, "site": "gogoanimehub" },
-    { "id": 40298, "site": "kickassanime" }
+    { "id": 40298, "site": "kickassanime" },
+    { "id": 37021, "site": "kickassanime" },
+    { "id": 37047, "site": "kickassanime" },
+    { "id": 38163, "site": "kickassanime" },
+    { "id": 39324, "site": "kickassanime" },
+    { "id": 40807, "site": "gogoanimehub" },
+    { "id": 40807, "site": "kickassanime" },
+    { "id": 41061, "site": "kickassanime" },
+    { "id": 42423, "site": "kickassanime" },
+    { "id": 42519, "site": "gogoanimehub" },
+    { "id": 42519, "site": "kickassanime" },
+    { "id": 42603, "site": "kickassanime" },
+    { "id": 43609, "site": "kickassanime" },
+    { "id": 44983, "site": "kickassanime" },
+    { "id": 48590, "site": "9anime" },
+    { "id": 49297, "site": "kickassanime" },
+    { "id": 50325, "site": "kickassanime" }
 ]
 
 run();
