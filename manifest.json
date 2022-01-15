@@ -1,19 +1,21 @@
 {
     "name": "MAL-Updater",
-    "version": "6.5.8",
+    "version": "7.0.0",
     "description": "Updates MAL List",
-    "manifest_version": 2,
+    "manifest_version": 3,
     "permissions": [
         "activeTab",
         "storage",
         "tabs",
         "bookmarks",
+        "alarms",
+        "notifications",
+        "scripting"
+    ],
+    "host_permissions": [
         "*://*.myanimelist.net/*",
         "*://*.github.com/*",
-        "webRequest",
-        "webRequestBlocking",
         "https://discord.com/channels/@me",
-        "contentSettings",
         "http://*/",
         "https://*/"
     ],
@@ -32,27 +34,32 @@
                 "https://discord.com/channels/@me"
             ],
             "js": [
-                "InjectScripts/discordRichPresenceInject.js"
+                "InjectScripts/discordInject.js"
             ],
-            "run_at": "document_start",
-            "all_frames": true
+            "run_at": "document_start"
         }
     ],
     "background": {
-        "page": "BackgroundScripts/background.html"
+        "service_worker": "serviceWorker.js"
     },
-    "web_accessible_resources": [
-        "Resources/secret.json",
-        "Pages/*",
-        "BackgroundScripts/*",
-        "Popup/cacheviewer.html",
-        "Popup/historyviewer.html"
-    ],
     "icons": {
         "64": "Resources/icon.png"
     },
-    "browser_action": {
+    "action": {
         "default_title": "MAL-Updater Settings",
         "default_popup": "Popup/settings.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "InjectScripts/discordRichPresenceInject.js"
+            ],
+            "matches": [
+                "https://discord.com/*"
+            ]
+        }
+    ],
+    "externally_connectable": {
+        "matches": ["https://discord.com/*"]
     }
 }

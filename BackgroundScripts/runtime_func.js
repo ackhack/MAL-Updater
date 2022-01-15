@@ -6,55 +6,54 @@ function closeTab(sender, force = false) {
 
 function validateSite(req, callb) {
     //check if we have the site saved as json
-    for (let site in sites) {
-        if (req.url.match(sites[site].sitePattern)) {
-            callb(sites[site]);
-            return true;
+    getSitesVariable(sites => {
+        for (let site in sites) {
+            if (req.url.match(sites[site].urlPattern)) {
+                sites[site].valid = true;
+                callb(sites[site]);
+                return;
+            }
+            if (req.url.match(sites[site].sitePattern)) {
+                sites[site].valid = false;
+                callb(sites[site]);
+                return;
+            }
         }
-    }
-    callb(undefined);
-    return false;
+        callb(undefined);
+    });
+    return true;
 }
 
 function validateMainSite(req, callb) {
     //check if we have the site saved as json
-
-    for (let site in sites) {
-        if (req.url.match(sites[site].mainPagePattern)) {
-            callb({ site: sites[site], cache: animeCache, addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName) });
-            return true;
-        }
-    }
-    callb(undefined);
-    return false;
+    getBookmarkAutoActiveVariable(bookmarkautoActive => {
+        getAnimeCacheVariable(animeCache => {
+            getSitesVariable(sites => {
+                getPreferredSiteNameVariable(preferredSiteName => {
+                    for (let site in sites) {
+                        if (req.url.match(sites[site].mainPagePattern)) {
+                            callb({
+                                site: sites[site],
+                                cache: animeCache,
+                                addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName)
+                            });
+                        }
+                    }
+                    callb(undefined);
+                });
+            });
+        });
+    });
+    return true;
 }
 
 function changeActiveState(value) {
-    active = value;
-    if (active && usertoken === undefined) {
-        getAuthCode();
-    }
-    return true;
-}
-
-function changeCheckLastEpisode(value) {
-    checkLastEpisodeBool = value;
-    return true;
-}
-
-function changeDisplayMode(value) {
-    displayMode = value;
-    return true;
-}
-
-function addBinge(id) {
-    binge.add(id);
-    return true;
-}
-
-function removeBinge(id) {
-    if (binge.has(id))
-        binge.delete(id);
+    setActiveVariable(value);
+    getUserTokenVariable(usertoken => {
+        if (value && usertoken.access == undefined) {
+            getAuthCode();
+        }
+    });
     return true;
 }
 
@@ -88,7 +87,7 @@ function checkUpdate(callb) {
                                 });
                             }
                         })
-                    })
+                    }).catch(err => console.log(err));
             })
         }).catch(err => console.log(err));
 
@@ -98,29 +97,47 @@ function checkUpdate(callb) {
 function checkUpdateCycle() {
     checkUpdate(result => {
         if (result.update) {
-            chrome.browserAction.setBadgeText({ text: "1" });
-            return;
+            console.log("[Updater] Update available");
+            chrome.action.setBadgeText({ text: "1" });
         }
-        setTimeout(() => { checkUpdateCycle() }, 1_800_000);
     });
 }
 
 function handleAnimeWatchedInfo(req) {
+    setBookmark(req.id, req.nextURL);
     addHistory(req.name, req.episode, req.id);
 }
 
-function confirmMessage(msg, callb) {
-    callb(confirm(msg));
-    return true;
-}
-
-function tryGetStorage(name, defaultValue, callb) {
-    chrome.storage.local.get(name, function (result) {
-        callb(result ? result[name] ?? defaultValue : defaultValue);
+function confirmMessage(msg, callb = () => { }) {
+    console.log("[General] Sending Confirm Message")
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "Resources/icon.png",
+        title: "MAL Updater",
+        requireInteraction: true,
+        buttons: [{
+            title: "Yes"
+        }, {
+            title: "No"
+        }],
+        message: msg
+    }, id => {
+        function listener(notificationId, buttonIndex) {
+            if (notificationId == id)
+                callb(buttonIndex == 0);
+            chrome.notifications.onButtonClicked.removeListener(listener);
+        }
+        chrome.notifications.onButtonClicked.addListener(listener);
     });
+    return true;
 }
 
-function getSitesAsync(callb) {
-    callb(sites);
-    return true;
+function sendNotification(message) {
+    console.log("[General] Sending Notification")
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "Resources/icon.png",
+        title: "MAL Updater",
+        message: message
+    });
 }

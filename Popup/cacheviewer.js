@@ -24,10 +24,7 @@ function init() {
     document.getElementById("btnDelete").onclick = deleteMeta;
 
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
-        if (result)
-            animeCache = result["MAL_AnimeCache"] ?? {};
-        else
-            animeCache = {};
+        animeCache = result ? result["MAL_AnimeCache"] ?? {} : {};
 
         createCards();
     });
@@ -38,11 +35,11 @@ function createCards() {
 
     for (let id in animeCache) {
         if (currFilter == "all") {
-            cards.push(createCard(id + ": " + getName(animeCache[id].meta), animeCache[id]));
+            cards.push(createCard(id + ": " + getAnimeTitle(animeCache[id]), animeCache[id]));
             continue;
         }
-        if (animeCache[id][currFilter])
-            cards.push(createCard(id + ": " + animeCache[id][currFilter].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]));
+        if (animeCache[id][currFilter].length > 0)
+            cards.push(createCard(id + ": " + animeCache[id][currFilter][0].replace(/^(.)|-(.)/g, (_, g1, g2) => { return g1 ? " " + g1.toLocaleUpperCase() : g2 ? " " + g2.toLocaleUpperCase() : "Unknown" }).slice(1), animeCache[id]));
     }
 
     switch (currSort) {
@@ -101,13 +98,6 @@ function clickedSort(event) {
     updateCards();
 }
 
-function getName(meta) {
-    if (meta.alternative_titles?.en) {
-        return meta.alternative_titles.en;
-    }
-    return meta.title;
-}
-
 function clickedCard(event) {
     currCard = JSON.parse(event.target.children[0].innerText);
     document.getElementById("metaDiv").style = "display: block;position:fixed;";
@@ -132,11 +122,7 @@ function deleteMeta() {
 }
 
 function syncCache() {
-    chrome.storage.local.set({ "MAL_AnimeCache": animeCache }, function () {
-        chrome.runtime.sendMessage({
-            type: "SYNC_CACHE"
-        });
-    });
+    chrome.storage.local.set({ "MAL_AnimeCache": animeCache });
 }
 
 function createListFromMeta(cardString) {
@@ -159,6 +145,10 @@ function createListFromMeta(cardString) {
                 }
 
                 li.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
+                if (li.innerText.length > 500) {
+                    li.innerText = li.innerText.slice(0, 500) + "...";
+                    li.style = "font-size: small;";
+                }
                 ul.appendChild(li);
             }
             continue;

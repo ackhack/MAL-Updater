@@ -11,19 +11,20 @@ function selectInjector(sender) {
 function injectScript(sender, site) {
     for (let script of site.js) {
         if (site.all_frames === true) {
-            chrome.tabs.executeScript(sender.tab.id,
-                {
-                    file: script,
-                    allFrames: true,
-                    runAt: site.run_at ?? "document_idle"
-                });
+            chrome.scripting.executeScript({
+                target: {
+                    tabId: sender.tab.id,
+                    allFrames: true
+                },
+                files: [script]
+            }, () => {});
         } else {
-            chrome.tabs.executeScript(sender.tab.id,
-                {
-                    file: script,
-                    frameId: sender.frameId,
-                    runAt: site.run_at ?? "document_idle"
-                });
+            chrome.scripting.executeScript({
+                target: {
+                    tabId: sender.tab.id
+                },
+                files: [script]
+            }, () => {});
         }
     }
 }
@@ -44,7 +45,8 @@ var injectObject = [{
     ],
     "js": [
         "InjectScripts/kaa-pick-server.js"
-    ]
+    ],
+    "all_frames": true
 },
 {
     "matches": [
@@ -61,10 +63,20 @@ var injectObject = [{
         "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
         "https:\\/\\/videovard\\.sx\\/e\\/.*",
         "https:\\/\\/streamtape\\.com\\/e\\/.*",
-        "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*"
+        "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*",
+        "https:\\/\\/gogoplay1\\.com\\/streaming\\.php.*"
     ],
     "js": [
         "InjectScripts/playerInject.js"
+    ],
+    "all_frames": true
+},
+{
+    "matches": [
+        "https:\\/\\/myanimelist\\.net\\/animelist\\/.*\\?status=6",
+    ],
+    "js": [
+        "InjectScripts/malInject.js"
     ]
 }
 ]

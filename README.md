@@ -2,7 +2,8 @@ USE AT YOUR OWN RISK
 
 This is a Chrome Extension. Its not on the Google Store, so add it as a Developer Extension.
 
-Features:
+
+# Features:
 - Update your MAL List
 - Show a Disord Rich Presence
 - History of Episodes watched
@@ -13,12 +14,17 @@ Features:
 - Filter Animes in Recent Page
 - Pressing Ctrl+I will show you the CacheInfos about the current Anime
 - Automatically add Bookmarks for new Releases
+- Timeline for current running Shows
+- Visually remove Not Yet Aired from Plan to Watch List for easier Usage
 
-Supported Sites:
+
+# Supported Sites:
 - Kickassanime
 - 9anime
 - gogoanimehub
 
+
+# Installation:
 If you want to use this Extension, you have to create a secret.json in the Resources Folder with the following structure
 ```
 {

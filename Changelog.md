@@ -1,5 +1,22 @@
-6.5.8: 22.12.2021
+7.0.0:
+    -Updated Manifest Version to 3
+    -Confirm Message now moved to Notifications
+    -Notification when new Auto Bookmark added
+    -Removed DisplayMode
+    -Removed checkLastEpisode, now happens always
+    -Less Authentification API Calls
+    -DRP now muted
+    -DRP now in a Tab not iframe
+    -Removed Binge Watching
+    -Now using Service Worker instead of Background Page
+    -Added a Timeline for current Anime Releases
+    -Button to visually remove Not Yet Aired from Plan to Watch List
+    -Added Global Storage
+    -Changed 9anime Pattern
+    -Added License
+    -Fixed Bugs
     -Newer gogoanimehub urls
+
 6.5.7: 26.10.2021
     -Fixed some Players not skipping on 9anime
     -Fixed DRP not disappearing

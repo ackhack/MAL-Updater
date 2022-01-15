@@ -11,52 +11,58 @@ function init() {
 }
 
 function initFunctions() {
-    document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
+
+
     document.getElementById("cbActive").onchange = changeActiveState;
-    document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
-    document.getElementById("cbCheckLastEpisode").onchange = changeCheckLastEpisode;
+    document.getElementById("btnHistoryViewer").onclick = showHistory;
+    document.getElementById("btnTimelineViewer").onclick = showTimeline;
+    document.getElementById("btnUnauthorize").onclick = unauthorize;
+
+    document.getElementById("btnCacheViewer").onclick = showCache;
     document.getElementById("btnCacheDeleteAll").onclick = deleteCacheAll;
     document.getElementById("btnCacheDeleteThis").onclick = _ => deleteCache({ current: true });
-    document.getElementById("btnUnauthorize").onclick = unauthorize;
-    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
-    document.getElementById("cbDisplayMode").onchange = changeDisplayMode;
-    document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
-    document.getElementById("pVersion").onclick = versionClicked;
-    document.getElementById("btnCacheViewer").onclick = showCache;
-    document.getElementById("btnHistoryViewer").onclick = showHistory;
-    document.getElementById("btnHelp").onclick = showHelp;
     document.getElementById("btnCacheImport").onclick = importCache;
     document.getElementById("btnCacheExport").onclick = exportCache;
+
+    document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
+    document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbBookmarkAutoActive").onchange = changeBookmarkAutoActive;
+    document.getElementById("cbBookmarkAutoNotification").onchange = changeBookmarkAutoNotification;
     document.getElementById("selectPreferredSite").onchange = changedPreferredSite;
+
+    document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
+    document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
+
+    document.getElementById("pVersion").onclick = versionClicked;
+    document.getElementById("btnHelp").onclick = showHelp;
 }
 
 function initSettings() {
 
-    getActiveState(active => {
+    getActiveVariable(active => {
         document.getElementById("cbActive").checked = active;
     })
+
     getBookmarkFolderName(name => {
         document.getElementById("tbBookmarks").value = name;
     })
-    getActiveDiscordState(active => {
-        document.getElementById("cbActiveDiscord").checked = active;
-    })
-    getCheckLastEpisode(active => {
-        document.getElementById("cbCheckLastEpisode").checked = active;
-    })
-    getDisplayMode(active => {
-        document.getElementById("cbDisplayMode").checked = active;
-    })
-    getCurrentVersion(versionText => {
-        document.getElementById("pVersion").innerText = versionText;
-    })
-    getBookmarkActive(active => {
+    getBookmarkActiveVariable(active => {
         document.getElementById("cbBookmarksActive").checked = active;
     })
-    initPreferredSiteSelect();
-    getBookmarkAutoActive(active => {
+    getBookmarkAutoActiveVariable(active => {
         document.getElementById("cbBookmarkAutoActive").checked = active;
+    })
+    getBookmarkAutoNotificationVariable(active => {
+        document.getElementById("cbBookmarkAutoNotification").checked = active;
+    })
+    getPreferredSiteSelect();
+
+    getDiscordActiveVariable(active => {
+        document.getElementById("cbActiveDiscord").checked = active;
+    })
+
+    getCurrentVersion(versionText => {
+        document.getElementById("pVersion").innerText = versionText;
     })
 }
 
@@ -74,70 +80,13 @@ function initCurrentAnime() {
 }
 
 function resetNotificationCounter() {
-    chrome.browserAction.setBadgeText({ text: "" });
+    chrome.action.setBadgeText({ text: "" });
 }
 
-function getActiveState(callb) {
-    chrome.storage.local.get("MAL_Settings_Active", res => {
-        if (res.MAL_Settings_Active !== "" && res.MAL_Settings_Active !== undefined)
-            callb(res.MAL_Settings_Active);
-        else
-            callb(true);
-    });
-}
-
-function getBookmarkFolderName(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks", res => {
-        if (res.MAL_Settings_Bookmarks !== "" && res.MAL_Settings_Bookmarks !== undefined)
-            callb(res.MAL_Settings_Bookmarks);
-        else
-            callb("");
-    });
-}
-
-function getBookmarkActive(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Active", res => {
-        if (res.MAL_Settings_Bookmarks_Active !== "" && res.MAL_Settings_Bookmarks_Active !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Active);
-        else
-            callb(true);
-    });
-}
-
-function getActiveDiscordState(callb) {
-    chrome.storage.local.get("MAL_Settings_DiscordActive", res => {
-        if (res.MAL_Settings_DiscordActive !== "" && res.MAL_Settings_DiscordActive !== undefined)
-            callb(res.MAL_Settings_DiscordActive);
-        else
-            callb(false);
-    });
-}
-
-function getCheckLastEpisode(callb) {
-    chrome.storage.local.get("MAL_Settings_CheckLastEpisode", res => {
-        if (res.MAL_Settings_CheckLastEpisode !== "" && res.MAL_Settings_CheckLastEpisode !== undefined)
-            callb(res.MAL_Settings_CheckLastEpisode);
-        else
-            callb(true);
-    });
-}
-
-function getDisplayMode(callb) {
-    chrome.storage.local.get("MAL_Settings_DisplayMode", res => {
-        if (res.MAL_Settings_DisplayMode !== "" && res.MAL_Settings_DisplayMode !== undefined)
-            callb(res.MAL_Settings_DisplayMode);
-        else
-            callb(true);
-    });
-}
-
-function getBookmarkAutoActive(callb) {
-    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto", res => {
-        if (res.MAL_Settings_Bookmarks_Auto !== "" && res.MAL_Settings_Bookmarks_Auto !== undefined)
-            callb(res.MAL_Settings_Bookmarks_Auto);
-        else
-            callb(false);
-    });
+function getBookmarkFolderName(callb = () => { }) {
+    chrome.runtime.sendMessage({
+        type: "GET_BOOKMARK_FOLDER_NAME"
+    }, callb);
 }
 
 function getCurrentVersion(callb) {
@@ -156,7 +105,7 @@ function getCurrentVersion(callb) {
     );
 }
 
-function initPreferredSiteSelect() {
+function getPreferredSiteSelect() {
     chrome.runtime.sendMessage(
         {
             type: "GET_SITES"
@@ -185,96 +134,28 @@ function initPreferredSiteSelect() {
 
 //#region Setting Functions
 
-function changeBookmarks() {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks": document.getElementById("tbBookmarks").value }, function () {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_BOOKMARK",
-                folderName: document.getElementById("tbBookmarks").value
-            },
-            () => { }
-        );
-    });
-}
-
-function changeBookmarkActive(event) {
-    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked }, function () {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_BOOKMARK_AUTO",
-                active: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
 function changeActiveState(event) {
-    chrome.storage.local.set({ "MAL_Settings_Active": event.target.checked }, function () {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_ACTIVE",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-function changeActiveDiscordState(event) {
-    chrome.storage.local.set({ "MAL_Settings_DiscordActive": event.target.checked }, function () {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_ACTIVE_DISCORD",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
-function deleteCache(query = {}) {
-    if (query.all) {
-        chrome.runtime.sendMessage(
-            {
-                type: "DELETE_CACHE",
-                query: query
-            },
-            () => { }
-        );
-    }
-    if (query.current) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-
-            // since only one tab should be active and in the current window at once
-            // the return variable should only have one entry
-            if (tabs[0]) {
-                chrome.runtime.sendMessage(
-                    {
-                        type: "DELETE_CACHE",
-                        query: { url: tabs[0].url }
-                    },
-                    (result) => {
-                        alert(result ? "Cache has been cleared" : "An Error has occured");
-                    }
-                );
-
-            }
-        });
-    }
-}
-
-function deleteCacheAll() {
     chrome.runtime.sendMessage(
         {
-            type: "CONFIRM_MESSAGE",
-            message: "Do you want to delete the whole Cache (can't be reverted)"
+            type: "CHANGED_ACTIVE",
+            value: event.target.checked
         },
-        result => {
-            if (result) {
-                deleteCache({ all: true });
-            }
-        }
+        () => { }
     );
+}
+
+function showHistory() {
+    fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
+}
+
+function showTimeline() {
+    fetch(chrome.runtime.getURL('Popup/timelineviewer.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
 }
 
 function unauthorize() {
@@ -298,43 +179,6 @@ function unauthorize() {
     );
 }
 
-function removeDiscord() {
-    chrome.runtime.sendMessage(
-        {
-            type: "REMOVE_DRP"
-        },
-        () => { }
-    );
-}
-
-function changeCheckLastEpisode(event) {
-    chrome.storage.local.set({ "MAL_Settings_CheckLastEpisode": event.target.checked }, function (res) {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_CHECK_LAST_EPISODE",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
-function changeDisplayMode(event) {
-    chrome.storage.local.set({ "MAL_Settings_DisplayMode": event.target.checked }, function (res) {
-        chrome.runtime.sendMessage(
-            {
-                type: "CHANGED_DISPLAY_MODE",
-                value: event.target.checked
-            },
-            () => { }
-        );
-    });
-}
-
-function versionClicked() {
-    window.open("https://github.com/ackhack/MAL-Updater");
-}
-
 function showCache() {
     fetch(chrome.runtime.getURL('Popup/cacheviewer.html'))
         .then((response) => {
@@ -342,18 +186,40 @@ function showCache() {
         }).catch(err => console.log(err));
 }
 
-function showHistory() {
-    fetch(chrome.runtime.getURL('Popup/historyviewer.html'))
-        .then((response) => {
-            chrome.tabs.create({ url: response.url });
-        }).catch(err => console.log(err));
+function deleteCacheAll() {
+    chrome.runtime.sendMessage(
+        {
+            type: "CONFIRM_MESSAGE",
+            message: "Do you want to delete the whole Cache (can't be reverted)"
+        },
+        result => {
+            if (result) {
+                deleteCache({ all: true });
+            }
+        }
+    );
 }
 
-function showHelp() {
-    fetch(chrome.runtime.getURL('Popup/helpPage.html'))
-        .then((response) => {
-            chrome.tabs.create({ url: response.url });
-        }).catch(err => console.log(err));
+function deleteCache(query = {}) {
+    if (query.all) {
+        chrome.runtime.sendMessage(
+            {
+                type: "DELETE_CACHE",
+                query: query
+            },
+            () => { }
+        );
+    }
+    if (query.current) {
+        chrome.runtime.sendMessage(
+            {
+                type: "DELETE_ACTIVE_CACHE"
+            },
+            (result) => {
+                alert(result ? "Cache has been cleared" : "An Error has occured");
+            }
+        );
+    }
 }
 
 function importCache() {
@@ -370,7 +236,6 @@ function importCache() {
         reader.readAsText(file, 'UTF-8');
         reader.onload = readerEvent => {
             var content = readerEvent.target.result;
-            console.log(content);
             chrome.runtime.sendMessage(
                 {
                     type: "IMPORT_CACHE",
@@ -402,22 +267,57 @@ function exportCache() {
     );
 }
 
-function changedPreferredSite(event) {
-    chrome.runtime.sendMessage(
-        {
-            type: "CHANGED_PREFERRED_SITE",
-            site: event.target.value
-        }
-    );
+function changeBookmarkActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked });
+}
+
+function changeBookmarks() {
+    chrome.runtime.sendMessage({
+        type: "CHANGE_BOOKMARKS",
+        folderName: document.getElementById("tbBookmarks").value
+    });
 }
 
 function changeBookmarkAutoActive(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto": event.target.checked });
+}
+
+function changeBookmarkAutoNotification(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Notification": event.target.checked });
+}
+
+function changedPreferredSite(event) {
+    chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.value });
+}
+
+function changeActiveDiscordState(event) {
     chrome.runtime.sendMessage(
         {
-            type: "CHANGED_BOOKMARK_AUTO_ACTIVE",
+            type: "CHANGED_ACTIVE_DISCORD",
             value: event.target.checked
-        }
+        },
+        () => { }
     );
+}
+
+function removeDiscord() {
+    chrome.runtime.sendMessage(
+        {
+            type: "REMOVE_DRP"
+        },
+        () => { }
+    );
+}
+
+function versionClicked() {
+    window.open("https://github.com/ackhack/MAL-Updater");
+}
+
+function showHelp() {
+    fetch(chrome.runtime.getURL('Popup/helpPage.html'))
+        .then((response) => {
+            chrome.tabs.create({ url: response.url });
+        }).catch(err => console.log(err));
 }
 
 //#endregion
@@ -443,17 +343,12 @@ function clickedBackButton() {
 //#region Current Anime
 
 function setCurrentAnime() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        if (tabs[0]) {
-            chrome.runtime.sendMessage(
-                {
-                    type: "GET_ANIME_BY_URL",
-                    url: tabs[0].url
-                },
-                anime => setAnime(anime)
-            );
-        }
-    });
+    chrome.runtime.sendMessage(
+        {
+            type: "GET_ACTIVE_ANIME"
+        },
+        anime => setAnime(anime)
+    );
 }
 
 function setAnime(anime) {
@@ -468,14 +363,4 @@ function setAnime(anime) {
         document.getElementById("divCurrent").style.display = "block";
     }
 }
-
-function getAnimeTitle(anime) {
-    if (anime.meta.alternative_titles) {
-        if (anime.meta.alternative_titles.en) {
-            return anime.meta.alternative_titles.en;
-        }
-    }
-    return anime.meta.title ?? "Unnamed Anime";
-}
-
 //#endregion

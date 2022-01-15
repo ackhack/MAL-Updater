@@ -1,164 +1,119 @@
-//Enables Discord to be loaded into iframe
-chrome.webRequest.onHeadersReceived.addListener(
-    function (info) {
-        let headers = info.responseHeaders;
-        for (let i = headers.length - 1; i >= 0; --i) {
-            let header = headers[i].name.toLowerCase();
-            if (header == "x-frame-options" || header == "frame-options") {
-                headers.splice(i, 1); // Remove header
-            }
-        }
-        return { responseHeaders: headers };
-    },
-    {
-        urls: ["https://discord.com/channels/@me"],
-        types: ["sub_frame"],
-    },
-    [
-        "blocking",
-        "responseHeaders",
-        // Modern Chrome needs 'extraHeaders' to see and change this header,
-        // so the following code evaluates to 'extraHeaders' only in modern Chrome.
-        chrome.webRequest.OnHeadersReceivedOptions.EXTRA_HEADERS,
-    ].filter(Boolean)
-);
-
 const updateCycleTime = 15_000;
-var discordActive;
-var lastUpdate = Date.now();
-var updateQueue = undefined;
-var discordPort;
-var recentName = "";
-var recentEpisode = 0;
 
 function changeActiveDiscordState(val) {
-    discordActive = val;
+    setDiscordActiveVariable(val);
     if (!val) {
         removeDiscord();
     } else {
-        if (confirm("Please make to sure be logged in in DiscordWeb")) {
-            chrome.tabs.create({ url: "https://discord.com/login" }, () => { })
-        }
+        confirmMessage("Please make to sure be logged in in DiscordWeb", result => {
+            if (result) {
+                chrome.tabs.create({ url: "https://discord.com/login" }, () => { })
+            }
+        })
     }
     return true;
 }
 
-function addDiscord() {
-    if (document.getElementById("iframeDiscord") == null) {
-        let iframe = document.createElement("iframe");
-        iframe.height = "1px";
-        iframe.width = "1px";
-        iframe.id = "iframeDiscord";
-        iframe.src = "https://discord.com/channels/@me";
-        document.documentElement.appendChild(iframe);
-        console.log("Discord on");
-    }
+function addDiscord(callb = () => { }) {
+    getDiscordTabIdVariable(discordTabId => {
+        if (discordTabId == -1) {
+            createDiscordWindow(callb);
+        } else {
+            chrome.tabs.get(discordTabId, tab => {
+                if (chrome.runtime.lastError) {
+                    createDiscordWindow(callb);
+                } else {
+                    callb(tab.id);
+                }
+            })
+        }
+    });
+}
+
+function createDiscordWindow(callb = () => { }) {
+    console.log("[Discord] Creating Window");
+    chrome.tabs.create({ url: "https://discord.com/channels/@me", active: false }, (tab) => {
+        if (chrome.runtime.lastError) {
+            return;
+        }
+        chrome.tabs.update(tab.id, { autoDiscardable: false, muted: true });
+        setDiscordTabIdVariable(tab.id);
+        setDiscordLatestMessageVariable({ valid: true, empty: true });
+        callb(tab.id);
+    });
 }
 
 function removeDiscord() {
-    let iframe = document.getElementById("iframeDiscord");
-    if (iframe) {
-        iframe.remove();
-        console.log("Discord off");
-    }
+    getDiscordTabIdVariable(discordTabId => {
+        if (discordTabId == -1) {
+            return;
+        }
+        console.log("[Discord] Removing Window");
+        chrome.tabs.remove(discordTabId);
+        setDiscordTabIdVariable(-1);
+        setDiscordLatestMessageVariable({
+            valid: true,
+            empty: true
+        });
+    });
     return true;
 }
 
-chrome.runtime.onConnect.addListener((port) => {
-    if (!discordActive) {
-        return;
-    }
-    if (port.name == "discord") {
-        if (discordPort !== undefined) {
-            discordPort.postMessage({ action: "close" });
-            discordPort.disconnect();
-        }
-        discordPort = port;
-        console.info("Discord port opened");
-        port.onDisconnect.addListener(() => {
-            console.info("Discord port closed");
-            discordPort = undefined;
+function setDiscordStatus(message) {
+    addDiscord(() => {
+        setDiscordLatestMessageVariable({
+            valid: true,
+            empty: false,
+            msg: message
         });
-    } else {
-        console.error("Denied connection with unexpected name:", port.name);
-        port.disconnect();
-    }
-});
+    });
+}
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch (request.type) {
-        case "CHANGED_ACTIVE_DISCORD":
-            return changeActiveDiscordState(request.value);
-        case "REMOVE_DRP":
-            return removeDiscord();
-        case "DISCORD_PRESENCE":
-            if (discordActive) {
-                addDiscord();
-                waitForLoad(() => {
+function handleDiscordPresence(request) {
+    getDiscordActiveVariable(discordActive => {
+        if (discordActive) {
+            getCacheById(request.id, anime => { 
+                getDiscordRecentInfoVariable(recentInfo => {
                     if (request.active) {
-                        if (recentName == request.name && recentEpisode == request.episode) {
-                            return true;
-                        }
-                        recentName = request.name;
-                        recentEpisode = request.episode;
-                        setDiscordPresence({
+                        let name = getAnimeTitle(anime);
+                        setDiscordRecentInfoVariable({ id: request.id, episode: request.episode });
+                        setDiscordStatus({
                             type: 3,
                             name: "Anime",
+                            episode: request.episode,
                             streamurl: "",
-                            details: request.name,
-                            state: "Episode " + request.episode + (request.maxEpisode ? "/" + request.maxEpisode : ""),
+                            details: name,
+                            state: "Episode " + request.episode + (anime.meta.num_episodes ? "/" + anime.meta.num_episodes : ""),
                             partycur: "",
                             partymax: "",
                         });
+    
                     } else {
-                        if (recentName == request.name && recentEpisode == request.episode && updateQueue === undefined)
-                            removeDiscord();
+                        if (recentInfo.id == request.id && recentInfo.episode == request.episode) {
+                            setDiscordRecentInfoVariable({ id: "", episode: "" });
+                            setDiscordLatestMessageVariable({
+                                valid: true,
+                                close: true
+                            });
+                        }
                     }
-                })
-
-            }
-            return true;
-        default:
-            return false;
-    }
-});
-
-function waitForLoad(callb, nTry = 0) {
-
-    if (discordPort !== undefined) {
-        callb();
-        return;
-    }
-
-    nTry++;
-    if (nTry > 9)
-        return;
-
-    setTimeout(() => {
-        waitForLoad(callb, nTry);
-    }, 1000);
+                });    
+            })
+        } else {
+            removeDiscord();
+        }
+    });
 }
 
-function setDiscordPresence(obj) {
-
-    //Renew UpdateQueue if new DRP is avaiable
-    if (updateQueue !== undefined) {
-        updateQueue = obj;
-        return;
-    }
-
-    let time = Date.now();
-    if (time - updateCycleTime > lastUpdate) {
-        //Send Update instant if lastUpdate is old
-        lastUpdate = time;
-        discordPort?.postMessage(obj);
-    } else {
-        //Send Update when some Time has passed
-        updateQueue = obj;
-        setTimeout(() => {
-            lastUpdate = Date.now();
-            discordPort?.postMessage(updateQueue);
-            updateQueue = undefined;
-        }, updateCycleTime - (time - lastUpdate));
-    }
+function handleDiscordExternal(request,sender,sendResponse) {
+    getDiscordLatestMessageVariable(latestMessage => {
+        if (request.type == "getDiscordStatus") {
+            console.log("[Discord] Sending " + (latestMessage.msg ? latestMessage.msg.details : latestMessage.close ? "Closing" : "No Status"));
+            sendResponse(latestMessage);
+        }
+        if (request.type == "closeDiscord" && latestMessage.close) {
+            removeDiscord();
+        }
+        return true;
+    });
 }

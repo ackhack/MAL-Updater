@@ -1,7 +1,7 @@
 {
     "sitePattern": ".*kickassanime\\.[a-z]+\\/anime\\/.*",
     "siteName": "kickassanime",
-    "urlPattern": "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*)-\\d+\\/episode-0*(\\d+)-\\d+",
+    "urlPattern": "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*-\\d+)\\/episode-0*(\\d+)-\\d+",
     "nameMatch": 1,
     "episodeMatch": 2,
     "pageColor": "rgb(231, 219, 163)",
@@ -11,7 +11,6 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 1,
     "ulMarginLeft": 0,
-    "nextBookmark": "for (let el of document.getElementsByClassName('ka-url-wrapper')) {if (el.innerText.includes('Next Episode')) {callb(el.href); return;}} callb(undefined);",
     "mainPagePattern": ".*kickassanime\\.[a-z]+\\/?$",
     "mainPageButtonParent": "main-nav",
     "mainPageButtonParentType": "id",

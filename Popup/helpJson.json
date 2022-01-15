@@ -20,12 +20,8 @@
         "info":"The History saves all watched Episodes with the Date"
     },
     {
-        "name":"Generic - Check if concurrent Episode",
-        "info":"Checks whether the current open Anime Site corelates to the next Episode in that Series.\n e.g. Episode 2 is concurrent to Episode 1"
-    },
-    {
-        "name":"Generic - Show Pictures in Anime Pick Window",
-        "info":"Whether the Anime Pick Window shows the Anime Picture or just Text"
+        "name":"Generic - Show Timeline",
+        "info":"The Timeline of currentently running Animes"
     },
     {
         "name":"Generic - Unauthorize",
@@ -62,6 +58,10 @@
     {
         "name":"Bookmark - Auto Bookmarks Active",
         "info":"Whether the Extension should automatically create Bookmarks"
+    },
+    {
+        "name":"Bookmark - Auto Bookmarks Notification",
+        "info":"Whether the Extension should notifiy the User about the added Bookmarks"
     },
     {
         "name":"Bookmark - Preferred Bookmark Site",

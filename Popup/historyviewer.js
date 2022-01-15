@@ -19,11 +19,7 @@ function init() {
     document.getElementById("btnDelete").onclick = deleteMeta;
 
     chrome.storage.local.get("MAL_AnimeHistory", function (result) {
-        if (result)
-            historyObj = result["MAL_AnimeHistory"] ?? [];
-        else
-            historyObj = [];
-
+        historyObj = result ? result["MAL_AnimeHistory"] ?? {} : {};
         createCards();
     });
 }
@@ -89,11 +85,7 @@ function deleteMeta() {
 }
 
 function syncHistory() {
-    chrome.storage.local.set({ "MAL_AnimeHistory": historyObj }, function () {
-        chrome.runtime.sendMessage({
-            type: "SYNC_HISTORY"
-        });
-    });
+    chrome.storage.local.set({ "MAL_AnimeHistory": historyObj });
 }
 
 function showMoreCards() {
