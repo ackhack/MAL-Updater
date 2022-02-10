@@ -52,7 +52,9 @@ const nonExistent = [
 run();
 
 function run() {
-    let imported = importCache(process.env.USERPROFILE + "/Downloads/malCache.json");
+    //Windows: const downloadLocation = process.env.USERPROFILE + "/Downloads/malCache.json";
+    const downloadLocation = "/home/ackhack/Downloads/malCache.json";
+    let imported = importCache(downloadLocation);
     let storage = getStorageAsObject();
     let missing = getMissingEntries(storage);
     getStorageInfo(storage);

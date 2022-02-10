@@ -1,0 +1,23 @@
+{
+  "name": "mal-updater-storage",
+  "version": "1.0.0",
+  "description": "This branch stores relations between urls and MAL-IDs.\r If the extension finds a matching name + site combo here, it will directly use the correlating MAL-ID.",
+  "main": "import.js",
+  "dependencies": {
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ackhack/MAL-Updater.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ackhack/MAL-Updater/issues"
+  },
+  "homepage": "https://github.com/ackhack/MAL-Updater#readme"
+}
