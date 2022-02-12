@@ -4,3 +4,5 @@ If the extension finds a matching name + site combo here, it will directly use t
 
 # import.js
 This is a Node.js File. It can import the cachefile outputted from the extension into this storage system. It will display stats about the current storage and display any missing name + site combos.
+
+The nonExistent Array contains MAL-Id + site combos that don't exist and therefor can't be added, this exists to prevent them from showing as missing.
