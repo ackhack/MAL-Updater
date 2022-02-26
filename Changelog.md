@@ -1,4 +1,7 @@
-7.0.0:
+7.0.1: 27.02.2022
+    -Better Discord Implementation
+
+7.0.0: 15.01.2022
     -Updated Manifest Version to 3
     -Confirm Message now moved to Notifications
     -Notification when new Auto Bookmark added
