@@ -41,7 +41,8 @@ var injectObject = [{
     "matches": [
         "https:\\/\\/kaa-play\\.me\\/dust\\/.*",
         "https:\\/\\/beststremo\\.(xyz|com)\\/dust\\/player\\.php\\?.*",
-        "https:\\/\\/kaaplayer\\.com\\/dust\\/player\\.php\\?.*"
+        "https:\\/\\/kaaplayer\\.com\\/dust\\/player\\.php\\?.*",
+        "https:\\/\\/kaast1\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
     ],
     "js": [
         "InjectScripts/kaa-pick-server.js"
@@ -61,6 +62,7 @@ var injectObject = [{
         "https:\\/\\/vidstreamz\\.online\\/embed\\/.*",
         "https:\\/\\/beststremo\\.(xyz|com)\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
         "https:\\/\\/kaaplayer\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
+        "https:\\/\\/kaast1\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*",
         "https:\\/\\/videovard\\.sx\\/e\\/.*",
         "https:\\/\\/streamtape\\.com\\/e\\/.*",
         "https:\\/\\/www\\.mp4upload\\.com\\/embed-.*",

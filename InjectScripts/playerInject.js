@@ -3,9 +3,6 @@ var firstS = false;
 init();
 
 function init() {
-    if (window.location.toString().includes("https://kaa-play.me/dust/")) {
-        return;
-    }
     addKeyListener();
 }
 
