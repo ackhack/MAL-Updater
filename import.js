@@ -46,14 +46,14 @@ const nonExistent = [
     { "id": 44983, "site": "kickassanime" },
     { "id": 48590, "site": "9anime" },
     { "id": 49297, "site": "kickassanime" },
-    { "id": 50325, "site": "kickassanime" }
+    { "id": 50325, "site": "kickassanime" },
+    { "id": 49893, "site": "kickassanime" }
 ]
 
 run();
 
 function run() {
-    //Windows: const downloadLocation = process.env.USERPROFILE + "/Downloads/malCache.json";
-    const downloadLocation = "/home/ackhack/Downloads/malCache.json";
+    const downloadLocation = process.env.USERPROFILE + "/Downloads/malCache.json";
     let imported = importCache(downloadLocation);
     let storage = getStorageAsObject();
     let missing = getMissingEntries(storage);
