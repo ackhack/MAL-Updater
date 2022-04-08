@@ -42,7 +42,6 @@ const nonExistent = [
     { "id": 42519, "site": "gogoanimehub" },
     { "id": 42519, "site": "kickassanime" },
     { "id": 42603, "site": "kickassanime" },
-    { "id": 43609, "site": "kickassanime" },
     { "id": 44983, "site": "kickassanime" },
     { "id": 48590, "site": "9anime" },
     { "id": 49297, "site": "kickassanime" },
