@@ -1,52 +1,41 @@
-const week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-var animeCache;
 init();
 
 function init() {
     Array.from(document.getElementsByClassName("dropdownOptionTimezone")).forEach(option => option.onclick = (ev) => { clickedTimezone(ev) });
     document.getElementById("btnTimezone").innerText = "Timezone: " + document.getElementById("divTimezone").children[0].innerText;
-    chrome.storage.local.get("MAL_AnimeCache", function (result) {
-        animeCache = result ? result["MAL_AnimeCache"] ?? {} : {};
-        createTimeline(hourOffsetFromJST());
+    createTimeline(hourOffsetFromJST());
+}
+
+function createTimeline(hourOffset = 0) {
+
+    clearTimeline();
+    getTimeline(hourOffset, tl => {
+        if (tl.length == 0)
+            return;
+        for (let anime of tl) {
+            createTimelineElement(anime);
+        }
+        sortTimeline();
     });
 }
 
-function createTimeline(houroffset = 0) {
-    if (animeCache == {})
-        return;
-
-    let now = Date.now();
-    clearTimeline();
-    for (let name in animeCache) {
-        let anime = animeCache[name];
-        if (anime.meta.end_date !== undefined && new Date(anime.meta.end_date) < now)
-            continue;
-        if (anime.meta.start_date === undefined || new Date(anime.meta.start_date) > now)
-            continue;
-
-        createTimelineElement(anime, houroffset);
-    }
-    sortTimeline();
-}
-
-function createTimelineElement(anime, houroffset) {
-    if (anime.meta.broadcast === undefined || anime.meta.broadcast.day_of_the_week === undefined || anime.meta.broadcast.start_time === undefined) {
+function createTimelineElement(anime) {
+    if (anime.time == undefined || anime.day == undefined) {
         let element = document.createElement("div");
         element.classList.add("timeline-element");
-        element.innerText = "??:??: " + getAnimeTitle(anime);
+        element.innerText = "??:??: " + anime.name;
         document.getElementById("divUnknown").children[1].appendChild(element);
         return;
     }
-    let runTime = addHourOffset(anime.meta.broadcast.day_of_the_week, anime.meta.broadcast.start_time, houroffset);
 
-    let parentDiv = document.getElementsByName(runTime[0])[0];
+    let parentDiv = document.getElementsByName(anime.day)[0];
     if (parentDiv == undefined)
         return;
 
     let element = document.createElement("div");
     element.classList.add("timeline-element");
-    element.innerText = runTime[1] + ": " + getAnimeTitle(anime);
-    element.name = runTime[1];
+    element.innerText = anime.time + ": " + anime.name;
+    element.name = anime.time;
     parentDiv.children[1].appendChild(element);
 }
 
@@ -77,28 +66,4 @@ function clickedTimezone(event) {
         return;
     }
     createTimeline(parseInt(timezone));
-}
-
-function addHourOffset(weekday, hour, offset) {
-    let index = week.indexOf(weekday);
-    if (index == -1 || offset == 0)
-        return [weekday, hour];
-
-    let returnHour = hour.split(":")[0];
-
-    returnHour = parseInt(returnHour) + offset;
-
-    if (returnHour >= 24) {
-        index = (index + 1) % week.length;
-        returnHour -= 24;
-    } else if (returnHour < 0) {
-        index = (index + week.length - 1) % week.length;
-        returnHour += 24;
-    }
-
-    return [week[index], returnHour + ":" + hour.split(":")[1]];
-}
-
-function hourOffsetFromJST() {
-    return -9 - (new Date().getTimezoneOffset() / 60);
 }
