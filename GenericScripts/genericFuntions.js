@@ -35,7 +35,13 @@ function getTimeline(houroffset = 0, callb = () => { }) {
 
             timeline.push(createTimelineElement(anime, houroffset));
         }
-        callb(timeline);
+        callb(timeline.sort((a,b) => {
+            if (a.day === b.day) {
+                return a.time.localeCompare(b.time);
+            }
+            return week.indexOf(a.day) - week.indexOf(b.day);
+
+        }));
         return;
     });
 

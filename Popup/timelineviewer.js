@@ -15,7 +15,6 @@ function createTimeline(hourOffset = 0) {
         for (let anime of tl) {
             createTimelineElement(anime);
         }
-        sortTimeline();
     });
 }
 
@@ -41,21 +40,6 @@ function createTimelineElement(anime) {
 
 function clearTimeline() {
     Array.from(document.getElementsByClassName("divElements")).forEach(element => { element.innerHTML = ""; });
-}
-
-function sortTimeline() {
-    for (let weekDiv of document.getElementsByClassName("weekDiv")) {
-        if (weekDiv.id == "divUnknown")
-            continue;
-        let children = weekDiv.children[1].children;
-        let sortedChildren = Array.from(children).sort((a, b) => {
-            return a.name.split(" ")[0].localeCompare(b.name.split(" ")[0]);
-        });
-        weekDiv.children[1].innerHTML = "";
-        for (let child of sortedChildren) {
-            weekDiv.children[1].appendChild(child);
-        }
-    }
 }
 
 function clickedTimezone(event) {
