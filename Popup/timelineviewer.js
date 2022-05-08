@@ -1,4 +1,5 @@
 init();
+let mainDiv = document.getElementById("mainDiv");
 
 function init() {
     Array.from(document.getElementsByClassName("dropdownOptionTimezone")).forEach(option => option.onclick = (ev) => { clickedTimezone(ev) });
@@ -27,7 +28,7 @@ function createTimelineElement(anime) {
         return;
     }
 
-    let parentDiv = document.getElementsByName(anime.day)[0];
+    let parentDiv = mainDiv.children[anime.day];
     if (parentDiv == undefined)
         return;
 

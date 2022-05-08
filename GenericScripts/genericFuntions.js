@@ -7,15 +7,15 @@ function getAnimeTitle(anime) {
     return anime.meta.title ?? "Unnamed Anime";
 }
 
-const week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+const week = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 function getTimeline(houroffset = 0, callb = () => { }) {
     function createTimelineElement(anime, houroffset = 0) {
         if (anime.meta.broadcast === undefined || anime.meta.broadcast.day_of_the_week === undefined || anime.meta.broadcast.start_time === undefined) {
-            return { name: getAnimeTitle(anime), time: undefined, day: undefined };
+            return { name: getAnimeTitle(anime), time: undefined, day: undefined, id: anime.id };
         }
-        let runTime = addHourOffset(anime.meta.broadcast.day_of_the_week, anime.meta.broadcast.start_time, houroffset);
-        return { name: getAnimeTitle(anime), time: runTime[1], day: runTime[0] };
+        let runTime = addHourOffset(week.indexOf(anime.meta.broadcast.day_of_the_week), anime.meta.broadcast.start_time, houroffset);
+        return { name: getAnimeTitle(anime), time: runTime[1], day: runTime[0], id: anime.id };
     }
 
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
@@ -35,11 +35,11 @@ function getTimeline(houroffset = 0, callb = () => { }) {
 
             timeline.push(createTimelineElement(anime, houroffset));
         }
-        callb(timeline.sort((a,b) => {
+        callb(timeline.sort((a, b) => {
             if (a.day === b.day) {
                 return a.time.localeCompare(b.time);
             }
-            return week.indexOf(a.day) - week.indexOf(b.day);
+            return a.day - b.day;
 
         }));
         return;
@@ -48,7 +48,7 @@ function getTimeline(houroffset = 0, callb = () => { }) {
 }
 
 function addHourOffset(weekday, hour, offset) {
-    let index = week.indexOf(weekday);
+    let index = weekday;
     if (index == -1 || offset == 0)
         return [weekday, hour];
 
@@ -57,14 +57,14 @@ function addHourOffset(weekday, hour, offset) {
     returnHour = parseInt(returnHour) + offset;
 
     if (returnHour >= 24) {
-        index = (index + 1) % week.length;
+        index = (index + 1) % 7;
         returnHour -= 24;
     } else if (returnHour < 0) {
-        index = (index + week.length - 1) % week.length;
+        index = (index + 6) % 7;
         returnHour += 24;
     }
 
-    return [week[index], returnHour + ":" + hour.split(":")[1]];
+    return [index, returnHour + ":" + hour.split(":")[1]];
 }
 
 function hourOffsetFromJST() {
