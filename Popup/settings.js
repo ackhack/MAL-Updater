@@ -27,8 +27,10 @@ function initFunctions() {
     document.getElementById("cbBookmarksActive").onchange = changeBookmarkActive;
     document.getElementById("btnBookmarkSave").onclick = changeBookmarks;
     document.getElementById("cbBookmarkAutoActive").onchange = changeBookmarkAutoActive;
+    document.getElementById("cbBookmarkAutoSmart").onchange = changeBookmarkAutoSmart;
     document.getElementById("cbBookmarkAutoNotification").onchange = changeBookmarkAutoNotification;
     document.getElementById("selectPreferredSite").onchange = changedPreferredSite;
+    document.getElementById("nbBookmarkAutoSmartOffset").onchange = changedAutoSmartOffset;
 
     document.getElementById("cbActiveDiscord").onchange = changeActiveDiscordState;
     document.getElementById("btnRemoveDiscord").onclick = removeDiscord;
@@ -52,10 +54,16 @@ function initSettings() {
     getBookmarkAutoActiveVariable(active => {
         document.getElementById("cbBookmarkAutoActive").checked = active;
     })
+    getBookmarkAutoSmartVariable(active => {
+        document.getElementById("cbBookmarkAutoSmart").checked = active;
+    })
     getBookmarkAutoNotificationVariable(active => {
         document.getElementById("cbBookmarkAutoNotification").checked = active;
     })
     getPreferredSiteSelect();
+    getAnimeOffsetVariable(offset => {
+        document.getElementById("nbBookmarkAutoSmartOffset").value = offset;
+    })
 
     getDiscordActiveVariable(active => {
         document.getElementById("cbActiveDiscord").checked = active;
@@ -114,7 +122,7 @@ function getPreferredSiteSelect() {
             let select = document.getElementById("selectPreferredSite");
             for (let site in sites) {
                 let option = document.createElement("option");
-                option.innerText = sites[site].siteName;
+                option.innerText = sites[site].friendyName;
                 option.value = sites[site].siteName;
                 select.appendChild(option);
             }
@@ -271,6 +279,10 @@ function changeBookmarkActive(event) {
     chrome.storage.local.set({ "MAL_Settings_Bookmarks_Active": event.target.checked });
 }
 
+function changeBookmarkAutoSmart(event) {
+    chrome.storage.local.set({ "MAL_Settings_Bookmarks_Auto_Smart": event.target.checked });
+}
+
 function changeBookmarks() {
     chrome.runtime.sendMessage({
         type: "CHANGE_BOOKMARKS",
@@ -288,6 +300,16 @@ function changeBookmarkAutoNotification(event) {
 
 function changedPreferredSite(event) {
     chrome.storage.local.set({ "MAL_Settings_Preferred_Site": event.target.value });
+}
+
+function changedAutoSmartOffset(event) {
+    console.log(event.target.value)
+    if (event.target.value > 0 && event.target.value < 1440) {
+        setAnimeOffsetVariable(event.target.value);
+    } else {
+        event.target.value = 1.5;
+        setAnimeOffsetVariable(1.5);
+    }
 }
 
 function changeActiveDiscordState(event) {

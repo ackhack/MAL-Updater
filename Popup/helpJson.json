@@ -56,15 +56,23 @@
         "info":"Enter the Name of the Folder in which the Extension should add/remove the Bookmarks.\n Will create a new Folder if non exits with the given Name"
     },
     {
-        "name":"Bookmark - Auto Bookmarks Active",
+        "name":"AutoBookmark - Auto Bookmarks Active",
         "info":"Whether the Extension should automatically create Bookmarks"
     },
     {
-        "name":"Bookmark - Auto Bookmarks Notification",
+        "name":"AutoBookmark - Auto Bookmarks Smart Mode",
+        "info":"Whether the Extension should calculate the Time until next Anime appears and checks more often after offically airing or just check every 10 minutes"
+    },
+    {
+        "name":"AutoBookmark - Auto Bookmarks Notification",
         "info":"Whether the Extension should notifiy the User about the added Bookmarks"
     },
     {
-        "name":"Bookmark - Preferred Bookmark Site",
+        "name":"AutoBookmark - Auto Bookmarks Smart Offset",
+        "info":"The Offset in hours between offical release time and release time on the sites (default is 1.5)"
+    },
+    {
+        "name":"AutoBookmark - Preferred Bookmark Site",
         "info":"Change the Site which the Extension should choose when creating Bookmarks automatically"
     },
     {

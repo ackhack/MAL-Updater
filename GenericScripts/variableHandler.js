@@ -144,6 +144,39 @@ function setBookmarkAutoNotificationVariable(MAL_Settings_Bookmarks_Notification
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Notification: MAL_Settings_Bookmarks_Notification });
 }
 
+function getBookmarkAutoSmartVariable(callback) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto_Smart", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Auto_Smart ?? true);
+    });
+    return true;
+}
+
+function setBookmarkAutoSmartVariable(MAL_Settings_Bookmarks_Auto_Smart) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto_Smart: MAL_Settings_Bookmarks_Auto_Smart });
+}
+
+function getBookmarkAutoSmartWaitingVariable(callback) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Auto_Smart_Waiting", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Auto_Smart_Waiting ?? {id:-1,iter:0});
+    });
+    return true;
+}
+
+function setBookmarkAutoSmartWaitingVariable(MAL_Settings_Bookmarks_Auto_Smart_Waiting) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Auto_Smart_Waiting: MAL_Settings_Bookmarks_Auto_Smart_Waiting });
+}
+
+function getAnimeOffsetVariable(callback) {
+    chrome.storage.local.get("MAL_Anime_Offset", function (result) {
+        callback(result.MAL_Anime_Offset ?? 1.5);
+    });
+    return true;
+}
+
+function setAnimeOffsetVariable(MAL_Anime_Offset) {
+    chrome.storage.local.set({ MAL_Anime_Offset: MAL_Anime_Offset });
+}
+
 //#endregion
 
 //#region History
@@ -205,7 +238,7 @@ function setDiscordLatestMessageVariable(LatestMessage) {
 
 function getDiscordLatestMessageVariable(callback) {
     chrome.storage.local.get("LatestMessage", function (result) {
-        callback(result.LatestMessage ?? {valid: true, empty: true});
+        callback(result.LatestMessage ?? { valid: true, empty: true });
     });
     return true;
 }

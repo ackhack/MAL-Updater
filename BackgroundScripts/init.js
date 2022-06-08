@@ -9,6 +9,7 @@ function init() {
             initCache(sites, () => {
                 initBookmarkEvent();
                 initBookmarkFolder();
+                initBookmarkLoop();
             });
         })
     });
@@ -102,7 +103,7 @@ function initInjector(sites) {
     });
 }
 
-function initCache(sites,callb = () => {}) {
+function initCache(sites, callb = () => { }) {
     getAnimeCacheVariable(cache => {
         for (let entry in cache) {
             for (let siteName in sites) {
@@ -118,5 +119,14 @@ function initCache(sites,callb = () => {}) {
         }
         setAnimeCacheVariable(cache);
         callb();
+    });
+}
+
+function initBookmarkLoop() {
+    getBookmarkActiveVariable(active => {
+        if (!active)
+            return;
+
+        smartBookmarkLoop();
     });
 }

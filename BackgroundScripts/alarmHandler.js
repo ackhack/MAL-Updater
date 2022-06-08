@@ -14,11 +14,19 @@ chrome.alarms.onAlarm.addListener(
             case "cycle10min":
                 console.log("[Alarm] 10Min Cycle");
                 checkUpdateCycle();
-                bookmarkLoop();
+                getBookmarkAutoSmartVariable(active => {
+                    if (!active) {
+                        createAutoBookmarks();
+                    }
+                })
                 return;
             case "newAccessToken":
                 console.log("[Alarm] New Access Token");
                 refreshAccessToken();
+                return;
+            case "smartBookmark":
+                console.log("[Alarm] Smart Bookmark");
+                smartBookmarkLoop();
                 return;
         }
     }
