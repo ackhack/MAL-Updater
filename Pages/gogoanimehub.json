@@ -1,6 +1,7 @@
 {
     "sitePattern": ".*gogoanimeapp.*",
     "siteName": "gogoanimehub",
+    "friendyName": "GoGoAnimeApp",
     "urlPattern": "https?:\\/\\/.*gogoanimeapp.*\\/(.*)-episode-(\\d+)",
     "nameMatch": 1,
     "episodeMatch": 2,

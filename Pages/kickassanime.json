@@ -1,6 +1,7 @@
 {
     "sitePattern": ".*kickassanime\\.[a-z]+\\/anime\\/.*",
     "siteName": "kickassanime",
+    "friendyName": "KickAssAnime",
     "urlPattern": "https?:\\/\\/.*kickassanime.*\\/anime\\/(.*-\\d+)\\/episode-0*(\\d+)-\\d+",
     "nameMatch": 1,
     "episodeMatch": 2,

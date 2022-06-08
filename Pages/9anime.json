@@ -1,6 +1,7 @@
 {
     "sitePattern": ".*9anime\\.[a-z]+\\/watch\\/.*",
     "siteName": "9anime",
+    "friendyName": "9Anime",
     "urlPattern": "https?:\\/\\/.*9anime.*\\/watch\\/(.*\\.[a-z0-9A-Z]*)[\\/\\?]ep[-=](\\d+)?.*",
     "nameMatch": 1,
     "episodeMatch": 2,
