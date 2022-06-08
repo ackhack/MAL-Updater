@@ -34,8 +34,7 @@ function validateMainSite(req, callb) {
                         if (req.url.match(sites[site].mainPagePattern)) {
                             callb({
                                 site: sites[site],
-                                cache: animeCache,
-                                addBookmarks: (bookmarkautoActive && preferredSiteName == sites[site].siteName)
+                                cache: animeCache
                             });
                         }
                     }

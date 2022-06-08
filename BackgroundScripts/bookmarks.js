@@ -174,7 +174,14 @@ function renameBookmark(bookmark) {
     });
 }
 
-function createAutoBookmarks() {
+function createAutoBookmarks(useNonPreferred = false) {
+
+    function addAutoCloseObject() {
+        let obj = document.createElement("span");
+        obj.id = "MAL_UPDATER_AUTO_CLOSE";
+        document.body.appendChild(obj);
+    }
+
     getBookmarkAutoActiveVariable(bookmarkautoActive => {
         if (!bookmarkautoActive) {
             return;
@@ -182,14 +189,41 @@ function createAutoBookmarks() {
 
         getSitesVariable(sites => {
             getPreferredSiteNameVariable(preferredSiteName => {
-                chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
-                    if (chrome.runtime.lastError) {
-                        return;
+                if (!useNonPreferred) {
+                    chrome.tabs.create({ url: sites[preferredSiteName].mainPageURL, active: false }, (tab) => {
+                        chrome.scripting.executeScript({
+                            target: {
+                                tabId: tab.id
+                            },
+                            func: addAutoCloseObject
+                        });
+                        if (chrome.runtime.lastError) {
+                            return;
+                        }
+                        chrome.alarms.create("force_close" + tab.id, {
+                            delayInMinutes: 1,
+                        })
+                    });
+                } else {
+                    for (let index in sites) {
+                        if (index != preferredSiteName) {
+                            chrome.tabs.create({ url: sites[index].mainPageURL, active: false }, (tab) => {
+                                chrome.scripting.executeScript({
+                                    target: {
+                                        tabId: tab.id
+                                    },
+                                    func: addAutoCloseObject
+                                });
+                                if (chrome.runtime.lastError) {
+                                    return;
+                                }
+                                chrome.alarms.create("force_close" + tab.id, {
+                                    delayInMinutes: 1,
+                                })
+                            });
+                        }
                     }
-                    chrome.alarms.create("force_close" + tab.id, {
-                        delayInMinutes: 1,
-                    })
-                });
+                }
             });
         });
     });
@@ -346,6 +380,9 @@ function nextSmartBookmarkTime(callb) {
                         }
                     }
                     info.iter++;
+                    if (info.iter >= 6) {
+                        createAutoBookmarks(true);
+                    }
 
                     let nextDay = ret[1];
                     let nextHour = ret[2];

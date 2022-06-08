@@ -11,8 +11,7 @@ chrome.runtime.sendMessage(
         if (data) {
             site = data['site'];
             cache = data['cache'];
-            if (data['addBookmarks'])
-                addBookmarks();
+            addBookmarks();
             insertButton();
         }
     }
@@ -109,5 +108,7 @@ function addBookmarks() {
         }
     );
 
-    chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: false });
+    if (document.getElementById("MAL_UPDATER_AUTO_CLOSE")) {
+        chrome.runtime.sendMessage({ type: "CLOSE_TAB", force: false });
+    }
 }
