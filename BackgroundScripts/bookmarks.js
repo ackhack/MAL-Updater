@@ -234,52 +234,51 @@ function checkBookmarkAuto(req) {
     let addedAnimes = [];
     getAnimeCacheVariable(animeCache => {
         getHistoryVariable(historyObj => {
-            function addBookmarkTmp(anime, callb) {
-                for (let i = historyObj.length - 1; i >= 0; i--) {
-                    if (animeCache[anime.cacheName].meta.id == historyObj[i].id) {
-                        if (historyObj[i].episode == anime.episode - 1) {
-                            addBookmark(getBookmarkName(animeCache[anime.cacheName], anime.episode), anime.url, (added) => {
-                                if (added) {
-                                    addedAnimes.push({
-                                        "name": getAnimeTitle(animeCache[anime.cacheName]),
-                                        "episode": anime.episode,
-                                        "id": animeCache[anime.cacheName].meta.id
+            getBookmarkAutoSmartWaitingVariable(smartWaiting => {
+                getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
+                    function addBookmarkTmp(anime, callb) {
+                        for (let i = historyObj.length - 1; i >= 0; i--) {
+                            if (animeCache[anime.cacheName].meta.id == historyObj[i].id) {
+                                if (historyObj[i].episode == anime.episode - 1) {
+                                    addBookmark(getBookmarkName(animeCache[anime.cacheName], anime.episode), anime.url, (added) => {
+                                        if (added) {
+                                            addedAnimes.push({
+                                                "name": getAnimeTitle(animeCache[anime.cacheName]),
+                                                "episode": anime.episode,
+                                                "id": animeCache[anime.cacheName].meta.id
+                                            });
+                                        }
+                                        callb();
                                     });
+                                    return;
                                 }
-                                callb();
-                            });
-                            return;
+                                break;
+                            }
                         }
-                        break;
+                        callb();
                     }
-                }
-                callb();
-            }
-            for (let anime of req.animes) {
-                addBookmarkTmp(anime, () => {
-                    processed++;
-                    if (processed == req.animes.length && addedAnimes.length > 0) {
-                        getBookmarkAutoSmartWaitingVariable(smartWaiting => {
-                            getBookmarkAutoNotificationVariable(bookmarkAutoNotification => {
-
+                    let bookmarkSing = true;
+                    for (let anime of req.animes) {
+                        if (anime.id == smartWaiting.id && bookmarkSing) {
+                            setBookmarkAutoSmartWaitingVariable({ id: -1, iter: 0 });
+                            smartBookmarkLoop(false);
+                            bookmarkSing = false;
+                        }
+                        addBookmarkTmp(anime, () => {
+                            processed++;
+                            if (processed == req.animes.length && addedAnimes.length > 0) {
                                 let notification = "Bookmarks: Added " + addedAnimes.length + "\n";
                                 for (let anime of addedAnimes) {
-                                    if (anime.id == smartWaiting.id) {
-                                        setBookmarkAutoSmartWaitingVariable({ id: -1, iter: 0 });
-                                        smartBookmarkLoop(false);
-                                    }
                                     notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
                                 }
                                 if (bookmarkAutoNotification) {
                                     sendNotification(notification);
                                 }
-                            });
-                        })
-
+                            }
+                        });
                     }
-                }
-                );
-            }
+                });
+            });
         });
     });
     return true;
