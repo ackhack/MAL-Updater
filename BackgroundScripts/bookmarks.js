@@ -242,7 +242,8 @@ function checkBookmarkAuto(req) {
                                 if (added) {
                                     addedAnimes.push({
                                         "name": getAnimeTitle(animeCache[anime.cacheName]),
-                                        "episode": anime.episode
+                                        "episode": anime.episode,
+                                        "id": animeCache[anime.cacheName].meta.id
                                     });
                                 }
                                 callb();
@@ -265,6 +266,7 @@ function checkBookmarkAuto(req) {
                                 for (let anime of addedAnimes) {
                                     if (anime.id == smartWaiting.id) {
                                         setBookmarkAutoSmartWaitingVariable({ id: -1, iter: 0 });
+                                        smartBookmarkLoop(false);
                                     }
                                     notification += anime.name.slice(0, 10) + " | Ep " + anime.episode + "\n";
                                 }
@@ -299,12 +301,13 @@ function getBookmarkFolderName(callb = () => { }) {
     });
 }
 
-function smartBookmarkLoop() {
+function smartBookmarkLoop(create = true) {
     getBookmarkAutoSmartVariable(bookmarkSmartActive => {
         if (!bookmarkSmartActive) {
             return;
         }
-        createAutoBookmarks();
+        if (create)
+            createAutoBookmarks();
         nextSmartBookmarkTime(time => {
             if (time === -1) {
                 return;
@@ -351,7 +354,7 @@ function nextSmartBookmarkTime(callb) {
     }
 
     getAnimeOffsetVariable(animeOffset => {
-        getTimeline(hourOffsetFromJST() + animeOffset, tl => {
+        getTimeline(hourOffsetFromJST() + parseInt(animeOffset), tl => {
             getBookmarkAutoSmartWaitingVariable(info => {
                 getNextAnimeInTimeline(tl, ret => {
                     let next = ret[0];
@@ -380,7 +383,7 @@ function nextSmartBookmarkTime(callb) {
                         }
                     }
                     info.iter++;
-                    if (info.iter >= 6) {
+                    if (info.iter >= 8) {
                         createAutoBookmarks(true);
                     }
 
