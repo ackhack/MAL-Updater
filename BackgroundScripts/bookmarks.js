@@ -346,12 +346,7 @@ function nextSmartBookmarkTime(callb) {
         callb([next, currDay, hour, minute]);
     }
 
-    function log(prefix, name, time, nextTime) {
-        if (typeof time === "object") {
-            time = time[0] + ":" + (time[1] < 10 ? "0" : "") + time[1];
-        }
-        console.log("[Smart Bookmark]: " + prefix + " " + name + " at " + time + " (" + nextTime + " minute" + (nextTime == 1 ? "" : "s") + ")");
-    }
+
 
     getAnimeOffsetVariable(animeOffset => {
         getTimeline(hourOffsetFromJST() + parseInt(animeOffset), tl => {
@@ -369,7 +364,7 @@ function nextSmartBookmarkTime(callb) {
                         next.iter = 0;
                         setBookmarkAutoSmartWaitingVariable(next);
                         let nextTime = ((ret[1] * 1440) + (parseInt(next.time.split(":")[0]) * 60) + parseInt(next.time.split(":")[1])) - (ret[2] * 60 + ret[3]);
-                        log("Waiting for", next.name, next.time, nextTime);
+                        smartBookmarkLog("Waiting for", next.name, next.time, nextTime);
                         callb(parseInt(nextTime));
                         return;
                     }
@@ -411,15 +406,22 @@ function nextSmartBookmarkTime(callb) {
                         }
                         nextTime = nextTime % 1440;
                         setBookmarkAutoSmartWaitingVariable(info);
-                        log("Waiting now for", info.name, info.time, nextTime);
+                        smartBookmarkLog("Waiting now for", info.name, info.time, nextTime);
                         callb(nextTime);
                     } else {
                         setBookmarkAutoSmartWaitingVariable(info);
-                        log("Retrying", info.name, [nextHour, nextMinute], nextTime);
+                        smartBookmarkLog("Retrying", info.name, [nextHour, nextMinute], nextTime);
                         callb(parseInt(nextTime));
                     }
                 });
             });
         });
     });
+}
+
+function smartBookmarkLog(prefix, name, time, nextTime) {
+    if (typeof time === "object") {
+        time = time[0] + ":" + (time[1] < 10 ? "0" : "") + time[1];
+    }
+    console.log("[Smart Bookmark]: " + prefix + " " + name + " at " + time + " (" + nextTime + " minute" + (nextTime == 1 ? "" : "s") + ")");
 }

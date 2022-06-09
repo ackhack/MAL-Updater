@@ -127,6 +127,51 @@ function initBookmarkLoop() {
         if (!active)
             return;
 
-        smartBookmarkLoop();
+        getBookmarkAutoSmartWaitingVariable(waiting => {
+            if (waiting.id == -1) {
+                smartBookmarkLoop();
+                return;
+            }
+
+            if (waiting.day == undefined || waiting.time == undefined) {
+                setBookmarkAutoSmartWaitingVariable({ id: -1, iter: 0 });
+                smartBookmarkLoop();
+                return;
+            }
+
+            let time = waiting.time.split(":");
+            let minutesToWait = parseInt(waiting.day) * 1440 + parseInt(time[0]) * 60 + parseInt(time[1]);
+            for (let i = 0; i < waiting.iter; i++) {
+                if (i < 5) {
+                    minutesToWait += 1;
+                }
+                else if (i < 10) {
+                    minutesToWait += 5;
+                }
+                else {
+                    minutesToWait += 30;
+                }
+            }
+
+            let now = new Date(Date.now());
+            let day = now.getDay();
+            let minutes = now.getHours() * 60 + now.getMinutes();
+        
+            if (day == 0) {
+                day = 7;
+            }
+        
+            minutes = (day - 1) * 1440 + minutes;
+            
+
+            if (minutesToWait < minutes) {
+                smartBookmarkLoop();
+            } else {
+                smartBookmarkLog("Waiting for",waiting.name,waiting.time,minutesToWait - minutes)
+                chrome.alarms.create("smartBookmark", {
+                    delayInMinutes: minutesToWait - minutes
+                });
+            }
+        });
     });
 }
