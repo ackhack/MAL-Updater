@@ -348,7 +348,7 @@ function nextSmartBookmarkTime(callb) {
 
 
     getAnimeOffsetVariable(animeOffset => {
-        getTimeline(hourOffsetFromJST() + parseInt(animeOffset), tl => {
+        getTimeline(hourOffsetFromJST() + parseFloat(animeOffset), tl => {
             getBookmarkAutoSmartWaitingVariable(info => {
                 getNextAnimeInTimeline(tl, ret => {
                     let next = ret[0];
