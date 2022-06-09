@@ -35,7 +35,7 @@ function getTimeline(houroffset = 0, callb = () => { }) {
 
             timeline.push(createTimelineElement(anime, houroffset));
         }
-        timeline.push({ name: "Test", time: "16:40", day: 2, id: 69420 });
+
         callb(timeline.sort((a, b) => {
             if (a.day === b.day) {
                 return a.time.localeCompare(b.time);
