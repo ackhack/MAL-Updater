@@ -18,5 +18,7 @@
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": 1,
     "mainPageListName": "video-list row mx-0",
-    "mainPageURL":"https://www.kickassanime.ro/"
+    "mainPageURL":"https://www.kickassanime.ro/",
+    "updatePageURL": "https://www.kickassanime.ro/",
+    "prefixURL": "https://www2.kickassanime.ro"
 }

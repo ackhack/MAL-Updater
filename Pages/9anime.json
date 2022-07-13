@@ -18,5 +18,7 @@
     "mainPageParentIndex": 1,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "anime-list",
-    "mainPageURL":"https://9anime.to/home"
+    "mainPageURL":"https://9anime.id/home",
+    "updatePageURL": "https://9anime.id/updated",
+    "prefixURL": "https://9anime.id"
 }

@@ -15,7 +15,7 @@ function getTimeline(houroffset = 0, callb = () => { }) {
             return { name: getAnimeTitle(anime), time: undefined, day: undefined, id: anime.id };
         }
         let runTime = addHourOffset(week.indexOf(anime.meta.broadcast.day_of_the_week), anime.meta.broadcast.start_time, houroffset);
-        return { name: getAnimeTitle(anime), time: runTime[1], day: runTime[0], id: anime.id };
+        return { name: getAnimeTitle(anime), time: runTime[1], day: runTime[0], id: anime.meta.id };
     }
 
     chrome.storage.local.get("MAL_AnimeCache", function (result) {
@@ -48,23 +48,45 @@ function getTimeline(houroffset = 0, callb = () => { }) {
 }
 
 function addHourOffset(weekday, hour, offset) {
-    let index = weekday;
-    if (index == -1 || offset == 0)
+
+    if (weekday == -1 || offset == 0)
         return [weekday, hour];
 
-    let returnHour = hour.split(":")[0];
+    while (offset > 24) {
+        offset -= 24;
+        weekday++;
+    }
+    weekday = weekday % 7;
 
-    returnHour = parseInt(returnHour) + offset;
+    let returnHour = parseInt(hour.split(":")[0]);
+    let returnMinute = parseInt(hour.split(":")[1]);
 
-    if (returnHour >= 24) {
-        index = (index + 1) % 7;
+    if (offset % 1 !== 0) {
+        returnMinute = returnMinute + (offset % 1) * 60;
+        if (returnMinute >= 60) {
+            returnMinute -= 60;
+            returnHour++;
+        }
+        if (returnMinute < 0) {
+            returnMinute += 60;
+        }
+    }
+
+    returnHour = returnHour + Math.floor(offset);
+
+    while (returnHour >= 24) {
+        weekday = (weekday + 1) % 7;
         returnHour -= 24;
-    } else if (returnHour < 0) {
-        index = (index + 6) % 7;
+    }
+    while (returnHour < 0) {
+        weekday = (weekday + 6) % 7;
         returnHour += 24;
     }
 
-    return [index, returnHour + ":" + hour.split(":")[1]];
+    returnHour = returnHour.toString().padStart(2, "0");
+    returnMinute = returnMinute.toString().padStart(2, "0");
+
+    return [weekday, returnHour + ":" + returnMinute];
 }
 
 function hourOffsetFromJST() {

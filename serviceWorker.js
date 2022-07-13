@@ -3,6 +3,7 @@ self.importScripts(
     "GenericScripts/genericFuntions.js",
     "BackgroundScripts/anime.js",
     "BackgroundScripts/auth.js",
+    "BackgroundScripts/autoBookmarks.js",
     "BackgroundScripts/bookmarks.js",
     "BackgroundScripts/cache.js",
     "BackgroundScripts/history.js",
@@ -79,9 +80,6 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "GET_PREFERRED_SITE":
                 getPreferredSiteNameVariable(onSuccess);
-                break;
-            case "AUTO_BOOKMARK_CHECK":
-                checkBookmarkAuto(request);
                 break;
             case "GET_ACTIVE_ANIME":
                 getActiveAnime(onSuccess);

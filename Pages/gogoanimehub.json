@@ -12,11 +12,13 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 2,
     "ulMarginLeft": 2,
-    "mainPagePattern": ".*gogoanimehub\\.[a-z]+\\/?$",
+    "mainPagePattern": ".*gogoanimeapp\\.[a-z]+\\/?$",
     "mainPageButtonParent": "anime_name recent_release",
     "mainPageButtonParentType": "class",
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "items",
-    "mainPageURL":"https://gogoanimeapp.com/"
+    "mainPageURL":"https://gogoanimeapp.com/",
+    "updatePageURL": "https://gogoanimeapp.com/",
+    "prefixURL": "https://gogoanimeapp.com"
 }
