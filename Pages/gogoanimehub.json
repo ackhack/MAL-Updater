@@ -1,7 +1,7 @@
 {
     "sitePattern": ".*gogoanimeapp.*",
     "siteName": "gogoanimehub",
-    "friendyName": "GoGoAnimeApp",
+    "friendlyName": "GoGoAnimeApp",
     "urlPattern": "https?:\\/\\/.*gogoanimeapp.*\\/(.*)-episode-(\\d+)",
     "nameMatch": 1,
     "episodeMatch": 2,
@@ -18,7 +18,5 @@
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "items",
-    "mainPageURL":"https://gogoanimeapp.com/",
-    "updatePageURL": "https://gogoanimeapp.com/",
     "prefixURL": "https://gogoanimeapp.com"
 }

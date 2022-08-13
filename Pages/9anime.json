@@ -1,7 +1,7 @@
 {
     "sitePattern": ".*9anime\\.[a-z]+\\/watch\\/.*",
     "siteName": "9anime",
-    "friendyName": "9Anime",
+    "friendlyName": "9Anime",
     "urlPattern": "https?:\\/\\/.*9anime.*\\/watch\\/(.*\\.[a-z0-9A-Z]*)[\\/\\?]ep[-=](\\d+)?.*",
     "nameMatch": 1,
     "episodeMatch": 2,
@@ -18,7 +18,5 @@
     "mainPageParentIndex": 1,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "anime-list",
-    "mainPageURL":"https://9anime.id/home",
-    "updatePageURL": "https://9anime.id/updated",
     "prefixURL": "https://9anime.id"
 }
