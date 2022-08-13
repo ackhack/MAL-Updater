@@ -90,7 +90,7 @@ let bookmarkFetches = {
             .then(async response => response.json())
             .then(async response => {
                 let addedAnimes = [];
-                let regex = /<a\s+href="(.*?)">/g
+                let regex = /<a\s+href="(.*?)".*?>/g
                 let match = undefined;
                 while (match = regex.exec(response.result)) {
                     let ret = await tryAddAnime(site.prefixURL + match[1]);
@@ -112,7 +112,7 @@ let bookmarkFetches = {
             .then(async response => response.text())
             .then(async response => {
                 let addedAnimes = [];
-                let regex = /<a\s+href="(\/.*?)">/g
+                let regex = /<a\s+href="(\/.*?)".*?>/g
                 let match = undefined;
                 let checkedUrls = [];
                 while (match = regex.exec(response)) {
