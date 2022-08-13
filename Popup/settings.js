@@ -114,7 +114,7 @@ function getPreferredSiteSelect() {
             let select = document.getElementById("selectPreferredSite");
             for (let site in sites) {
                 let option = document.createElement("option");
-                option.innerText = sites[site].siteName;
+                option.innerText = sites[site].friendlyName;
                 option.value = sites[site].siteName;
                 select.appendChild(option);
             }
