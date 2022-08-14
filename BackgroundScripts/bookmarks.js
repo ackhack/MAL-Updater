@@ -70,7 +70,7 @@ function addBookmark(name, url, callb = () => { }, nTry = 0) {
         getBookmark(bookmarkID, res => {
             if (res != undefined) {
                 for (let child of res.children) {
-                    if (child.url == url) {
+                    if (child.url == url || child.title == name) {
                         callb(false);
                         return;
                     }

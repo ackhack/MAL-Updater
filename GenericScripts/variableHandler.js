@@ -144,6 +144,17 @@ function setBookmarkAutoNotificationVariable(MAL_Settings_Bookmarks_Notification
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Notification: MAL_Settings_Bookmarks_Notification });
 }
 
+function getBookmarkAutoLastFetchUrlListVariable(callback) {
+    chrome.storage.local.get("MAL_Settings_Bookmarks_Last_Fetch_Url_List", function (result) {
+        callback(result.MAL_Settings_Bookmarks_Last_Fetch_Url_List ?? {});
+    });
+    return true;
+}
+
+function setBookmarkAutoLastFetchUrlListVariable(MAL_Settings_Bookmarks_Last_Fetch_Url_List) {
+    chrome.storage.local.set({ MAL_Settings_Bookmarks_Last_Fetch_Url_List: MAL_Settings_Bookmarks_Last_Fetch_Url_List });
+}
+
 //#endregion
 
 //#region History
