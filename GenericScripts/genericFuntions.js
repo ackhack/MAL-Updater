@@ -72,7 +72,7 @@ function addHourOffset(weekday, hour, offset) {
         }
     }
 
-    returnHour = returnHour + Math.floor(offset);
+    returnHour = returnHour + (offset << 0);
 
     while (returnHour >= 24) {
         weekday = (weekday + 1) % 7;
