@@ -10,7 +10,7 @@ function init() {
 function createTimeline(hourOffset = 0) {
 
     clearTimeline();
-    getTimeline(hourOffset, tl => {
+    getTimeline(hourOffset + 1.5, tl => {
         if (tl.length == 0)
             return;
         for (let anime of tl) {
