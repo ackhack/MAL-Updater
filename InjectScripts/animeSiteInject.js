@@ -7,7 +7,7 @@ var finished = false;
 var activeAPICalls = new Set();
 var hasKeyListener = false;
 var aborted = false;
-
+var buttonStyle = ""
 //#region Init
 
 chrome.runtime.sendMessage(
@@ -45,6 +45,7 @@ function initSite(nTry = 0) {
     nTry++;
 
     if (parseURL(window.location.toString())) {
+        buttonStyle = "margin-left: 1.5em;margin-top: 5px;padding: 3px;background-color: " + site.bgColor + ";color: " + site.pageColor + ";border: 2px solid " + site.pageColor + ";border-radius: 5px;padding-right: 4px;}";
         getAnime();
     }
     else
@@ -147,6 +148,7 @@ function recieveAnime(res) {
     let abortBtn = document.createElement("button");
     abortBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_1")?.remove(); aborted = true };
     abortBtn.innerText = "Abort";
+    abortBtn.style = buttonStyle;
 
     let tbBtn = document.createElement("button");
     tbBtn.onclick = () => {
@@ -159,6 +161,7 @@ function recieveAnime(res) {
         }
     };
     tbBtn.innerText = "Check ID";
+    tbBtn.style = buttonStyle;
 
     divButton.appendChild(tbBtn);
     divButton.appendChild(abortBtn);
@@ -375,12 +378,12 @@ function finishedLastEpisode(data) {
     let commitBtn = document.createElement("button");
     commitBtn.onclick = () => { clickedLastEp(select.value); document.getElementById("MAL_UPDATER_DIV_2")?.remove(); };
     commitBtn.innerText = "Rate";
-    commitBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    commitBtn.style = buttonStyle;
 
     let notLastBtn = document.createElement("button");
     notLastBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_2")?.remove(); finishedEpisode(true); };
     notLastBtn.innerText = "Not Last Episode";
-    notLastBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    notLastBtn.style = buttonStyle;
 
     let pSequel = document.createElement("p");
     pSequel.innerText = data.next ? "Sequels: " + data.next : "No Sequel found";
@@ -432,7 +435,7 @@ function updateEpisodeSuccess(success, nextURL = undefined) {
     let okBtn = document.createElement("button");
     okBtn.onclick = () => { document.getElementById("MAL_UPDATER_DIV_3")?.remove() };
     okBtn.innerText = "OK";
-    okBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    okBtn.style = buttonStyle;
 
     div.appendChild(p);
     div.appendChild(okBtn);
@@ -441,7 +444,7 @@ function updateEpisodeSuccess(success, nextURL = undefined) {
         let nextBtn = document.createElement("button");
         nextBtn.onclick = () => { window.open(nextURL, "_self") };
         nextBtn.innerText = "Next EP";
-        nextBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+        nextBtn.style = buttonStyle;
         div.appendChild(nextBtn);
     }
 
@@ -495,7 +498,7 @@ function showInfo(header, text, buttons = []) {
     let okBtn = document.createElement("button");
     okBtn.onclick = () => { div?.remove(); };
     okBtn.innerText = "OK";
-    okBtn.style = "margin-left: 1.5em;margin-top: 5px;";
+    okBtn.style = buttonStyle;
 
     document.onkeydown = function (evt) {
         evt = evt || window.event;
