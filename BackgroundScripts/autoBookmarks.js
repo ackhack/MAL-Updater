@@ -133,9 +133,8 @@ const bookmarkFetches = {
 
         for (let page = 1; page < maxPageSearches; page++) {
             if (finished) break;
-            await fetch('https://9anime.id/ajax/home/widget/updated-sub?page=' + page, {
+            await fetch('https://9anime.pl/ajax/home/widget/updated-sub?page=' + page, {
                 method: 'GET',
-                headers: { cookie: 'session=qMmVFNmjiK1GXm12A2gGboNnLoqH5fykSv6Nif6T' }
             })
                 .then(async response => response.json())
                 .then(async response => {
