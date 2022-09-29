@@ -18,5 +18,6 @@
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": 1,
     "mainPageListName": "video-list row mx-0",
-    "prefixURL": "https://www2.kickassanime.ro"
+    "prefixURL": "https://www2.kickassanime.ro",
+    "autoBookmarkUrl": "https://www2.kickassanime.ro/api/get_anime_list/sub/"
 }

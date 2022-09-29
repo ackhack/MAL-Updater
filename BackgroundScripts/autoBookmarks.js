@@ -66,7 +66,7 @@ async function fetchBookmarks() {
                     getPreferredSiteNameVariable(async preferredSiteName => {
                         getBookmarkAutoLastFetchUrlListVariable(async lastFetchUrlList => {
 
-                            let res = await bookmarkFetches[preferredSiteName](sites[preferredSiteName].prefixURL, tryAddAnime, lastFetchUrlList[preferredSiteName]);
+                            let res = await bookmarkFetches[preferredSiteName](sites[preferredSiteName], tryAddAnime, lastFetchUrlList[preferredSiteName]);
                             let addedAnimes = [];
                             let newLastFetchUrlList = {};
                             newLastFetchUrlList[preferredSiteName] = res.lastFetchUrl;
@@ -74,7 +74,7 @@ async function fetchBookmarks() {
                             for (let index in sites) {
                                 let site = sites[index];
                                 if (site.siteName != preferredSiteName) {
-                                    let res2 = await bookmarkFetches[site.siteName](sites[site.siteName].prefixURL, tryAddAnime, lastFetchUrlList[site.siteName]);
+                                    let res2 = await bookmarkFetches[site.siteName](sites[site.siteName], tryAddAnime, lastFetchUrlList[site.siteName]);
                                     addedAnimes = addedAnimes.concat(res2.addedAnimes);
                                     newLastFetchUrlList[site.siteName] = res2.lastFetchUrl;
                                 }
@@ -92,13 +92,13 @@ async function fetchBookmarks() {
 
 const maxPageSearches = 10;
 const bookmarkFetches = {
-    "kickassanime": async (prefixURL, tryAddAnime, lastFetchUrl) => {
+    "kickassanime": async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 
         for (let page = 1; page < maxPageSearches; page++) {
             if (finished) break;
-            await fetch('https://www2.kickassanime.ro/api/get_anime_list/sub/' + page, {
+            await fetch(site.autoBookmarkUrl + page, {
                 method: 'GET'
             })
                 .then(async response => response.json())
@@ -107,14 +107,14 @@ const bookmarkFetches = {
                     let addedAnimes = [];
                     for (let anime of response.data) {
 
-                        if (res.lastFetchUrl == "") res.lastFetchUrl = prefixURL + anime.slug;
-                        if (lastFetchUrl == prefixURL + anime.slug) {
+                        if (res.lastFetchUrl == "") res.lastFetchUrl = site.prefixURL + anime.slug;
+                        if (lastFetchUrl == site.prefixURL + anime.slug) {
                             res.addedAnimes = res.addedAnimes.concat(addedAnimes);
                             finished = true;
                             return;
                         };
 
-                        let ret = await tryAddAnime(prefixURL, anime.slug);
+                        let ret = await tryAddAnime(site.prefixURL, anime.slug);
                         if (ret) {
                             addedAnimes.push(ret);
                         }
@@ -127,13 +127,13 @@ const bookmarkFetches = {
         return res;
     },
 
-    "9anime": async (prefixURL, tryAddAnime, lastFetchUrl) => {
+    "9anime": async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 
         for (let page = 1; page < maxPageSearches; page++) {
             if (finished) break;
-            await fetch('https://9anime.pl/ajax/home/widget/updated-sub?page=' + page, {
+            await fetch(site.autoBookmarkUrl + page, {
                 method: 'GET',
             })
                 .then(async response => response.json())
@@ -144,14 +144,14 @@ const bookmarkFetches = {
                     let match = undefined;
                     while (match = regex.exec(response.result)) {
 
-                        if (res.lastFetchUrl == "") res.lastFetchUrl = prefixURL + match[1];
-                        if (lastFetchUrl == prefixURL + match[1]) {
+                        if (res.lastFetchUrl == "") res.lastFetchUrl = site.prefixURL + match[1];
+                        if (lastFetchUrl == site.prefixURL + match[1]) {
                             res.addedAnimes = res.addedAnimes.concat(addedAnimes);
                             finished = true;
                             return;
                         };
 
-                        let ret = await tryAddAnime(prefixURL, match[1]);
+                        let ret = await tryAddAnime(site.prefixURL, match[1]);
                         if (ret) {
                             addedAnimes.push(ret);
                         }
@@ -164,13 +164,13 @@ const bookmarkFetches = {
         return res;
     },
 
-    "gogoanimehub": async (prefixURL, tryAddAnime, lastFetchUrl) => {
+    "gogoanimehub": async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 
         for (let page = 1; page < maxPageSearches; page++) {
             if (finished) break;
-            await fetch('https://gogoanimeapp.com//page-recent-release.html?type=1&page=' + page, {
+            await fetch(site.autoBookmarkUrl + page, {
                 method: 'GET',
                 headers: { cookie: 'gogoanime=9o5vj4kvomttllbh8s6s7ilb35' }
             })
@@ -183,8 +183,8 @@ const bookmarkFetches = {
                     let checkedUrls = [];
                     while (match = regex.exec(response)) {
 
-                        if (res.lastFetchUrl == "") res.lastFetchUrl = prefixURL + match[1];
-                        if (lastFetchUrl == prefixURL + match[1]) {
+                        if (res.lastFetchUrl == "") res.lastFetchUrl = site.prefixURL + match[1];
+                        if (lastFetchUrl == site.prefixURL + match[1]) {
                             res.addedAnimes = res.addedAnimes.concat(addedAnimes);
                             finished = true;
                             return;
@@ -192,7 +192,7 @@ const bookmarkFetches = {
 
                         if (!checkedUrls.includes(match[1])) {
                             checkedUrls.push(match[1]);
-                            let ret = await tryAddAnime(prefixURL, match[1]);
+                            let ret = await tryAddAnime(site.prefixURL, match[1]);
                             if (ret) {
                                 addedAnimes.push(ret);
                             }
