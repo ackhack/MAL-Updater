@@ -15,29 +15,12 @@ function init() {
 }
 
 function initSites(callb) {
-    //Write the Pages Folder into a useable object
-    const siteFileNames = [
-        "9anime.json",
-        "gogoanimehub.json",
-        "kickassanime.json"
-    ];
-    var sites = {};
-    let i = 0;
-
-    for (let name of siteFileNames) {
-        fetch(chrome.runtime.getURL('Pages/' + name))
-            .then((response) => {
-                response.json().then((json) => {
-                    sites[name.substring(0, name.length - 5)] = json;
-                    i++;
-                    if (i == siteFileNames.length) {
-                        setSitesVariable(sites);
-                        initInjector(sites);
-                        callb(sites);
-                    }
-                })
-            }).catch(err => console.log(err));
-    }
+    updatePages(() => {
+        getSitesVariable(sites => {
+            initInjector(sites);
+            callb(sites);
+        });
+    });
 }
 
 function initSecret(callb) {
@@ -102,7 +85,7 @@ function initInjector(sites) {
     });
 }
 
-function initCache(sites,callb = () => {}) {
+function initCache(sites, callb = () => { }) {
     getAnimeCacheVariable(cache => {
         for (let entry in cache) {
             for (let siteName in sites) {

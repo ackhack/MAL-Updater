@@ -52,22 +52,25 @@ function changeActiveState(value) {
     return true;
 }
 
-function checkUpdate(callb) {
-    function hasUpdate(oldVersion, newVersion) {
-        let oldSplit = oldVersion.split(".");
-        let newSplit = newVersion.split(".");
-
-        for (let i = 0; i < oldSplit.length; i++) {
-            if (oldSplit[i] > newSplit[i]) {
-                return false;
-            }
-            if (oldSplit[i] < newSplit[i]) {
-                return true;
-            }
-        }
-        return false;
+function hasUpdate(oldVersion, newVersion) {
+    if (oldVersion == -1) {
+        return true;
     }
+    let oldSplit = oldVersion.split(".");
+    let newSplit = newVersion.split(".");
 
+    for (let i = 0; i < oldSplit.length; i++) {
+        if (oldSplit[i] > newSplit[i]) {
+            return false;
+        }
+        if (oldSplit[i] < newSplit[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkUpdateExtension(callb) {
     fetch(chrome.runtime.getURL('manifest.json'))
         .then((response) => {
             response.json().then((json) => {
@@ -85,17 +88,63 @@ function checkUpdate(callb) {
                     }).catch(err => console.log(err));
             })
         }).catch(err => console.log(err));
-
     return true;
 }
 
+function updatePages(callb = () => {}) {
+
+    function getNewPages(callb) {
+        let newPages = {};
+        fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/pages/names.json")
+            .then((response) => {
+                response.json().then((json) => {
+                    if (json.names) {
+                        let i = 0;
+                        for (page of json.names) {
+                            let name = page;
+                            fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/pages/" + name + ".json")
+                                .then((response) => {
+                                    response.json().then((pageJson) => {
+                                        i++;
+                                        newPages[name] = pageJson;
+                                        if (i == Object.keys(json.names).length) {
+                                            setSitesVariable(newPages);
+                                            callb();
+                                        }
+                                    })
+                                }).catch(err => console.log(err));
+                        }
+                    }
+                })
+            }).catch(err => console.log(err));
+    }
+
+    getSitesVersion((oldVersion) => {
+        fetch("https://raw.githubusercontent.com/ackhack/MAL-Updater/global-storage/pages/version.json")
+            .then((response) => {
+                response.json().then((json) => {
+                    if (json.version) {
+                        if (hasUpdate(oldVersion, json.version)) {
+                            getNewPages(callb);
+                            setSitesVersion(json.version)
+                        }
+                        else {
+                            callb();
+                        }
+                    }
+                })
+            }).catch(err => console.log(err));
+    });
+}
+
 function checkUpdateCycle() {
-    checkUpdate(result => {
+    checkUpdateExtension(result => {
         if (result.update) {
             console.log("[Updater] Update available");
             chrome.action.setBadgeText({ text: "1" });
         }
     });
+    updatePages();
 }
 
 function handleAnimeWatchedInfo(req) {

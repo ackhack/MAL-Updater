@@ -1,14 +1,14 @@
 //#region Generic
 
 function getSitesVariable(callback) {
-    chrome.storage.local.get("sites", function (result) {
-        callback(result.sites ?? {});
+    chrome.storage.local.get("MAL_Sites_Variable", function (result) {
+        callback(result.MAL_Sites_Variable ?? {});
     });
     return true;
 }
 
-function setSitesVariable(sites) {
-    chrome.storage.local.set({ sites: sites });
+function setSitesVariable(MAL_Sites_Variable) {
+    chrome.storage.local.set({ MAL_Sites_Variable: MAL_Sites_Variable });
 }
 
 function getActiveVariable(callback) {
@@ -20,6 +20,17 @@ function getActiveVariable(callback) {
 
 function setActiveVariable(MAL_Settings_Active) {
     chrome.storage.local.set({ MAL_Settings_Active: MAL_Settings_Active });
+}
+
+function getSitesVersion(callback) {
+    chrome.storage.local.get("MAL_Pages_Version", function (result) {
+        callback(result.MAL_Pages_Version ?? -1);
+    });
+    return true;
+}
+
+function setSitesVersion(MAL_Pages_Version) {
+    chrome.storage.local.set({ MAL_Pages_Version: MAL_Pages_Version });
 }
 
 //#endregion
