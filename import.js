@@ -47,11 +47,15 @@ const nonExistent = [
     { "id": 49297, "site": "kickassanime" },
     { "id": 50325, "site": "kickassanime" },
     { "id": 49893, "site": "kickassanime" },
-    { "id": 48561, "site": "gogoanimehub" },
-    { "id": 48561, "site": "kickassanime" },
     { "id": 42916, "site": "kickassanime" },
     { "id": 50339, "site": "kickassanime" }
 ]
+
+//ID:48548 quint movie
+//ID:44204 In/Spectre Season 2
+//ID:50275 sao movie
+//ID:51105 nier
+//ID:51179 Mushoku Tensei: Jobless Reincarnation 2nd Season
 
 run();
 
