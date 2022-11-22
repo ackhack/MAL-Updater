@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(
                 unauthorize();
                 break;
             case "GET_NEWEST_VERSION":
-                checkUpdate(onSuccess);
+                checkUpdateExtension(onSuccess);
                 break;
             case "SITE_OPENED":
                 selectInjector(sender);
