@@ -103,9 +103,9 @@ const bookmarkFetches = {
             })
                 .then(async response => response.json())
                 .then(async response => {
-
+                
                     let addedAnimes = [];
-                    for (let anime of response.data) {
+                    for (let anime of response.data.result) {
 
                         if (res.lastFetchUrl == "") res.lastFetchUrl = site.prefixURL + anime.slug;
                         if (lastFetchUrl == site.prefixURL + anime.slug) {
