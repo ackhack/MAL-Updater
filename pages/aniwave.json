@@ -1,8 +1,8 @@
 {
-    "sitePattern": ".*9anime\\.[a-z]+\\/watch\\/.*",
-    "siteName": "9anime",
-    "friendlyName": "9Anime",
-    "urlPattern": "https?:\\/\\/.*9anime.*\\/watch\\/(.*\\.[a-z0-9A-Z]*)[\\/\\?]ep[-=](\\d+)?.*",
+    "sitePattern": ".*aniwave\\.[a-z]+\\/watch\\/.*",
+    "siteName": "aniwave",
+    "friendlyName": "AniWave",
+    "urlPattern": "https?:\\/\\/.*aniwave.*\\/watch\\/(.*\\.[a-z0-9A-Z]*)[\\/\\?]ep[-=](\\d+)?.*",
     "nameMatch": 1,
     "episodeMatch": 2,
     "pageColor": "rgb(73, 37, 123)",
@@ -12,12 +12,12 @@
     "parentIndex": 1,
     "buttonInsertBeforeIndex": -1,
     "ulMarginLeft": 0,
-    "mainPagePattern": ".*9anime\\.[a-z]+\\/home\\/?$",
+    "mainPagePattern": ".*aniwave\\.[a-z]+\\/home\\/?$",
     "mainPageButtonParent": "menu",
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 1,
     "mainPageButtonInsertBeforeIndex": -1,
     "mainPageListName": "anime-list",
-    "prefixURL": "https://9anime.pl",
-    "autoBookmarkUrl": "https://9anime.pl/ajax/home/widget/updated-sub?page="
+    "prefixURL": "https://aniwave.to",
+    "autoBookmarkUrl": "https://aniwave.to/ajax/home/widget/updated-sub?page="
 }
