@@ -1,6 +1,6 @@
 {
     "sitePattern": ".*aniwave\\.[a-z]+\\/watch\\/.*",
-    "siteName": "aniwave",
+    "siteName": "9anime",
     "friendlyName": "AniWave",
     "urlPattern": "https?:\\/\\/.*aniwave.*\\/watch\\/(.*\\.[a-z0-9A-Z]*)[\\/\\?]ep[-=](\\d+)?.*",
     "nameMatch": 1,
