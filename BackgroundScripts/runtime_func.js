@@ -125,6 +125,7 @@ function updatePages(callb = () => {}) {
                 response.json().then((json) => {
                     if (json.version) {
                         if (hasUpdate(oldVersion, json.version)) {
+                            console.log("[Updater] Updating Pages to " + json.version);
                             getNewPages(callb);
                             setSitesVersion(json.version)
                         }
