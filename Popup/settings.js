@@ -115,7 +115,7 @@ function getPreferredSiteSelect() {
             for (let site in sites) {
                 let option = document.createElement("option");
                 option.innerText = sites[site].friendlyName;
-                option.value = sites[site].siteName;
+                option.value = sites[site].id;
                 select.appendChild(option);
             }
             chrome.runtime.sendMessage(

@@ -2,7 +2,7 @@ init();
 
 function init() {
     //Init with callbacks for right order
-    console.log("[Init] Starting");
+    console.log("[Init] Starting at " + new Date(Date.now()).toLocaleString());
 
     initSecret(() => {
         initSites((sites) => {
@@ -88,17 +88,36 @@ function initInjector(sites) {
 function initCache(sites, callb = () => { }) {
     getAnimeCacheVariable(cache => {
         for (let entry in cache) {
-            for (let siteName in sites) {
-                if (!(sites[siteName].siteName in cache[entry])) {
-                    cache[entry][sites[siteName].siteName] = [];
+            for (let index in sites) {
+                if (!(sites[index].id in cache[entry])) {
+                    cache[entry][sites[index].id] = [];
                     continue;
                 }
-                //Update old Cache Entries
-                if (typeof cache[entry][sites[siteName].siteName] === "string") {
-                    cache[entry][sites[siteName].siteName] = [cache[entry][sites[siteName].siteName]];
-                }
+            }
+            if (cache[entry][undefined]) {
+                delete cache[entry][undefined];
+            }
+            if (cache[entry][null]) {
+                delete cache[entry][null];
+            }
+            if (cache[entry]["undefined"]) {
+                delete cache[entry]["undefined"];
+            }
+            //TEMP move from siteName to id
+            if (cache[entry]["kickassanime"]) {
+                cache[entry][0] = cache[entry]["kickassanime"];
+                delete cache[entry]["kickassanime"];
+            }
+            if (cache[entry]["9anime"]) {
+                cache[entry][1] = cache[entry]["9anime"];
+                delete cache[entry]["9anime"];
+            }
+            if (cache[entry]["gogoanimehub"]) {
+                cache[entry][2] = cache[entry]["gogoanimehub"];
+                delete cache[entry]["gogoanimehub"];
             }
         }
+
         setAnimeCacheVariable(cache);
         callb();
     });

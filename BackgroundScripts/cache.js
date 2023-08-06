@@ -13,9 +13,9 @@ function loadIntoCache(req, callb = () => { }) {
                     json["id"] = req.id;
 
                     animeCache[req.id].meta = json;
-                    for (let siteName in sites) {
-                        if (!(sites[siteName].siteName in animeCache[req.id]))
-                            animeCache[req.id][sites[siteName].siteName] = [];
+                    for (let index in sites) {
+                        if (!(sites[index].id in animeCache[req.id]))
+                            animeCache[req.id][sites[index].id] = [];
                     }
 
                     if (req.site !== undefined && req.name !== undefined) {
@@ -42,10 +42,10 @@ function loadIntoCache(req, callb = () => { }) {
 
 //#region Get Cache Variants
 
-function getCacheByName(site, name, callb) {
+function getCacheBySiteId(id, name, callb) {
     getAnimeCacheVariable((animeCache) => {
         for (let elem in animeCache) {
-            if (animeCache[elem][site].includes(name)) {
+            if (animeCache[elem][id].includes(name)) {
                 callb(animeCache[elem]);
                 return;
             }
@@ -62,10 +62,10 @@ function getCacheById(id, callb) {
 
 function getCacheByURL(url, callb = () => { }) {
     getSitesVariable((sites) => {
-        for (let site in sites) {
-            let match = url.match(sites[site].urlPattern);
+        for (let index in sites) {
+            let match = url.match(sites[index].urlPattern);
             if (match != null) {
-                getCacheByName(site, match[sites[site].nameMatch], result => {
+                getCacheBySiteId(sites[index].id, match[sites[index].nameMatch], result => {
                     callb(result)
                 })
                 return;
@@ -135,8 +135,8 @@ function deleteCache(query = {}, callb = () => { }) {
 
                         if (res) {
                             for (let elem in animeCache) {
-                                if (animeCache[elem][site.siteName].includes(res[site.nameMatch])) {
-                                    animeCache[elem][site.siteName].splice(animeCache[elem][site.siteName].indexOf(res[site.nameMatch]), 1)
+                                if (animeCache[elem][site.id].includes(res[site.nameMatch])) {
+                                    animeCache[elem][site.id].splice(animeCache[elem][site.id].indexOf(res[site.nameMatch]), 1)
                                     setAnimeCacheVariable(animeCache);
                                     callb(true);
                                     return;
@@ -178,12 +178,12 @@ function importCache(cacheString) {
                     if (entry in animeCache) {
                         for (let site in sites) {
                             //Support older Caches
-                            if (typeof imported[entry][sites[site].siteName] === 'string') {
-                                imported[entry][sites[site].siteName] = [imported[entry][sites[site].siteName]];
+                            if (typeof imported[entry][sites[site].id] === 'string') {
+                                imported[entry][sites[site].id] = [imported[entry][sites[site].id]];
                             }
-                            for (let name of imported[entry][sites[site].siteName]) {
-                                if (!animeCache[entry][sites[site].siteName].includes(name)) {
-                                    animeCache[entry][sites[site].siteName].push(name);
+                            for (let name of imported[entry][sites[site].id]) {
+                                if (!animeCache[entry][sites[site].id].includes(name)) {
+                                    animeCache[entry][sites[site].id].push(name);
                                 }
                             }
                         }

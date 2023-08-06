@@ -79,7 +79,7 @@ chrome.runtime.onMessage.addListener(
                 getSitesVariable(onSuccess);
                 break;
             case "GET_PREFERRED_SITE":
-                getPreferredSiteNameVariable(onSuccess);
+                getPreferredSiteIdVariable(onSuccess);
                 break;
             case "GET_ACTIVE_ANIME":
                 getActiveAnime(onSuccess);

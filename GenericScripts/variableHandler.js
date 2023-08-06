@@ -122,13 +122,13 @@ function setBookmarkActiveVariable(MAL_Settings_Bookmarks_Active) {
     chrome.storage.local.set({ MAL_Settings_Bookmarks_Active: MAL_Settings_Bookmarks_Active });
 }
 
-function setPreferredSiteNameVariable(MAL_Settings_Preferred_Site) {
+function setPreferredSiteIdVariable(MAL_Settings_Preferred_Site) {
     chrome.storage.local.set({ MAL_Settings_Preferred_Site: MAL_Settings_Preferred_Site });
 }
 
-function getPreferredSiteNameVariable(callback) {
+function getPreferredSiteIdVariable(callback) {
     chrome.storage.local.get("MAL_Settings_Preferred_Site", function (result) {
-        callback(result.MAL_Settings_Preferred_Site ?? "kickassanime");
+        callback(isNaN(result.MAL_Settings_Preferred_Site) ? 0 : result.MAL_Settings_Preferred_Site);
     });
     return true;
 }

@@ -75,7 +75,7 @@ function getAnime() {
     chrome.runtime.sendMessage(
         {
             type: "GET_ANIME",
-            site: site.siteName,
+            site: site.id,
             name: animeName,
             episode: episodeNumber
         },
@@ -242,7 +242,7 @@ function afterAnimeID(id, cache = true) {
         chrome.runtime.sendMessage(
             {
                 type: "CACHE_ANIME",
-                site: site.siteName,
+                site: site.id,
                 name: animeName,
                 id: id
             },
@@ -314,8 +314,8 @@ function getButtonParent() {
 function finishedEpisode(force = false) {
     finished = true;
     let nextURL = undefined;
-    switch (site.siteName) {
-        case "kickassanime":
+    switch (site.id) {
+        case 0: //kickassanime
             for (let el of document.getElementsByClassName('ka-url-wrapper')) {
                 if (el.innerText.includes('Next Episode')) {
                     nextURL = el.href;

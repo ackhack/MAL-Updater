@@ -50,7 +50,7 @@ function addBookmarkByURL(url, callb = () => { }) {
                 let site = sites[index];
                 let match = url.match(site.urlPattern);
                 if (match != null) {
-                    getCacheByName(site.siteName, match[site.nameMatch], res => {
+                    getCacheBySiteId(site.id, match[site.nameMatch], res => {
                         if (res != undefined) {
                             addBookmark(getBookmarkName(res, match[site.episodeMatch]), url);
                             callb();
@@ -159,7 +159,7 @@ function renameBookmark(bookmark) {
                     let site = sites[index];
                     let match = bookmark.url.match(site.urlPattern);
                     if (match != null) {
-                        getCacheByName(site.siteName, match[site.nameMatch], res => {
+                        getCacheBySiteId(site.id, match[site.nameMatch], res => {
                             if (res === undefined)
                                 return;
 

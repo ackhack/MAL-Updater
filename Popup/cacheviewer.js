@@ -1,4 +1,5 @@
 var animeCache;
+var sitesCache;
 var currFilter = "all";
 var currSort = "name";
 var currCard;
@@ -23,10 +24,13 @@ function init() {
     document.getElementById("btnClose").onclick = closedMeta;
     document.getElementById("btnDelete").onclick = deleteMeta;
 
-    chrome.storage.local.get("MAL_AnimeCache", function (result) {
-        animeCache = result ? result["MAL_AnimeCache"] ?? {} : {};
-
+    getAnimeCacheVariable(result => {
+        animeCache = result;
         createCards();
+    });
+
+    getSitesVariable(result => {
+        sitesCache = result;
     });
 }
 
@@ -143,19 +147,45 @@ function createListFromMeta(cardString) {
                     ul.insertBefore(li, ul.children[0]);
                     continue;
                 }
-
-                li.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
-                if (li.innerText.length > 500) {
-                    li.innerText = li.innerText.slice(0, 500) + "...";
-                    li.style = "font-size: small;";
+                if (subelem != null && subelem != undefined && subelem != "") {
+                    li.innerText += subelem + ": " + JSON.stringify(card[elem][subelem]);
+                    if (li.innerText.length > 500) {
+                        li.innerText = li.innerText.slice(0, 500) + "...";
+                        li.style = "font-size: small;";
+                    }
+                    ul.appendChild(li);
                 }
-                ul.appendChild(li);
             }
             continue;
         }
-        let li = document.createElement("li");
-        li.innerText += elem + ": " + card[elem];
-        ul.appendChild(li);
+
+        //if is number, must be from cache
+        if (!isNaN(elem)) {
+            var id = parseInt(elem);
+            var found = false;
+            for (let index in sitesCache) {
+                let site = sitesCache[index];
+                if (site.id == id) {
+                    let li = document.createElement("li");
+                    li.innerText += site.friendlyName + ": " + card[elem];
+                    ul.appendChild(li);
+                    found = true;
+                    continue;
+                }
+            }
+            if (found) continue;
+
+            let li = document.createElement("li");
+            li.innerText += "Site " + id + ": " + card[elem];
+            ul.appendChild(li);
+            continue;
+        }
+
+        if (elem != null && elem != undefined && elem != "") {
+            let li = document.createElement("li");
+            li.innerText += elem + ": " + card[elem];
+            ul.appendChild(li);
+        }
     }
 
     return ul;

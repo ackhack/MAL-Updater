@@ -38,7 +38,7 @@ async function fetchBookmarks() {
                                 let res = url.match(site.urlPattern);
                                 if (res) {
                                     for (let elem in animeCache) {
-                                        if (animeCache[elem][site.siteName].includes(res[site.nameMatch])) {
+                                        if (animeCache[elem][site.id].includes(res[site.nameMatch])) {
                                             for (let i = historyObj.length - 1; i >= 0; i--) {
                                                 if (animeCache[elem].meta.id == historyObj[i].id) {
                                                     if (historyObj[i].episode == res[site.episodeMatch] - 1) {
@@ -63,20 +63,21 @@ async function fetchBookmarks() {
                             }
                         }
                     }
-                    getPreferredSiteNameVariable(async preferredSiteName => {
+
+                    getPreferredSiteIdVariable(async preferredSiteId => {
                         getBookmarkAutoLastFetchUrlListVariable(async lastFetchUrlList => {
 
-                            let res = await bookmarkFetches[preferredSiteName](sites[preferredSiteName], tryAddAnime, lastFetchUrlList[preferredSiteName]);
+                            let res = await bookmarkFetches[preferredSiteId](sites[preferredSiteId], tryAddAnime, lastFetchUrlList[preferredSiteId]);
                             let addedAnimes = [];
                             let newLastFetchUrlList = {};
-                            newLastFetchUrlList[preferredSiteName] = res.lastFetchUrl;
+                            newLastFetchUrlList[preferredSiteId] = res.lastFetchUrl;
 
                             for (let index in sites) {
                                 let site = sites[index];
-                                if (site.siteName != preferredSiteName) {
-                                    let res2 = await bookmarkFetches[site.siteName](sites[site.siteName], tryAddAnime, lastFetchUrlList[site.siteName]);
+                                if (site.id != preferredSiteId) {
+                                    let res2 = await bookmarkFetches[site.id](sites[site.id], tryAddAnime, lastFetchUrlList[site.id]);
                                     addedAnimes = addedAnimes.concat(res2.addedAnimes);
-                                    newLastFetchUrlList[site.siteName] = res2.lastFetchUrl;
+                                    newLastFetchUrlList[site.id] = res2.lastFetchUrl;
                                 }
                             }
 
@@ -92,7 +93,8 @@ async function fetchBookmarks() {
 
 const maxPageSearches = 10;
 const bookmarkFetches = {
-    "kickassanime": async (site, tryAddAnime, lastFetchUrl) => {
+    //kickassanime
+    0: async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 
@@ -103,9 +105,9 @@ const bookmarkFetches = {
             })
                 .then(async response => response.json())
                 .then(async response => {
-                
+
                     let addedAnimes = [];
-                    for (let anime of response.data.result) {
+                    for (let anime of response.result) {
 
                         if (res.lastFetchUrl == "") res.lastFetchUrl = site.prefixURL + anime.slug;
                         if (lastFetchUrl == site.prefixURL + anime.slug) {
@@ -126,8 +128,8 @@ const bookmarkFetches = {
         if (res.lastFetchUrl == "") res.lastFetchUrl = lastFetchUrl;
         return res;
     },
-
-    "9anime": async (site, tryAddAnime, lastFetchUrl) => {
+    //aniwave
+    1: async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 
@@ -163,8 +165,8 @@ const bookmarkFetches = {
         if (res.lastFetchUrl == "") res.lastFetchUrl = lastFetchUrl;
         return res;
     },
-
-    "gogoanimehub": async (site, tryAddAnime, lastFetchUrl) => {
+    //gogoanime
+    2: async (site, tryAddAnime, lastFetchUrl) => {
         let res = { addedAnimes: [], lastFetchUrl: "" };
         let finished = false;
 

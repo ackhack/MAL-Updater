@@ -58,7 +58,7 @@ function filterList() {
 
             if (res) {
                 for (let elem in cache) {
-                    if (cache[elem][site.siteName].includes(res[site.nameMatch])) {
+                    if (cache[elem][site.id].includes(res[site.nameMatch])) {
                         inCache = true;
                         break;
                     }

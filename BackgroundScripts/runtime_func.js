@@ -106,7 +106,7 @@ function updatePages(callb = () => {}) {
                                 .then((response) => {
                                     response.json().then((pageJson) => {
                                         i++;
-                                        newPages[name] = pageJson;
+                                        newPages[pageJson.id] = pageJson;
                                         if (i == Object.keys(json.names).length) {
                                             setSitesVariable(newPages);
                                             callb();

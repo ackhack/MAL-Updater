@@ -6,7 +6,7 @@ function getAnime(req, callb, nTry = 0) {
         nTry++;
 
         getUserTokenVariable(usertoken => {
-            getCacheByName(req.site, req.name, result => {
+            getCacheBySiteId(req.site, req.name, result => {
                 let cached = nTry == 1 ? result : undefined;
 
                 if (cached !== undefined) {
