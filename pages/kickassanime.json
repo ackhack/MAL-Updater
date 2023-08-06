@@ -1,6 +1,6 @@
 {
+    "id": 0,
     "sitePattern": ".*kaas\\.am\\/[\\w-]+\\/ep-\\d+-.*",
-    "siteName": "kickassanime",
     "friendlyName": "KickAssAnime",
     "urlPattern": "https?:\\/\\/kaas\\.am\\/([\\w-]+)\\/ep-(\\d+)-.*",
     "nameMatch": 1,

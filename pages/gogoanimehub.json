@@ -1,6 +1,6 @@
 {
+    "id": 2,
     "sitePattern": ".*gogoanimeapp.*",
-    "siteName": "gogoanimehub",
     "friendlyName": "GoGoAnimeApp",
     "urlPattern": "https?:\\/\\/.*gogoanimeapp.*\\/(.*)-episode-(\\d+)",
     "nameMatch": 1,
