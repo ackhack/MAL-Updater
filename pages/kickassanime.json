@@ -1,8 +1,8 @@
 {
     "id": 0,
-    "sitePattern": ".*kaas\\.am\\/[\\w-]+\\/ep-\\d+-.*",
+    "sitePattern": ".*kickassanime\\.am\\/[\\w-]+\\/ep-\\d+-.*",
     "friendlyName": "KickAssAnime",
-    "urlPattern": "https?:\\/\\/kaas\\.am\\/([\\w-]+)\\/ep-(\\d+)-.*",
+    "urlPattern": "https?:\\/\\/kickassanime\\.am\\/([\\w-]+)\\/ep-(\\d+)-.*",
     "nameMatch": 1,
     "episodeMatch": 2,
     "pageColor": "rgb(231, 219, 163)",
@@ -12,12 +12,12 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 0,
     "ulMarginLeft": 0,
-    "mainPagePattern": "https?:\\/\\/kaas\\.am\\/?$",
+    "mainPagePattern": "https?:\\/\\/kickassanime\\.am\\/?$",
     "mainPageButtonParent": "main-search-container",
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": 0,
     "mainPageListName": "",
-    "prefixURL": "https://kaas.am/",
+    "prefixURL": "https://kickassanime.am/",
     "autoBookmarkUrl": "https://kaas.am/api/show/recent?type=sub&page="
 }
