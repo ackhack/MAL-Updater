@@ -1,6 +1,6 @@
 {
     "name": "MAL-Updater",
-    "version": "8.2.2",
+    "version": "8.3.0",
     "description": "Updates MAL List",
     "manifest_version": 3,
     "permissions": [
