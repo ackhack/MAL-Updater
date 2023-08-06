@@ -19,5 +19,5 @@
     "mainPageButtonInsertBeforeIndex": 0,
     "mainPageListName": "",
     "prefixURL": "https://kaas.am/",
-    "autoBookmarkUrl": "https://kaas.am/api/show/recent"
+    "autoBookmarkUrl": "https://kaas.am/api/show/recent?type=sub&page="
 }
