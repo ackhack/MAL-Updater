@@ -1,16 +1,18 @@
 function getAuthCode() {
-
-    try {
-        getUserTokenVariable(usertoken => {
-            if (usertoken.access === undefined) {
-                getNewAuthCode();
-            } else {
-                parseUserToken(usertoken);
-            }
-        });
-    } catch (ex) {
-        getNewAuthCode();
-    }
+    getActiveVariable(active => {
+        if (!active) return;
+        try {
+            getUserTokenVariable(usertoken => {
+                if (usertoken.access === undefined) {
+                    getNewAuthCode();
+                } else {
+                    parseUserToken(usertoken);
+                }
+            });
+        } catch (ex) {
+            getNewAuthCode();
+        }
+    });
 }
 
 function parseUserToken(usertoken) {
