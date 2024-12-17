@@ -1,9 +1,9 @@
 {
     "id": 0,
-    "sitePattern": ".*kickassanime\\.am\\/[\\w-]+\\/ep-\\d+-.*",
-    "friendlyName": "KickAssAnime",
-    "urlPattern": "https?:\\/\\/kickassanime\\.am\\/([\\w-]+)\\/ep-(\\d+)-.*",
-    "nameMatch": 1,
+    "sitePattern": ".*kickassanime\\.mx\\/[\\w-]+\\/ep-\\d+-.*",
+    "friendlyNmxe": "KickAssAnime",
+    "urlPattern": "https?:\\/\\/.*kickassanime\\.mx\\/([\\w-]+)\\/ep-(\\d+)-.*",
+    "nmxeMatch": 1,
     "episodeMatch": 2,
     "pageColor": "rgb(231, 219, 163)",
     "bgColor": "rgb(33, 33, 33)",
@@ -12,12 +12,12 @@
     "parentIndex": 0,
     "buttonInsertBeforeIndex": 0,
     "ulMarginLeft": 0,
-    "mainPagePattern": "https?:\\/\\/kickassanime\\.am\\/?$",
+    "mainPagePattern": "https?:\\/\\/.*kickassanime\\.mx\\/?$",
     "mainPageButtonParent": "main-search-container",
     "mainPageButtonParentType": "id",
     "mainPageParentIndex": 0,
     "mainPageButtonInsertBeforeIndex": 0,
-    "mainPageListName": "",
-    "prefixURL": "https://kickassanime.am/",
-    "autoBookmarkUrl": "https://kaas.am/api/show/recent?type=sub&page="
+    "mainPageListNmxe": "",
+    "prefixURL": "https://www1.kickassanime.mx/",
+    "autoBookmarkUrl": "https://www1.kickassanime.mx/api/show/recent?type=all&page="
 }
