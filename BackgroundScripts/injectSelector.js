@@ -39,18 +39,6 @@ var injectObject = [{
 },
 {
     "matches": [
-        "https:\\/\\/kaa-play\\.me\\/dust\\/.*",
-        "https:\\/\\/beststremo\\.(xyz|com)\\/dust\\/player\\.php\\?.*",
-        "https:\\/\\/kaaplayer\\.com\\/dust\\/player\\.php\\?.*",
-        "https:\\/\\/kaast1\\.com\\/[a-zA-Z0-9-]+\\/(pref|player\\d*)\\.php\\?.*"
-    ],
-    "js": [
-        "InjectScripts/kaa-pick-server.js"
-    ],
-    "all_frames": true
-},
-{
-    "matches": [
         "https:\\/\\/kaa-play\\.me\\/.*",
         "https:\\/\\/gogo-play\\.tv\\/.*",
         "https:\\/\\/www.mp4upload\\.com\\/.*",
