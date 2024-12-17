@@ -20,7 +20,7 @@ This is a Chrome Extension. Its not on the Google Store, so add it as a Develope
 
 # Supported Sites:
 - Kickassanime
-- AniWave (former 9Anime)
+- HiAnime (former AniWave (former 9Anime))
 - gogoanimehub
 
 

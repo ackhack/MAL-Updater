@@ -62,15 +62,35 @@ function parseURL(url) {
     let res = url.match(site.urlPattern);
 
     if (!res) {
+        updateStatus("URL Parse failed")
         return false;
     } else {
-        animeName = res[site.nameMatch];
-        episodeNumber = res[site.episodeMatch] ?? 1;
+        animeName = res[site.nameMatch]
+
+        if (site.episodeMatch >= 0)
+            episodeNumber = res[site.episodeMatch] ?? 1
+        else {
+            updateStatus("Sourcing episode number from page instead of url")
+            
+            var parentElements = document.getElementsByClassName(site.episodeElementParentClassTags)
+            var element = null;
+            for (var i = 0; i < parentElements.length; i++) {
+                var childElements = parentElements[i].getElementsByClassName(site.episodeElementTags)
+                if (childElements.length > site.episodeElementIndex) {
+                    element = childElements[site.episodeElementIndex]
+                    break;
+                }
+            }
+            episodeNumber = element.innerText
+       }
+
+        updateStatus(animeName + " : " + episodeNumber)
         return true;
     }
 }
 
 function getAnime() {
+    updateStatus("getAnime")
     apiCallSent("GET_ANIME");
     chrome.runtime.sendMessage(
         {
@@ -87,6 +107,7 @@ function getAnime() {
 }
 
 function recieveAnime(res) {
+    updateStatus("recieveAnime")
 
     //Error handeling
     if (res.error) {
@@ -97,6 +118,7 @@ function recieveAnime(res) {
 
     //Dont do anything if inactive
     if (res.inactive) {
+        updateStatus("Inactive")
         return;
     }
 
@@ -109,17 +131,21 @@ function recieveAnime(res) {
 
     //If id was recieved from cache, dont create Elements
     if (res.cache == "local") {
+        updateStatus("Local Cache")
         metaData = res.meta;
         waitPageloadCache();
         return;
     }
 
     if (res.cache == "global") {
+        updateStatus("Global Cache")
         metaData = res.meta;
         showInfo("Global Cache", "This Anime was loaded from the Global Cache");
         waitPageloadCache();
         return;
     }
+
+    updateStatus("No Cache, creating Picker Window")
 
     document.getElementById("MAL_UPDATER_DIV_1")?.remove();
     //Create the HTML ELements needed for User 
@@ -129,7 +155,7 @@ function recieveAnime(res) {
     //Main Div for Anime List
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_1";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: fixed;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 1.5em;font-size: xx-large;";
@@ -174,12 +200,14 @@ function recieveAnime(res) {
 }
 
 function clickedAnimeOption(li) {
+    updateStatus("clickedAnimeOption")
     //Save Anime to Cache, insert the Finished button and hide the Div
     afterAnimeID(li.value);
     document.getElementById("MAL_UPDATER_DIV_1")?.remove();
 }
 
 function waitPageloadCache(nTry = 0) {
+    updateStatus("waitPageloadCache")
     //Have to wait for Site to load so btnFinished can be placed
     if (nTry > 9) {
         alert("MAL Updater couldnt place the Button, stopping the extension for now");
@@ -238,6 +266,7 @@ function createMainList(res) {
 }
 
 function afterAnimeID(id, cache = true) {
+    updateStatus("afterAnimeID")
     if (cache) {
         chrome.runtime.sendMessage(
             {
@@ -257,6 +286,7 @@ function afterAnimeID(id, cache = true) {
 }
 
 function finishedAnimeInit() {
+    updateStatus("finishedAnimeInit")
     sendDiscordPresence(true);
     insertButton();
     createInfoWindow();
@@ -277,6 +307,7 @@ function addKeyListener() {
 }
 
 function insertButton() {
+    updateStatus("insertButton")
     if (document.getElementById("MAL_UPDATER_BUTTON_1"))
         return;
     let btnFinish = document.createElement("button");
@@ -286,8 +317,10 @@ function insertButton() {
     btnFinish.title = metaData.id;
     btnFinish.onclick = () => { finishedEpisode(); };
     let navbar = getButtonParent();
+    updateStatus(navbar.tagName)
     for (let i = 0; i < site.parentIndex; i++) {
         navbar = navbar.parentElement;
+        updateStatus(navbar.tagName)
     }
     if (site.buttonInsertBeforeIndex != -1) {
         navbar.insertBefore(btnFinish, navbar.children[site.buttonInsertBeforeIndex]);
@@ -359,7 +392,7 @@ function finishedLastEpisode(data) {
         return;
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_2";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: fixed;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let paragrah = document.createElement("p");
     paragrah.style = "padding-left: 2em;font-size: x-large;";
@@ -398,6 +431,7 @@ function finishedLastEpisode(data) {
 }
 
 function clickedLastEp(value) {
+    updateStatus("clickedLastEp " + episodeNumber)
     apiCallSent("SEND_ANIME_FINISHED");
     chrome.runtime.sendMessage(
         {
@@ -416,6 +450,7 @@ function clickedLastEp(value) {
 }
 
 function updateEpisodeSuccess(success, nextURL = undefined) {
+    updateStatus("updateEpisodeSuccess " + success)
 
     if (success)
         document.getElementById("MAL_UPDATER_BUTTON_1")?.remove();
@@ -426,7 +461,7 @@ function updateEpisodeSuccess(success, nextURL = undefined) {
 
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_3";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + borderColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: fixed;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + borderColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let p = document.createElement("p");
     p.style = "margin-left:1.5em;margin-bottom:5px;";
@@ -485,7 +520,7 @@ window.onbeforeunload = () => {
 //Shows Infotext in middle of Screen as Div
 function showInfo(header, text, buttons = []) {
     let div = document.createElement("div");
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
+    div.style = "position: fixed;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 0;z-index: 300000;transform: translate(-50%, -50%);";
 
     let pHeader = document.createElement("p");
     pHeader.style = "padding-left: 1.5em;font-size: larger;";
@@ -519,10 +554,18 @@ function showInfo(header, text, buttons = []) {
 
 
 function updateStatus(text) {
+    chrome.runtime.sendMessage(
+        {
+            type: "LOG",
+            msg: text,
+            page: window.location.toString()
+        }
+    );
     console.log(text);
 }
 
 function apiCallSent(name) {
+    updateStatus("Sent API Call " + name)
     activeAPICalls.add(name);
     setTimeout(() => {
         if (activeAPICalls.has(name)) {
@@ -532,6 +575,7 @@ function apiCallSent(name) {
 }
 
 function apiCallRecieved(name) {
+    updateStatus("Received API Call " + name)
     if (activeAPICalls.has(name)) {
         activeAPICalls.delete(name);
         removeDelayMessage();
@@ -595,7 +639,7 @@ function createInfoWindow() {
         return;
     let div = document.createElement("div");
     div.id = "MAL_UPDATER_DIV_4";
-    div.style = "position: absolute;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);display:none";
+    div.style = "position: fixed;left: 50%;top: 50%;background-color:" + site.bgColor + ";border: 3px solid " + site.pageColor + ";padding: 1em 1em 1em 1em;z-index: 300000;transform: translate(-50%, -50%);display:none";
 
     let header = document.createElement("h5");
     header.innerText = getAnimeName();

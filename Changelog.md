@@ -1,3 +1,7 @@
+7.1.0: 17.12.2024
+    -Migrate Aniwave to Hianime
+    -Migrate to new KickAssAnime Link
+
 7.0.1: 27.02.2022
     -Better Discord Implementation
 

@@ -29,11 +29,14 @@ function validateMainSite(req, callb) {
     getAnimeCacheVariable(animeCache => {
         getSitesVariable(sites => {
             for (let site in sites) {
-                if (req.url.match(sites[site].mainPagePattern)) {
-                    callb({
-                        site: sites[site],
-                        cache: animeCache
-                    });
+                let pattern = sites[site].mainPagePattern
+                if (pattern != undefined && pattern != "") {
+                    if (req.url.match(pattern)) {
+                        callb({
+                            site: sites[site],
+                            cache: animeCache
+                        });
+                    }
                 }
             }
             callb(undefined);

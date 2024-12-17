@@ -76,7 +76,9 @@ function initInjector(sites) {
 
     sitePatterns = [];
     for (let site in sites) {
-        sitePatterns.push(sites[site].mainPagePattern);
+        let pattern= sites[site].mainPagePattern
+        if (pattern != undefined && pattern != "")
+            sitePatterns.push(pattern);
     }
     injectObject.push({
         matches: sitePatterns,

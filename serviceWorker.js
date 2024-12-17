@@ -102,6 +102,9 @@ chrome.runtime.onMessage.addListener(
             case "DISCORD_PRESENCE":
                 handleDiscordPresence(request);
                 break;
+            case "LOG":
+                console.log("[Page] " + request.page + " : " + request.msg);
+                break;
             default:
                 return false;
         }
