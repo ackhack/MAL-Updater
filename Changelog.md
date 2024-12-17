@@ -1,4 +1,4 @@
-7.1.0: 17.12.2024
+8.3.2: 17.12.2024
     -Migrate Aniwave to Hianime
     -Migrate to new KickAssAnime Link
 
