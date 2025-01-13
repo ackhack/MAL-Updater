@@ -22,5 +22,5 @@
     "prefixURL": "https://hianime.to",
     "sitePattern": ".*hianime\\.[a-z]+\\/watch\\/.*",
     "ulMarginLeft": 0,
-    "urlPattern": "https?:\\/\\/.*hianime.*\\/watch\\/(.*?)[\\/\\?]ep[-=](\\d+)?.*"
+    "urlPattern": "https?:\\/\\/.*hianime.*\\/watch\\/(.*?)[\\/\\?].*?ep[-=](\\d+)?.*"
 }
